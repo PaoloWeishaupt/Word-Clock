@@ -3,7 +3,7 @@
 ### Canobbio, 27.02.2019
 
 ## Lavori svolti
-Mattia e Paolo oggi inseme hanno testato il modulo RTC del Fishino stampando l'ora corrente su un display LCD.
+Mattia e Paolo oggi inseme hanno testato il modulo RTC del Fishino stampando l'ora corrente su un display LCD. Per fare ciò all'inizio hanno dapprima cercato di utilizzare la libreria scritta da Filippo e Matan nel secondo progetto del modulo, ma alla fine si sono documentati online. Sito consultato: https://www.wikiinfo.net/t2800-come-funziona-rtc-del-fishino-codice.
 Gabriele ha finito di analizzare i led.
 
 
