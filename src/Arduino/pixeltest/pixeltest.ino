@@ -7,7 +7,7 @@
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(195, PIN, NEO_GRB + NEO_KHZ800);
 
-const int matrix[15][13] = {
+const int pixels[15][13] = {
   {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
   {25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13},
   {26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38},
@@ -40,6 +40,7 @@ void setup() {
 
 void loop() {
   randPixel();
+  //sonoLeQuattro();
 }
 
 void pixelOn(int pixel, uint32_t color) {
@@ -68,18 +69,18 @@ void whitePixel() {
 
 void ciao() {
   for (int i = 0; i < 3; i++) {
-    pixelOn(matrix[3][i], white);
-    pixelOn(matrix[3 + i][0], white);
-    pixelOn(matrix[5][i], white);
-    pixelOn(matrix[3 + i][4], blue);
-    pixelOn(matrix[4][6 + i], green);
-    pixelOn(matrix[3 + i][6], green);
-    pixelOn(matrix[3 + i][8], green);
-    pixelOn(matrix[2][7], green);
-    pixelOn(matrix[3][10 + i], red);
-    pixelOn(matrix[3 + i][10], red);
-    pixelOn(matrix[5][10 + i], red);
-    pixelOn(matrix[3 + i][12], red);
+    pixelOn(pixels[3][i], white);
+    pixelOn(pixels[3 + i][0], white);
+    pixelOn(pixels[5][i], white);
+    pixelOn(pixels[3 + i][4], blue);
+    pixelOn(pixels[4][6 + i], green);
+    pixelOn(pixels[3 + i][6], green);
+    pixelOn(pixels[3 + i][8], green);
+    pixelOn(pixels[2][7], green);
+    pixelOn(pixels[3][10 + i], red);
+    pixelOn(pixels[3 + i][10], red);
+    pixelOn(pixels[5][10 + i], red);
+    pixelOn(pixels[3 + i][12], red);
   }
 }
 
@@ -87,5 +88,20 @@ void randPixel() {
   uint32_t c = strip.Color(random(100), random(100), random(100));
   int randI = random(15);
   int randJ = random(13);
-  pixelOn(matrix[randI][randJ], c);
+  pixelOn(pixels[randI][randJ], c);
+}
+
+void sonoLeQuattro() {
+  // sono
+  for (int i = 0; i < 4; i++) {
+    pixelOn(pixels[2 + i][11], white);
+  }
+  // le
+  for (int i = 0; i < 2; i++) {
+    pixelOn(pixels[7 + i][11], red);
+  }
+  // quattro
+  for (int i = 0; i < 7; i++) {
+    pixelOn(pixels[5 + i][9], green);
+  }
 }
