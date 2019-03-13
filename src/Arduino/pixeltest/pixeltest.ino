@@ -56,16 +56,7 @@ void setup() {
 }
 
 void loop() {
-  //randPixel();
-  //sonoLeQuattro();
-  for (int i = 0; i < 15; i++) {
-    pixelOn(pixels[0][i], strip.Color(255, 0, 0));
-    delay(100);
-  }
-  for (int i = 0; i < 15; i++) {
-    pixelOn(pixels[1][i], strip.Color(0, 0, 255));
-    delay(100);
-  }
+  randPixel();
 }
 
 void pixelOn(int pixel, uint32_t color) {
@@ -111,22 +102,7 @@ void ciao() {
 
 void randPixel() {
   uint32_t c = strip.Color(random(100), random(100), random(100));
-  int randI = random(15);
-  int randJ = random(13);
+  int randI = random(13);
+  int randJ = random(15);
   pixelOn(pixels[randI][randJ], c);
-}
-
-void sonoLeQuattro() {
-  // sono
-  for (int i = 0; i < 4; i++) {
-    pixelOn(pixels[2 + i][11], white);
-  }
-  // le
-  for (int i = 0; i < 2; i++) {
-    pixelOn(pixels[7 + i][11], red);
-  }
-  // quattro
-  for (int i = 0; i < 7; i++) {
-    pixelOn(pixels[5 + i][9], green);
-  }
 }
