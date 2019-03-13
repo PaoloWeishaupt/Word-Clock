@@ -123,8 +123,8 @@ void randPixel() {
 }
 
 void printTime(int hour, int minute, int second) {
-  if (hour != 1 && hour != 13) {
-    una();
+  if ((hour != 1 && hour != 13) || minute >= 35) {
+    sonoLe();
     //time += "Sono le ";
     if (hour == 2 || hour == 14) {
       due();
@@ -165,7 +165,7 @@ void printTime(int hour, int minute, int second) {
   }
 }
 
-void una() {
+void sonoLe() {
   pixelOn(pixels[1][2], red);
   pixelOn(pixels[1][3], red);
   pixelOn(pixels[1][4], red);
