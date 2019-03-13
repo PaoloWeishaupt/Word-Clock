@@ -165,6 +165,43 @@ void printTime(int hour, int minute, int second) {
   } else {
     //time += "È l'una";
   }
+  //secondi
+  if(second >= 0 && second <= 4){
+    generateWord(1, 0, 0, red);
+  }
+  else if(second >= 5 && second <= 9){
+    generateWord(2, 0, 0, red);
+  }
+  else if(second >= 10 && second <= 14){
+    generateWord(3, 0, 0, red);
+  }
+  else if(second >= 15 && second <= 19){
+    generateWord(4, 0, 0, red);
+  }
+  else if(second >= 20 && second <= 24){
+    generateWord(5, 0, 0, red);
+  }
+  else if(second >= 25 && second <= 29){
+    generateWord(6, 0, 0, red);
+  }
+  else if(second >= 30 && second <= 34){
+    generateWord(7, 0, 0, red);
+  }
+  else if(second >= 35 && second <= 39){
+    generateWord(8, 0, 0, red);
+  }
+  else if(second >= 40 && second <= 44){
+    generateWord(9, 0, 0, red);
+  }
+  else if(second >= 45 && second <= 49){
+    generateWord(10, 0, 0, red);
+  }
+  else if(second >= 50 && second <= 54){
+    generateWord(11, 0, 0, red);
+  }
+  else if(second >= 55 && second <= 59){
+    generateWord(12, 0, 0, red);
+  }
 }
 
 void sonoLe() {
