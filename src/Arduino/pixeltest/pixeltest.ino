@@ -51,12 +51,13 @@ void setup() {
     // l'orario: ANNO, MESE, GIORNI, ORA, MINUTI, SECONDI
     //rtc.adjust(DateTime(2014, 1, 12, 18, 0, 0));
   }
-  rtc.adjust(DateTime(2014, 1, 12, 19, 0, 0));
+  rtc.adjust(DateTime(2014, 1, 12, 15, 0, 0));
+  //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 }
 
 void loop() {
   DateTime now = rtc.now(); //creo istanza ora/data
-  int hour = now.hour() - 1; //DA SISTEMARE
+  int hour = now.hour(); //DA SISTEMARE
   int minute = now.minute();
   int second = now.second();
   Serial.print(now.year(), DEC); //stampo anno in decimale
@@ -130,7 +131,7 @@ void printTime(int hour, int minute, int second) {
       due();
       //time += "due ";
     } else if (hour == 3 || hour == 15) {
-      tre();
+      //tre();
       generateWord(3, 1, 3, red);
       //time += "tre ";
     } else if (hour == 4 || hour == 16) {
@@ -259,9 +260,12 @@ void dodici() {
   pixelOn(pixels[2][14], red);
 }
 
-void generateWord(int row, int min, int max, uint32_t color){
-   for(int i = 0; i <= (max - min); i++){
-      strip.setPixelColor(pixels[row][i], color);
-   }
-   strip.show();
- }
+void generateWord(int row, int min, int max, uint32_t color) {
+  Serial.println(row);
+  Serial.println(min);
+  Serial.println(max);
+  Serial.println(color);
+  for (int i = min; i <= (max - min) + 1; i++) {
+    pixelOn(pixels[row][i], color);
+  }
+}
