@@ -7,26 +7,9 @@
 
 #define PIN 6
 
+RTC_DS1307 rtc;
+
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(195, PIN, NEO_GRB + NEO_KHZ800);
-/*
-  const int pixels[15][13] = {
-  {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
-  {25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13},
-  {26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38},
-  {51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39},
-  {52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64},
-  {77, 76, 75, 74, 73, 72, 71, 70, 69, 68, 67, 66, 65},
-  {78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90},
-  {103, 102, 101, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91},
-  {104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116},
-  {129, 128, 127, 126, 125, 124, 123, 122, 121, 120, 119, 118, 117},
-  {130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142},
-  {155, 154, 153, 152, 151, 150, 149, 148, 147, 146, 145, 144, 143},
-  {156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168},
-  {181, 180, 179, 178, 177, 176, 175, 174, 173, 172, 171, 170, 169},
-  {182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194},
-  };
-*/
 
 const int pixels[13][15] = {
   {182, 181, 156, 155, 130, 129, 104, 103, 78, 77, 52, 51, 26, 25, 0},
@@ -53,7 +36,7 @@ const uint32_t black = strip.Color(0, 0, 0);
 void setup() {
   Serial.begin(9600);
   strip.begin();
-  strip.setBrightness(100);
+  strip.setBrightness(255);
   strip.show();
   if (! rtc.begin()) { //verifico la presenza dell'RTC
     Serial.println("Impossibile trovare RTC");
@@ -63,11 +46,12 @@ void setup() {
   if (! rtc.isrunning()) { //verifico funzionamento dell'RTC
     Serial.println("RTC non è in funzione!");
     //inserisce l'orario del computer durante la compilazione
-    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
     // Se vuoi un orario personalizzato, togli il commento alla riga successiva
     // l'orario: ANNO, MESE, GIORNI, ORA, MINUTI, SECONDI
-    //rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+    //rtc.adjust(DateTime(2014, 1, 12, 18, 0, 0));
   }
+  rtc.adjust(DateTime(2014, 1, 12, 19, 0, 0));
 }
 
 void loop() {
@@ -81,8 +65,6 @@ void loop() {
   Serial.print('/');
   Serial.print(now.day(), DEC); //stampo giorno in decimale
   Serial.print(" (");
-  Serial.print(daysOfTheWeek[now.dayOfTheWeek()]); //stampo nome giorno
-  Serial.print(") ");
   Serial.print(now.hour(), DEC); //stampo ora in decimale
   Serial.print(':');
   Serial.print(now.minute(), DEC); //stampo minuto in decimale
@@ -142,90 +124,136 @@ void randPixel() {
 
 void printTime(int hour, int minute, int second) {
   if (hour != 1 && hour != 13) {
-    pixelOn(pixels[1][2], red);
-    pixelOn(pixels[1][3], red);
-    pixelOn(pixels[1][4], red);
-    pixelOn(pixels[1][5], red);
-    pixelOn(pixels[1][7], red);
-    pixelOn(pixels[1][8], red);
+    una();
     //time += "Sono le ";
     if (hour == 2 || hour == 14) {
-      pixelOn(pixels[2][12], red);
-      pixelOn(pixels[2][13], red);
-      pixelOn(pixels[2][14], red);
+      due();
       //time += "due ";
     } else if (hour == 3 || hour == 15) {
-      pixelOn(pixels[3][1], red);
-      pixelOn(pixels[3][2], red);
-      pixelOn(pixels[3][3], red);
+      tre();
       //time += "tre ";
     } else if (hour == 4 || hour == 16) {
-      pixelOn(pixels[3][5], red);
-      pixelOn(pixels[3][6], red);
-      pixelOn(pixels[3][7], red);
-      pixelOn(pixels[3][8], red);
-      pixelOn(pixels[3][9], red);
-      pixelOn(pixels[3][10], red);
-      pixelOn(pixels[3][11], red);
+      quattro();
       //time += "quattro ";
     } else if (hour == 5 || hour == 17) {
-      pixelOn(pixels[4][1], red);
-      pixelOn(pixels[4][2], red);
-      pixelOn(pixels[4][3], red);
-      pixelOn(pixels[4][4], red);
-      pixelOn(pixels[4][5], red);
-      pixelOn(pixels[4][6], red);
+      cinque();
       //time += "cinque ";
     } else if (hour == 6 || hour == 18) {
-      pixelOn(pixels[3][12], red);
-      pixelOn(pixels[3][13], red);
-      pixelOn(pixels[3][14], red);
+      sei();
       //time += "sei ";
     } else if (hour == 7 || hour == 19) {
-      pixelOn(pixels[4][10], red);
-      pixelOn(pixels[4][11], red);
-      pixelOn(pixels[4][12], red);
-      pixelOn(pixels[4][13], red);
-      pixelOn(pixels[4][14], red);
+      sette();
       //time += "sette ";
     } else if (hour == 8 || hour == 20) {
-      pixelOn(pixels[2][12], red);
-      pixelOn(pixels[2][13], red);
-      pixelOn(pixels[2][14], red);
-      pixelOn(pixels[2][12], red);
+      otto();
       //time += "otto ";
     } else if (hour == 9 || hour == 21) {
-      pixelOn(pixels[2][12], red);
-      pixelOn(pixels[2][13], red);
-      pixelOn(pixels[2][14], red);
-      pixelOn(pixels[2][12], red);
+      nove();
       //time += "nove ";
     } else if (hour == 10 || hour == 22) {
-      pixelOn(pixels[2][12], red);
-      pixelOn(pixels[2][13], red);
-      pixelOn(pixels[2][14], red);
-      pixelOn(pixels[2][12], red);
-      pixelOn(pixels[2][13], red);
+      dieci();
       //time += "dieci ";
     } else if (hour == 11 || hour == 23) {
-      pixelOn(pixels[2][12], red);
-      pixelOn(pixels[2][13], red);
-      pixelOn(pixels[2][14], red);
-      pixelOn(pixels[2][12], red);
-      pixelOn(pixels[2][13], red);
-      pixelOn(pixels[2][14], red);
+      undici();
       //time += "undici ";
     } else if (hour == 12 || hour == 24) {
-      pixelOn(pixels[2][12], red);
-      pixelOn(pixels[2][13], red);
-      pixelOn(pixels[2][14], red);
-      pixelOn(pixels[2][12], red);
-      pixelOn(pixels[2][13], red);
-      pixelOn(pixels[2][14], red);
+      dodici();
       //time += "dodici ";
     }
   } else {
-    //time += "È la una";
+    //time += "È l'una";
   }
-  //return time;
+}
+
+void una() {
+  pixelOn(pixels[1][2], red);
+  pixelOn(pixels[1][3], red);
+  pixelOn(pixels[1][4], red);
+  pixelOn(pixels[1][5], red);
+  pixelOn(pixels[1][7], red);
+  pixelOn(pixels[1][8], red);
+}
+
+void due() {
+  pixelOn(pixels[2][12], red);
+  pixelOn(pixels[2][13], red);
+  pixelOn(pixels[2][14], red);
+}
+
+void tre() {
+  pixelOn(pixels[3][1], red);
+  pixelOn(pixels[3][2], red);
+  pixelOn(pixels[3][3], red);
+}
+
+void quattro() {
+  pixelOn(pixels[3][5], red);
+  pixelOn(pixels[3][6], red);
+  pixelOn(pixels[3][7], red);
+  pixelOn(pixels[3][8], red);
+  pixelOn(pixels[3][9], red);
+  pixelOn(pixels[3][10], red);
+  pixelOn(pixels[3][11], red);
+}
+
+void cinque() {
+  pixelOn(pixels[4][1], red);
+  pixelOn(pixels[4][2], red);
+  pixelOn(pixels[4][3], red);
+  pixelOn(pixels[4][4], red);
+  pixelOn(pixels[4][5], red);
+  pixelOn(pixels[4][6], red);
+}
+
+void seii() {
+  pixelOn(pixels[3][12], red);
+  pixelOn(pixels[3][13], red);
+  pixelOn(pixels[3][14], red);
+}
+
+void sette() {
+  pixelOn(pixels[4][10], red);
+  pixelOn(pixels[4][11], red);
+  pixelOn(pixels[4][12], red);
+  pixelOn(pixels[4][13], red);
+  pixelOn(pixels[4][14], red);
+}
+
+void otto() {
+  pixelOn(pixels[2][12], red);
+  pixelOn(pixels[2][13], red);
+  pixelOn(pixels[2][14], red);
+  pixelOn(pixels[2][12], red);
+}
+
+void nove() {
+  pixelOn(pixels[2][12], red);
+  pixelOn(pixels[2][13], red);
+  pixelOn(pixels[2][14], red);
+  pixelOn(pixels[2][12], red);
+}
+
+void dieci() {
+  pixelOn(pixels[2][12], red);
+  pixelOn(pixels[2][13], red);
+  pixelOn(pixels[2][14], red);
+  pixelOn(pixels[2][12], red);
+  pixelOn(pixels[2][13], red);
+}
+void undici() {
+  pixelOn(pixels[2][12], red);
+  pixelOn(pixels[2][13], red);
+  pixelOn(pixels[2][14], red);
+  pixelOn(pixels[2][12], red);
+  pixelOn(pixels[2][13], red);
+  pixelOn(pixels[2][14], red);
+}
+
+void dodici() {
+  pixelOn(pixels[2][12], red);
+  pixelOn(pixels[2][13], red);
+  pixelOn(pixels[2][14], red);
+  pixelOn(pixels[2][12], red);
+  pixelOn(pixels[2][13], red);
+  pixelOn(pixels[2][14], red);
 }
