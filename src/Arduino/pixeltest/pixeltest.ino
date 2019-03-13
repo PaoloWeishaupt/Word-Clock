@@ -257,3 +257,10 @@ void dodici() {
   pixelOn(pixels[2][13], red);
   pixelOn(pixels[2][14], red);
 }
+
+void generateWord(int min, int max, uint32_t color){
+   for(int i = min; i <= max; i++){
+      strip.setPixelColor(pixels[min][max], color);
+   }
+   strip.show();
+ }
