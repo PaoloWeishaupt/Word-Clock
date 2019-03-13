@@ -56,7 +56,119 @@ void setup() {
 }
 
 void loop() {
-  randPixel();
+  //randPixel();
+  //sonoLeQuattro();
+  for (int i = 0; i < 15; i++) {
+    pixelOn(pixels[0][i], strip.Color(255, 0, 0));
+    delay(100);
+  }
+  for (int i = 0; i < 15; i++) {
+    pixelOn(pixels[1][i], strip.Color(0, 0, 255));
+    delay(100);
+  }
+}
+
+void pixelOn(int pixel, uint32_t color) {
+  strip.setPixelColor(pixel, color);
+  strip.show();
+}
+
+void colorWipe(uint32_t color) {
+  int i = 0;
+  while (i < strip.numPixels()) {
+    pixelOn(i, color);
+    delay(5);
+    i++;
+  }
+}
+
+void whitePixel() {
+  int i = 0;
+  while (i < strip.numPixels()) {
+    pixelOn(i, white);
+    pixelOn(i, black);
+    delay(5);
+    i++;
+  }
+}
+
+void ciao() {
+  for (int i = 0; i < 3; i++) {
+    pixelOn(pixels[3][i], white);
+    pixelOn(pixels[3 + i][0], white);
+    pixelOn(pixels[5][i], white);
+    pixelOn(pixels[3 + i][4], blue);
+    pixelOn(pixels[4][6 + i], green);
+    pixelOn(pixels[3 + i][6], green);
+    pixelOn(pixels[3 + i][8], green);
+    pixelOn(pixels[2][7], green);
+    pixelOn(pixels[3][10 + i], red);
+    pixelOn(pixels[3 + i][10], red);
+    pixelOn(pixels[5][10 + i], red);
+    pixelOn(pixels[3 + i][12], red);
+  }
+}
+
+void randPixel() {
+  uint32_t c = strip.Color(random(100), random(100), random(100));
+  int randI = random(15);
+  int randJ = random(13);
+  pixelOn(pixels[randI][randJ], c);
+}
+
+void sonoLeQuattro() {
+  // sono
+  for (int i = 0; i < 4; i++) {
+    pixelOn(pixels[2 + i][11], white);
+  }
+  // le
+  for (int i = 0; i < 2; i++) {
+    pixelOn(pixels[7 + i][11], red);
+  }
+  // quattro
+  for (int i = 0; i < 7; i++) {
+    pixelOn(pixels[5 + i][9], green);
+  }
+}
+}
+
+void printTime(int hour, int minute, int second){
+   if(hour != 1 && hour != 13){
+     pixelOn(pixels[1][2], red);
+     pixelOn(pixels[1][3], red);
+     pixelOn(pixels[1][4], red);
+     pixelOn(pixels[1][5], red);
+     pixelOn(pixels[1][7], red);
+     pixelOn(pixels[1][8], red);
+      time += "Sono le ";
+    if(hour == 2 || hour == 14){
+        time += "due ";
+    }else if(hour == 3 || hour == 15){
+        time += "tre ";
+    }else if(hour == 4 || hour == 16){
+        time += "quattro ";
+    }else if(hour == 5 || hour == 17){
+        time += "cinque ";
+    }else if(hour == 6 || hour == 18){
+        time += "sei ";
+    }else if(hour == 7 || hour == 19){
+        time += "sette ";
+    }else if(hour == 8 || hour == 20){
+        time += "otto ";
+    }else if(hour == 9 || hour == 21){
+        time += "nove ";
+    }else if(hour == 10 || hour == 22){
+        time += "dieci ";
+    }else if(hour == 11 || hour == 23){
+        time += "undici ";
+    }else if(hour == 12 || hour == 24){
+        time += "dodici ";
+    }
+   }
+   else{
+      time += "È la una";
+   }
+   return time;
 }
 
 void pixelOn(int pixel, uint32_t color) {
@@ -106,3 +218,4 @@ void randPixel() {
   int randJ = random(15);
   pixelOn(pixels[randI][randJ], c);
 }
+>>>>>>> before discard
