@@ -131,6 +131,7 @@ void printTime(int hour, int minute, int second) {
       //time += "due ";
     } else if (hour == 3 || hour == 15) {
       tre();
+      generateWord(3, 1, 3, red);
       //time += "tre ";
     } else if (hour == 4 || hour == 16) {
       quattro();
@@ -258,9 +259,9 @@ void dodici() {
   pixelOn(pixels[2][14], red);
 }
 
-void generateWord(int min, int max, uint32_t color){
-   for(int i = min; i <= max; i++){
-      strip.setPixelColor(pixels[min][max], color);
+void generateWord(int row, int min, int max, uint32_t color){
+   for(int i = 0; i <= (max - min); i++){
+      strip.setPixelColor(pixels[row][i], color);
    }
    strip.show();
  }
