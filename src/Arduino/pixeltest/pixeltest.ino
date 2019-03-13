@@ -1,3 +1,5 @@
+#include <Wire.h> //libreria per interfacciare i2c e rtc
+#include "RTClib.h" //libreria rtc
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
 #include <avr/power.h>
@@ -53,10 +55,41 @@ void setup() {
   strip.begin();
   strip.setBrightness(100);
   strip.show();
+  if (! rtc.begin()) { //verifico la presenza dell'RTC
+    Serial.println("Impossibile trovare RTC");
+    while (1);
+  }
+
+  if (! rtc.isrunning()) { //verifico funzionamento dell'RTC
+    Serial.println("RTC non è in funzione!");
+    //inserisce l'orario del computer durante la compilazione
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    // Se vuoi un orario personalizzato, togli il commento alla riga successiva
+    // l'orario: ANNO, MESE, GIORNI, ORA, MINUTI, SECONDI
+    //rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+  }
 }
 
 void loop() {
-
+  DateTime now = rtc.now(); //creo istanza ora/data
+  int hour = now.hour() - 1; //DA SISTEMARE
+  int minute = now.minute();
+  int second = now.second();
+  Serial.print(now.year(), DEC); //stampo anno in decimale
+  Serial.print('/');
+  Serial.print(now.month(), DEC); //stampo mese in decimale
+  Serial.print('/');
+  Serial.print(now.day(), DEC); //stampo giorno in decimale
+  Serial.print(" (");
+  Serial.print(daysOfTheWeek[now.dayOfTheWeek()]); //stampo nome giorno
+  Serial.print(") ");
+  Serial.print(now.hour(), DEC); //stampo ora in decimale
+  Serial.print(':');
+  Serial.print(now.minute(), DEC); //stampo minuto in decimale
+  Serial.print(':');
+  Serial.print(now.second(), DEC); //stampo secondi in decimale
+  Serial.println();
+  printTime(hour, minute, second);
 }
 
 void pixelOn(int pixel, uint32_t color) {
