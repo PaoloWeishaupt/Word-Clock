@@ -352,7 +352,9 @@ void generateWord(int row, int min, int max, uint32_t color) {
       pixelOn(pixels[row][i], color);
     }
   }
-  for (int i = min; i <= (max - min) + 1; i++) {
-    pixelOn(pixels[row][i], color);
+  else{
+    for (int i = min; i <= (max - min) + 1; i++) {
+      pixelOn(pixels[row][i], color);
+    }
   }
 }
