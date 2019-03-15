@@ -72,9 +72,6 @@ void loop() {
   Serial.print(':');
   Serial.print(now.second(), DEC); //stampo secondi in decimale
   Serial.println();
-  for(int i = 1; i < 13; i++){
-      generateWord(i, 0, 0, black);
-  }
   printTime(hour, minute, second);
 }
 
@@ -130,8 +127,13 @@ void printTime(int hour, int minute, int second) {
   if ((hour != 1 && hour != 13) || minute >= 35) {
     generateWord(1, 2, 5, red);
     generateWord(1, 7, 8, red);
-    //time += "Sono le ";
-    if (hour == 2 || hour == 14) {
+  }
+
+  if (hour == 1 || hour == 13){
+    generateWord(1, 1, 1, red);
+    generateWord(1, 10, 14, red);
+    //time += "È l'una";
+  } else  if (hour == 2 || hour == 14) {
       generateWord(2, 12, 14, red);
       //time += "due ";
     } else if (hour == 3 || hour == 15) {
@@ -169,71 +171,108 @@ void printTime(int hour, int minute, int second) {
       generateWord(7, 1, 10, red);
       //time += "mezzanotte ";
     }
-  } else {
-    generateWord(1, 1, 1, red);
-    generateWord(1, 10, 14, red);
-    //time += "È l'una";
-  }
   //secondi
   if(second >= 0 && second <= 4){
-    for (int i = 0; i < 1; i++) {
-      generateWord(i, 0, 0, blue);
-    }
+    generateWord(1, 0, 0, red);
   }
   else if(second >= 5 && second <= 9){
-    for (int i = 0; i < 2; i++) {
-      generateWord(i, 0, 0, blue);
-    }
+    generateWord(1, 0, 0, red);
+    generateWord(2, 0, 0, red);
   }
   else if(second >= 10 && second <= 14){
-    for (int i = 0; i < 3; i++) {
-      generateWord(i, 0, 0, blue);
-    }
+    generateWord(1, 0, 0, red);
+    generateWord(2, 0, 0, red);
+    generateWord(3, 0, 0, red);
   }
   else if(second >= 15 && second <= 19){
-    for (int i = 0; i < 4; i++) {
-      generateWord(i, 0, 0, blue);
-    }
+    generateWord(1, 0, 0, red);
+    generateWord(2, 0, 0, red);
+    generateWord(3, 0, 0, red);
+    generateWord(4, 0, 0, red);
   }
   else if(second >= 20 && second <= 24){
-    for (int i = 0; i < 5; i++) {
-      generateWord(i, 0, 0, blue);
-    }
+    generateWord(1, 0, 0, red);
+    generateWord(2, 0, 0, red);
+    generateWord(3, 0, 0, red);
+    generateWord(4, 0, 0, red);
+    generateWord(5, 0, 0, red);
   }
   else if(second >= 25 && second <= 29){
-    for (int i = 0; i < 6; i++) {
-      generateWord(i, 0, 0, blue);
-    }
+    generateWord(1, 0, 0, red);
+    generateWord(2, 0, 0, red);
+    generateWord(3, 0, 0, red);
+    generateWord(4, 0, 0, red);
+    generateWord(5, 0, 0, red);
+    generateWord(6, 0, 0, red);
   }
   else if(second >= 30 && second <= 34){
-    for (int i = 0; i < 7; i++) {
-      generateWord(i, 0, 0, blue);
-    }
+    generateWord(1, 0, 0, red);
+    generateWord(2, 0, 0, red);
+    generateWord(3, 0, 0, red);
+    generateWord(4, 0, 0, red);
+    generateWord(5, 0, 0, red);
+    generateWord(6, 0, 0, red);
+    generateWord(7, 0, 0, red);
   }
   else if(second >= 35 && second <= 39){
-    for (int i = 0; i < 8; i++) {
-      generateWord(i, 0, 0, blue);
-    }
+    generateWord(1, 0, 0, red);
+    generateWord(2, 0, 0, red);
+    generateWord(3, 0, 0, red);
+    generateWord(4, 0, 0, red);
+    generateWord(5, 0, 0, red);
+    generateWord(6, 0, 0, red);
+    generateWord(7, 0, 0, red);
+    generateWord(8, 0, 0, red);
   }
   else if(second >= 40 && second <= 44){
-    for (int i = 0; i < 9; i++) {
-      generateWord(i, 0, 0, blue);
-    }
+    generateWord(1, 0, 0, red);
+    generateWord(2, 0, 0, red);
+    generateWord(3, 0, 0, red);
+    generateWord(4, 0, 0, red);
+    generateWord(5, 0, 0, red);
+    generateWord(6, 0, 0, red);
+    generateWord(7, 0, 0, red);
+    generateWord(8, 0, 0, red);
+    generateWord(9, 0, 0, red);
   }
   else if(second >= 45 && second <= 49){
-    for (int i = 0; i < 10; i++) {
-      generateWord(i, 0, 0, blue);
-    }
+    generateWord(1, 0, 0, red);
+    generateWord(2, 0, 0, red);
+    generateWord(3, 0, 0, red);
+    generateWord(4, 0, 0, red);
+    generateWord(5, 0, 0, red);
+    generateWord(6, 0, 0, red);
+    generateWord(7, 0, 0, red);
+    generateWord(8, 0, 0, red);
+    generateWord(9, 0, 0, red);
+    generateWord(10, 0, 0, red);
   }
   else if(second >= 50 && second <= 54){
-    for (int i = 0; i < 11; i++) {
-      generateWord(i, 0, 0, blue);
-    }
+    generateWord(1, 0, 0, red);
+    generateWord(2, 0, 0, red);
+    generateWord(3, 0, 0, red);
+    generateWord(4, 0, 0, red);
+    generateWord(5, 0, 0, red);
+    generateWord(6, 0, 0, red);
+    generateWord(7, 0, 0, red);
+    generateWord(8, 0, 0, red);
+    generateWord(9, 0, 0, red);
+    generateWord(10, 0, 0, red);
+    generateWord(11, 0, 0, red);
   }
   else if(second >= 55 && second <= 59){
-    for (int i = 0; i < 12; i++) {
-      generateWord(i, 0, 0, blue);
-    }
+    generateWord(1, 0, 0, red);
+    generateWord(2, 0, 0, red);
+    generateWord(3, 0, 0, red);
+    generateWord(4, 0, 0, red);
+    generateWord(5, 0, 0, red);
+    generateWord(6, 0, 0, red);
+    generateWord(7, 0, 0, red);
+    generateWord(8, 0, 0, red);
+    generateWord(9, 0, 0, red);
+    generateWord(10, 0, 0, red);
+    generateWord(11, 0, 0, red);
+    generateWord(12, 0, 0, red);
   }
 }
 
