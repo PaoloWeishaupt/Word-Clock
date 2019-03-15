@@ -125,44 +125,50 @@ void randPixel() {
 
 void printTime(int hour, int minute, int second) {
   if ((hour != 1 && hour != 13) || minute >= 35) {
-    sonoLe();
+    generateWord(1, 2, 5, red);
+    generateWord(1, 7, 8, red);
     //time += "Sono le ";
     if (hour == 2 || hour == 14) {
-      due();
+      generateWord(2, 12, 14, red);
       //time += "due ";
     } else if (hour == 3 || hour == 15) {
       //tre();
       generateWord(3, 1, 3, red);
       //time += "tre ";
     } else if (hour == 4 || hour == 16) {
-      quattro();
+      generateWord(3, 5, 11, red);
       //time += "quattro ";
     } else if (hour == 5 || hour == 17) {
-      cinque();
+      generateWord(4, 1, 6, red);
       //time += "cinque ";
     } else if (hour == 6 || hour == 18) {
-      sei();
+      generateWord(3, 12, 14, red);
       //time += "sei ";
     } else if (hour == 7 || hour == 19) {
-      sette();
+      generateWord(4, 10, 14, red);
       //time += "sette ";
     } else if (hour == 8 || hour == 20) {
-      otto();
+      generateWord(5, 1, 4, red);
       //time += "otto ";
     } else if (hour == 9 || hour == 21) {
-      nove();
+      generateWord(5, 5, 8, red);
       //time += "nove ";
     } else if (hour == 10 || hour == 22) {
-      dieci();
+      generateWord(5, 10, 14, red);
       //time += "dieci ";
     } else if (hour == 11 || hour == 23) {
-      undici();
+      generateWord(6, 1, 6, red);
       //time += "undici ";
-    } else if (hour == 12 || hour == 24) {
-      dodici();
-      //time += "dodici ";
+    } else if (hour == 12) {
+      generateWord(2, 1, 11, red);
+      //time += "mezzogiorno ";
+    } else if (hour == 24) {
+      generateWord(7, 1, 10, red);
+      //time += "mezzanotte ";
     }
   } else {
+    generateWord(1, 1, 1, red);
+    generateWord(1, 10, 14, red);
     //time += "È l'una";
   }
   //secondi
@@ -334,99 +340,6 @@ void printTime(int hour, int minute, int second) {
     generateWord(11, 0, 0, red);
     generateWord(12, 0, 0, red);
   }
-}
-
-void sonoLe() {
-  pixelOn(pixels[1][2], red);
-  pixelOn(pixels[1][3], red);
-  pixelOn(pixels[1][4], red);
-  pixelOn(pixels[1][5], red);
-  pixelOn(pixels[1][7], red);
-  pixelOn(pixels[1][8], red);
-}
-
-void due() {
-  pixelOn(pixels[2][12], red);
-  pixelOn(pixels[2][13], red);
-  pixelOn(pixels[2][14], red);
-}
-
-void tre() {
-  pixelOn(pixels[3][1], red);
-  pixelOn(pixels[3][2], red);
-  pixelOn(pixels[3][3], red);
-}
-
-void quattro() {
-  pixelOn(pixels[3][5], red);
-  pixelOn(pixels[3][6], red);
-  pixelOn(pixels[3][7], red);
-  pixelOn(pixels[3][8], red);
-  pixelOn(pixels[3][9], red);
-  pixelOn(pixels[3][10], red);
-  pixelOn(pixels[3][11], red);
-}
-
-void cinque() {
-  pixelOn(pixels[4][1], red);
-  pixelOn(pixels[4][2], red);
-  pixelOn(pixels[4][3], red);
-  pixelOn(pixels[4][4], red);
-  pixelOn(pixels[4][5], red);
-  pixelOn(pixels[4][6], red);
-}
-
-void seii() {
-  pixelOn(pixels[3][12], red);
-  pixelOn(pixels[3][13], red);
-  pixelOn(pixels[3][14], red);
-}
-
-void sette() {
-  pixelOn(pixels[4][10], red);
-  pixelOn(pixels[4][11], red);
-  pixelOn(pixels[4][12], red);
-  pixelOn(pixels[4][13], red);
-  pixelOn(pixels[4][14], red);
-}
-
-void otto() {
-  pixelOn(pixels[2][12], red);
-  pixelOn(pixels[2][13], red);
-  pixelOn(pixels[2][14], red);
-  pixelOn(pixels[2][12], red);
-}
-
-void nove() {
-  pixelOn(pixels[2][12], red);
-  pixelOn(pixels[2][13], red);
-  pixelOn(pixels[2][14], red);
-  pixelOn(pixels[2][12], red);
-}
-
-void dieci() {
-  pixelOn(pixels[2][12], red);
-  pixelOn(pixels[2][13], red);
-  pixelOn(pixels[2][14], red);
-  pixelOn(pixels[2][12], red);
-  pixelOn(pixels[2][13], red);
-}
-void undici() {
-  pixelOn(pixels[2][12], red);
-  pixelOn(pixels[2][13], red);
-  pixelOn(pixels[2][14], red);
-  pixelOn(pixels[2][12], red);
-  pixelOn(pixels[2][13], red);
-  pixelOn(pixels[2][14], red);
-}
-
-void dodici() {
-  pixelOn(pixels[2][12], red);
-  pixelOn(pixels[2][13], red);
-  pixelOn(pixels[2][14], red);
-  pixelOn(pixels[2][12], red);
-  pixelOn(pixels[2][13], red);
-  pixelOn(pixels[2][14], red);
 }
 
 void generateWord(int row, int min, int max, uint32_t color) {
