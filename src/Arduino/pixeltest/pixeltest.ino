@@ -128,7 +128,9 @@ void printTime(int hour, int minute, int second) {
   //for(int i = 0; i < 13; i++){
   //  generateWord(i, 0, 14, strip.Color(i,i,i));
   //}
-  
+  for(int i = 1; i < 13; i++){
+      generateWord(i, 0, 0, black);
+  }
   boolean piuOMeno = false;
   if ((hour != 1 && hour != 13) || minute >= 35) {
     generateWord(1, 2, 5, red);
