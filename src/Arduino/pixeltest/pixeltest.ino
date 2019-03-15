@@ -347,6 +347,11 @@ void generateWord(int row, int min, int max, uint32_t color) {
   Serial.println(min);
   Serial.println(max);
   Serial.println(color);
+  if(min == 0 && max == 0){
+    for (int i = min; i <= (max - min); i++) {
+      pixelOn(pixels[row][i], color);
+    }
+  }
   for (int i = min; i <= (max - min) + 1; i++) {
     pixelOn(pixels[row][i], color);
   }
