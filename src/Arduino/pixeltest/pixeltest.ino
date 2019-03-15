@@ -51,8 +51,8 @@ void setup() {
     // l'orario: ANNO, MESE, GIORNI, ORA, MINUTI, SECONDI
     //rtc.adjust(DateTime(2014, 1, 12, 18, 0, 0));
   }
-  rtc.adjust(DateTime(2014, 1, 12, 15, 0, 0));
-  //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  //rtc.adjust(DateTime(2014, 1, 12, 15, 0, 0));
+  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 }
 
 void loop() {
@@ -124,11 +124,17 @@ void randPixel() {
 }
 
 void printTime(int hour, int minute, int second) {
+
+  //for(int i = 0; i < 13; i++){
+  //  generateWord(i, 0, 14, strip.Color(i,i,i));
+  //}
+  
   boolean piuOMeno = false;
   if ((hour != 1 && hour != 13) || minute >= 35) {
-    generateWord(1, 2, 6, red);
+    generateWord(1, 2, 5, red);
     generateWord(1, 7, 8, red);
   }
+  Serial.println(minute);
   if(minute >= 35){
     piuOMeno = true;
     hour += 1;
@@ -176,6 +182,9 @@ void printTime(int hour, int minute, int second) {
     //time += "mezzanotte ";
   }
   //secondi
+  for(int i = 0; i < 13; i++){
+    generateWord(i, 0, 0, black);
+  }
   if(second >= 0 && second <= 4){
     generateWord(1, 0, 0, red);
   }
