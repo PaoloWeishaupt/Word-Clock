@@ -124,53 +124,57 @@ void randPixel() {
 }
 
 void printTime(int hour, int minute, int second) {
+  boolean piuOMeno = false;
   if ((hour != 1 && hour != 13) || minute >= 35) {
-    generateWord(1, 2, 5, red);
+    generateWord(1, 2, 6, red);
     generateWord(1, 7, 8, red);
   }
-
+  if(minute >= 35){
+    piuOMeno = true;
+    hour += 1;
+  }
   if (hour == 1 || hour == 13){
     generateWord(1, 1, 1, red);
     generateWord(1, 10, 14, red);
     //time += "È l'una";
   } else  if (hour == 2 || hour == 14) {
-      generateWord(2, 12, 14, red);
-      //time += "due ";
-    } else if (hour == 3 || hour == 15) {
-      //tre();
-      generateWord(3, 1, 3, red);
-      //time += "tre ";
-    } else if (hour == 4 || hour == 16) {
-      generateWord(3, 5, 11, red);
-      //time += "quattro ";
-    } else if (hour == 5 || hour == 17) {
-      generateWord(4, 1, 6, red);
-      //time += "cinque ";
-    } else if (hour == 6 || hour == 18) {
-      generateWord(3, 12, 14, red);
-      //time += "sei ";
-    } else if (hour == 7 || hour == 19) {
-      generateWord(4, 10, 14, red);
-      //time += "sette ";
-    } else if (hour == 8 || hour == 20) {
-      generateWord(5, 1, 4, red);
-      //time += "otto ";
-    } else if (hour == 9 || hour == 21) {
-      generateWord(5, 5, 8, red);
-      //time += "nove ";
-    } else if (hour == 10 || hour == 22) {
-      generateWord(5, 10, 14, red);
-      //time += "dieci ";
-    } else if (hour == 11 || hour == 23) {
-      generateWord(6, 1, 6, red);
-      //time += "undici ";
-    } else if (hour == 12) {
-      generateWord(2, 1, 11, red);
-      //time += "mezzogiorno ";
-    } else if (hour == 24) {
-      generateWord(7, 1, 10, red);
-      //time += "mezzanotte ";
-    }
+    generateWord(2, 12, 14, red);
+    //time += "due ";
+  } else if (hour == 3 || hour == 15) {
+    //tre();
+    generateWord(3, 1, 3, red);
+    //time += "tre ";
+  } else if (hour == 4 || hour == 16) {
+    generateWord(3, 5, 11, red);
+    //time += "quattro ";
+  } else if (hour == 5 || hour == 17) {
+    generateWord(4, 1, 6, red);
+    //time += "cinque ";
+  } else if (hour == 6 || hour == 18) {
+    generateWord(3, 12, 14, red);
+    //time += "sei ";
+  } else if (hour == 7 || hour == 19) {
+    generateWord(4, 10, 14, red);
+    //time += "sette ";
+  } else if (hour == 8 || hour == 20) {
+    generateWord(5, 1, 4, red);
+    //time += "otto ";
+  } else if (hour == 9 || hour == 21) {
+    generateWord(5, 5, 8, red);
+    //time += "nove ";
+  } else if (hour == 10 || hour == 22) {
+    generateWord(5, 10, 14, red);
+    //time += "dieci ";
+  } else if (hour == 11 || hour == 23) {
+    generateWord(6, 1, 6, red);
+    //time += "undici ";
+  } else if (hour == 12) {
+    generateWord(2, 1, 11, red);
+    //time += "mezzogiorno ";
+  } else if (hour == 24) {
+    generateWord(7, 1, 10, red);
+    //time += "mezzanotte ";
+  }
   //secondi
   if(second >= 0 && second <= 4){
     generateWord(1, 0, 0, red);
