@@ -175,15 +175,102 @@ void printTime(int hour, int minute, int second) {
   }
 
   //Più o meno
-  if(minutes < 35){
+  if(minute < 35){
       generateWord(0, 2, 2, red);
+      generateWord(0, 4, 4, black);
       meno = false;
   }else{
       generateWord(0, 2, 2, black);
       generateWord(0, 4, 4, red);
       meno = true;
-      hours += 1;
+      hour += 1;
   }
+
+  //Illuminazione dei pallini
+  diff = minute - parseInt(minute / 10)*10;
+
+  //Minuti
+  if(meno == false) {
+    if(diff != 0 && diff != 5) {
+      //+ on
+      genWord(20, 6, 6, on);
+      generateWord(0, 2, 2, red);
+      generateWord(0, 4, 4, black);
+      if (diff != 5 && diff != 0) {
+        generateWord(0, 6, 6, red);
+      }
+      if (diff >= 2 && diff <= 4 || diff >= 7 && diff <= 9) {
+        generateWord(0, 6, 7, red);
+      }
+      if (diff >= 3 && diff <= 4 || diff >= 8 && diff <= 9) {
+        generateWord(0, 6, 8, red);
+      }
+      if (diff == 4 || diff == 9) {
+        generateWord(0, 6, 9, red);
+      }
+    }
+    /*
+
+      //Nach
+      genWord(80, 0, 0, on);
+      if(minutes < 5){
+          genWord(80, 0, 0, off);//Past off
+      }else if(minutes < 10){
+          genWord(90, 5, 10, on); //Five on
+      }else if (minutes < 15){
+          genWord(100, 0, 4, on);
+      }else if(minutes < 20){
+          genWord(80, 2, 3, on);
+          genWord(80, 5, 10, on);
+      }else if(minutes < 25){
+          genWord(90, 0, 4, on); //Twenty on
+      }else if(minutes < 30){
+          genWord(90, 0, 10, on); //25 on
+      }else{
+          genWord(100, 6, 10, on); //Half on
+      }
+      */
+  }else{
+    /*
+      genWord(70, 7, 10, on); //To on
+
+      if(diff != 0 && diff != 5) {
+          genWord(20, 6, 6, on);
+          if (diff == 2 || diff == 7) {
+              circle(210, on);
+              circle(200, on);
+              circle(220, on);
+          } else if (diff == 3 || diff == 8) {
+              circle(220, on);
+              circle(200, on);
+          } else if (diff == 4 || diff == 9) {
+              circle(200, on);
+          } else if (diff == 1 || diff == 6) {
+              circle(230, on);
+              circle(200, on);
+              circle(220, on);
+              circle(210, on);
+          }
+      }
+      if(minutes > 55){
+          genWord(70, 7, 10, off); //To off
+          //- on
+          genWord(80, 1, 1, on);
+          genWord(20, 6, 6, off);
+      }else if(minutes > 50){
+          genWord(90, 5, 10, on); //Five on
+      }else if(minutes > 45){
+          genWord(100, 0, 4, on);
+      }else if(minutes > 40){
+          genWord(80, 2, 3, on);
+          genWord(80, 5, 10, on);
+      }else if(minutes > 35){
+          genWord(90, 0, 4, on); //Twenty on
+      }else if(minutes > 30){
+          genWord(90, 0, 10, on); //25 on
+      }
+  }*/
+}
 
   //secondi
   for(int i = 0; i < 13; i++){
