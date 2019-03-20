@@ -188,7 +188,8 @@ void printTime(int hour, int minute, int second) {
   }
 
   //Illuminazione dei pallini
-  diff = minute - int(minute / 10)*10;
+  diff = minute - int(minute / 10) * 10;
+  Serial.println(diff);
 
   //Minuti
   if(meno == false) {
@@ -210,27 +211,33 @@ void printTime(int hour, int minute, int second) {
         generateWord(0, 6, 9, red);
       }
     }
-    /*
-
-      //Nach
-      genWord(80, 0, 0, on);
-      if(minutes < 5){
-          genWord(80, 0, 0, off);//Past off
-      }else if(minutes < 10){
-          genWord(90, 5, 10, on); //Five on
-      }else if (minutes < 15){
-          genWord(100, 0, 4, on);
-      }else if(minutes < 20){
-          genWord(80, 2, 3, on);
-          genWord(80, 5, 10, on);
-      }else if(minutes < 25){
-          genWord(90, 0, 4, on); //Twenty on
-      }else if(minutes < 30){
-          genWord(90, 0, 10, on); //25 on
-      }else{
-          genWord(100, 6, 10, on); //Half on
-      }
-      */
+    //e
+    //genWord(80, 0, 0, on);
+    generateWord(6, 10, 10, red);
+    if(minute < 5){
+      //genWord(80, 0, 0, off);//Past off
+      generateWord(6, 10, 10, black);
+    }else if(minute < 10){
+      //genWord(90, 5, 10, on); //Five on
+      generateWord(8, 7, 12, red);
+    }else if (minute < 15){
+      //genWord(100, 0, 4, on);
+      generateWord(10, 1, 5, red);
+    }else if(minute < 20){
+      //genWord(80, 2, 3, on);
+      //genWord(80, 5, 10, on);
+      generateWord(10, 6, 7, red);
+      generateWord(10, 8, 14, red);
+    }else if(minute < 25){
+      //genWord(90, 0, 4, on); //Twenty on
+      generateWord(11, 1, 5, red);
+    }else if(minute < 30){
+      //genWord(90, 0, 10, on); //25 on
+      generateWord(12, 4, 14, red);
+    }else{
+      //genWord(100, 6, 10, on); //Half on
+      generateWord(7, 1, 5, red);
+    }
   }else{
     /*
       genWord(70, 7, 10, on); //To on
