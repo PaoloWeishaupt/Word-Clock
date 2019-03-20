@@ -123,7 +123,7 @@ void randPixel() {
 }
 
 void printTime(int hour, int minute, int second) {
-  int diff;
+  int diff; 
   boolean meno = false;
   if ((hour != 1 && hour != 13) || minute >= 35) {
     generateWord(1, 2, 5, red);
@@ -175,8 +175,12 @@ void printTime(int hour, int minute, int second) {
 
   //Più o meno
   if(minute < 35){
+      generateWord(0, 2, 2, red);
+      generateWord(0, 4, 4, black);
       meno = false;
   }else{
+      generateWord(0, 2, 2, black);
+      generateWord(0, 4, 4, red);
       meno = true;
       hour += 1;
   }
@@ -235,8 +239,6 @@ void printTime(int hour, int minute, int second) {
   }else{
     /*
       genWord(70, 7, 10, on); //To on
-      generateWord(0, 2, 2, black);
-      generateWord(0, 4, 4, red);
 
       if(diff != 0 && diff != 5) {
           genWord(20, 6, 6, on);
