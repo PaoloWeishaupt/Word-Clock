@@ -46,13 +46,11 @@ void setup() {
   if (! rtc.isrunning()) { //verifico funzionamento dell'RTC
     Serial.println("RTC non è in funzione!");
     //inserisce l'orario del computer durante la compilazione
-    //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
     // Se vuoi un orario personalizzato, togli il commento alla riga successiva
     // l'orario: ANNO, MESE, GIORNI, ORA, MINUTI, SECONDI
     //rtc.adjust(DateTime(2014, 1, 12, 18, 0, 0));
   }
-  //rtc.adjust(DateTime(2014, 1, 12, 15, 0, 0));
-  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 }
 
 void loop() {
