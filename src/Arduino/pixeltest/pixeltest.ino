@@ -73,6 +73,7 @@ void loop() {
   Serial.print(now.second(), DEC); //stampo secondi in decimale
   Serial.println();
   printTime(hour, minute, second);
+  delay(1000);
 }
 
 void pixelOn(int pixel, uint32_t color) {
