@@ -125,22 +125,12 @@ void randPixel() {
 
 void printTime(int hour, int minute, int second) {
 
-  //for(int i = 0; i < 13; i++){
-  //  generateWord(i, 0, 14, strip.Color(i,i,i));
-  //}
-  for(int i = 1; i < 13; i++){
-      generateWord(i, 0, 0, black);
-  }
-  boolean piuOMeno = false;
+  boolean meno = false;
   if ((hour != 1 && hour != 13) || minute >= 35) {
     generateWord(1, 2, 5, red);
     generateWord(1, 7, 8, red);
   }
   Serial.println(minute);
-  if(minute >= 35){
-    piuOMeno = true;
-    hour += 1;
-  }
   if (hour == 1 || hour == 13){
     generateWord(1, 1, 1, red);
     generateWord(1, 10, 14, red);
@@ -183,6 +173,18 @@ void printTime(int hour, int minute, int second) {
     generateWord(7, 1, 10, red);
     //time += "mezzanotte ";
   }
+
+  //Più o meno
+  if(minutes < 35){
+      generateWord(0, 2, 2, red);
+      meno = false;
+  }else{
+      generateWord(0, 2, 2, black);
+      generateWord(0, 4, 4, red);
+      meno = true;
+      hours += 1;
+  }
+
   //secondi
   for(int i = 0; i < 13; i++){
     generateWord(i, 0, 0, black);
