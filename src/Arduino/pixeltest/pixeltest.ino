@@ -124,7 +124,7 @@ void randPixel() {
 }
 
 void printTime(int hour, int minute, int second) {
-
+  int diff; 
   boolean meno = false;
   if ((hour != 1 && hour != 13) || minute >= 35) {
     generateWord(1, 2, 5, red);
@@ -187,13 +187,13 @@ void printTime(int hour, int minute, int second) {
   }
 
   //Illuminazione dei pallini
-  diff = minute - parseInt(minute / 10)*10;
+  diff = minute - int(minute / 10)*10;
 
   //Minuti
   if(meno == false) {
     if(diff != 0 && diff != 5) {
       //+ on
-      genWord(20, 6, 6, on);
+      //genWord(20, 6, 6, on);
       generateWord(0, 2, 2, red);
       generateWord(0, 4, 4, black);
       if (diff != 5 && diff != 0) {
@@ -381,10 +381,6 @@ void printTime(int hour, int minute, int second) {
 }
 
 void generateWord(int row, int min, int max, uint32_t color) {
-  Serial.println(row);
-  Serial.println(min);
-  Serial.println(max);
-  Serial.println(color);
   if(min == 0 && max == 0){
     for (int i = min; i <= (max - min); i++) {
       pixelOn(pixels[row][i], color);
