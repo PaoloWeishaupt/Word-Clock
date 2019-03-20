@@ -183,6 +183,16 @@ void printTime(int hour, int minute, int second) {
     generateWord(7, 1, 10, red);
     //time += "mezzanotte ";
   }
+
+  //Più o meno
+  if(minutes < 35){
+      generateWord(0, 2, 2, red);
+  }else{
+      generateWord(0, 2, 2, black);
+      generateWord(0, 4, 4, red);
+      hours += 1;
+  }
+
   //secondi
   for(int i = 0; i < 13; i++){
     generateWord(i, 0, 0, black);
