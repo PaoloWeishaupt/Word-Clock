@@ -108,8 +108,8 @@ const uint32_t black = strip.Color(0, 0, 0);
 // local port to listen for UDP packets
 unsigned int localPort = 2390;
 
-// time.google.com NTP server
-IPAddress timeServer(216, 239, 35, 0);
+// time.nist.gov NTP Server
+IPAddress timeServer(129, 6, 15, 28);
 
 // NTP time stamp is in the first 48 bytes of the message
 const int NTP_PACKET_SIZE = 48;
@@ -362,7 +362,7 @@ void loop()
 	delay(5000);
 
   DateTime now = rtc.now(); //creo istanza ora/data
-  int hour = now.hour(); //DA SISTEMARE
+  int hour = now.hour(); 
   int minute = now.minute();
   int second = now.second();
   Serial.print(now.year(), DEC); //stampo anno in decimale
@@ -383,11 +383,20 @@ void loop()
 void printTime(int hour, int minute, int second) {
   int diff; 
   boolean meno = false;
+
+  //Più o meno
+  if(minute < 35){
+      meno = false;
+  }else{
+      meno = true;
+      hour += 1;
+  }
+  
   if ((hour != 1 && hour != 13) || minute >= 35) {
     generateWord(1, 2, 5, red);
     generateWord(1, 7, 8, red);
   }
-  Serial.println(minute);
+  Serial.println(hour);
   if (hour == 1 || hour == 13){
     generateWord(1, 1, 1, red);
     generateWord(1, 10, 14, red);
@@ -431,18 +440,6 @@ void printTime(int hour, int minute, int second) {
     //time += "mezzanotte ";
   }
 
-  //Più o meno
-  if(minute < 35){
-      generateWord(0, 2, 2, red);
-      generateWord(0, 4, 4, black);
-      meno = false;
-  }else{
-      generateWord(0, 2, 2, black);
-      generateWord(0, 4, 4, red);
-      meno = true;
-      hour += 1;
-  }
-
   //Illuminazione dei pallini
   diff = minute - int(minute / 10) * 10;
   Serial.println(diff);
@@ -452,19 +449,25 @@ void printTime(int hour, int minute, int second) {
     if(diff != 0 && diff != 5) {
       //+ on
       //genWord(20, 6, 6, on);
-      generateWord(0, 2, 2, red);
-      generateWord(0, 4, 4, black);
+      if(minute % 5 != 0){
+        generateWord(0, 2, 2, red);
+        generateWord(0, 4, 4, black);
+      }
+      else{
+        generateWord(0, 4, 4, black);
+        generateWord(0, 2, 2, black);
+      }
       if (diff != 5 && diff != 0) {
         generateWord(0, 6, 6, red);
       }
       if (diff >= 2 && diff <= 4 || diff >= 7 && diff <= 9) {
-        generateWord(0, 6, 7, red);
+        generateWord(0, 8, 8, red);
       }
       if (diff >= 3 && diff <= 4 || diff >= 8 && diff <= 9) {
-        generateWord(0, 6, 8, red);
+        generateWord(0, 10, 10, red);
       }
       if (diff == 4 || diff == 9) {
-        generateWord(0, 6, 9, red);
+        generateWord(0, 12, 12, red);
       }
     }
     //e
@@ -483,7 +486,7 @@ void printTime(int hour, int minute, int second) {
       //genWord(80, 2, 3, on);
       //genWord(80, 5, 10, on);
       generateWord(10, 6, 7, red);
-      generateWord(10, 8, 14, red);
+      generateWord(10, 9, 14, red);
     }else if(minute < 25){
       //genWord(90, 0, 4, on); //Twenty on
       generateWord(11, 1, 5, red);
@@ -495,46 +498,45 @@ void printTime(int hour, int minute, int second) {
       generateWord(7, 1, 5, red);
     }
   }else{
-    /*
-      genWord(70, 7, 10, on); //To on
+    
+      generateWord(9, 1, 4, red); //Meno
 
       if(diff != 0 && diff != 5) {
-          genWord(20, 6, 6, on);
+          if(minute % 5 != 0){
+            generateWord(0, 2, 2, red);
+            generateWord(0, 4, 4, black);
+          }
+          else{
+            generateWord(0, 4, 4, black);
+            generateWord(0, 2, 2, black);
+          }
           if (diff == 2 || diff == 7) {
-              circle(210, on);
-              circle(200, on);
-              circle(220, on);
+              generateWord(0, 6, 8, red);
           } else if (diff == 3 || diff == 8) {
-              circle(220, on);
-              circle(200, on);
+              generateWord(0, 6, 7, red);
           } else if (diff == 4 || diff == 9) {
-              circle(200, on);
+              generateWord(0, 6, 6, red);
           } else if (diff == 1 || diff == 6) {
-              circle(230, on);
-              circle(200, on);
-              circle(220, on);
-              circle(210, on);
+              generateWord(0, 6, 9, red);
           }
       }
-      if(minutes > 55){
-          genWord(70, 7, 10, off); //To off
-          //- on
-          genWord(80, 1, 1, on);
-          genWord(20, 6, 6, off);
-      }else if(minutes > 50){
-          genWord(90, 5, 10, on); //Five on
-      }else if(minutes > 45){
-          genWord(100, 0, 4, on);
-      }else if(minutes > 40){
-          genWord(80, 2, 3, on);
-          genWord(80, 5, 10, on);
-      }else if(minutes > 35){
-          genWord(90, 0, 4, on); //Twenty on
-      }else if(minutes > 30){
-          genWord(90, 0, 10, on); //25 on
+      if(minute > 55){
+          generateWord(9, 1, 4, black);
+          generateWord(0, 4, 4, red);
+          generateWord(0, 2, 2, black);
+      }else if(minute > 50){
+          generateWord(8, 7, 12, red);
+      }else if(minute > 45){
+          generateWord(10, 1, 5, red);
+      }else if(minute > 40){
+          generateWord(10, 6, 7, red);
+          generateWord(10, 9, 14, red);
+      }else if(minute > 35){
+          generateWord(11, 1, 5, red);
+      }else if(minute > 30){
+          generateWord(12, 4, 14, red);
       }
-  }*/
-}
+  }
 
   //secondi
   for(int i = 0; i < 13; i++){
