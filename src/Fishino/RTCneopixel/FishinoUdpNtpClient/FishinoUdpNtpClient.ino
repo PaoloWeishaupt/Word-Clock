@@ -509,13 +509,13 @@ void printTime(int hour, int minute, int second) {
 
       if(diff != 0 && diff != 5) {
           if (diff == 2 || diff == 7) {
-              generateWord(0, 6, 8, red);
-          } else if (diff == 3 || diff == 8) {
-              generateWord(0, 6, 7, red);
-          } else if (diff == 4 || diff == 9) {
               generateWord(0, 6, 6, red);
+          } else if (diff == 3 || diff == 8) {
+              generateWord(0, 8, 8, red);
+          } else if (diff == 4 || diff == 9) {
+              generateWord(0, 10, 10, red);
           } else if (diff == 1 || diff == 6) {
-              generateWord(0, 6, 9, red);
+              generateWord(0, 12, 12, red);
           }
 
           if(minute % 5 != 0){
