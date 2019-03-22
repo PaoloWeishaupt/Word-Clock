@@ -363,7 +363,7 @@ void loop()
 
   DateTime now = rtc.now(); //creo istanza ora/data
   int hour = now.hour(); 
-  int minute = now.minute();
+  int minute = now.minute() + 1;
   int second = now.second();
   Serial.print(now.year(), DEC); //stampo anno in decimale
   Serial.print('/');
@@ -396,7 +396,7 @@ void printTime(int hour, int minute, int second) {
     generateWord(1, 2, 5, red);
     generateWord(1, 7, 8, red);
   }
-  Serial.println(hour);
+  Serial.println(minute);
   if (hour == 1 || hour == 13){
     generateWord(1, 1, 1, red);
     generateWord(1, 10, 14, red);
@@ -449,14 +449,7 @@ void printTime(int hour, int minute, int second) {
     if(diff != 0 && diff != 5) {
       //+ on
       //genWord(20, 6, 6, on);
-      if(minute % 5 != 0){
-        generateWord(0, 2, 2, red);
-        generateWord(0, 4, 4, black);
-      }
-      else{
-        generateWord(0, 4, 4, black);
-        generateWord(0, 2, 2, black);
-      }
+      
       if (diff != 5 && diff != 0) {
         generateWord(0, 6, 6, red);
       }
@@ -468,6 +461,19 @@ void printTime(int hour, int minute, int second) {
       }
       if (diff == 4 || diff == 9) {
         generateWord(0, 12, 12, red);
+      }
+
+      if(minute % 5 != 0){
+        generateWord(0, 2, 2, red);
+        generateWord(0, 4, 4, black);
+      }
+      else{
+        generateWord(0, 6, 6, black);
+        generateWord(0, 8, 8, black);
+        generateWord(0, 10, 10, black);
+        generateWord(0, 12, 12, black);
+        generateWord(0, 4, 4, black);
+        generateWord(0, 2, 2, black);
       }
     }
     //e
@@ -502,14 +508,6 @@ void printTime(int hour, int minute, int second) {
       generateWord(9, 1, 4, red); //Meno
 
       if(diff != 0 && diff != 5) {
-          if(minute % 5 != 0){
-            generateWord(0, 2, 2, red);
-            generateWord(0, 4, 4, black);
-          }
-          else{
-            generateWord(0, 4, 4, black);
-            generateWord(0, 2, 2, black);
-          }
           if (diff == 2 || diff == 7) {
               generateWord(0, 6, 8, red);
           } else if (diff == 3 || diff == 8) {
@@ -518,6 +516,19 @@ void printTime(int hour, int minute, int second) {
               generateWord(0, 6, 6, red);
           } else if (diff == 1 || diff == 6) {
               generateWord(0, 6, 9, red);
+          }
+
+          if(minute % 5 != 0){
+            generateWord(0, 2, 2, red);
+            generateWord(0, 4, 4, black);
+          }
+          else{
+            generateWord(0, 6, 6, black);
+            generateWord(0, 8, 8, black);
+            generateWord(0, 10, 10, black);
+            generateWord(0, 12, 12, black);
+            generateWord(0, 4, 4, black);
+            generateWord(0, 2, 2, black);
           }
       }
       if(minute > 55){
