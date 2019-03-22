@@ -19,3 +19,7 @@ http://samtinfo.ch/i14tocale/web/wordclock/
 | http://www.fishino.com/download-libraries-it.html | librerie - fishino | 2019-02-20 |
 | http://www.fishino.com/download-drivers-it.html | drivers - fishino | 2019-02-20 |
 | https://www.wikiinfo.net/t2800-come-funziona-rtc-del-fishino-codice | come funziona rtc del fishino | 2019-02-27 |
+
+- Adafruit:
+
+Alimentatore da 4A
