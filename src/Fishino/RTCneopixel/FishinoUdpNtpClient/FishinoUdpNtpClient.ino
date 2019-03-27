@@ -250,7 +250,7 @@ void setup()
 	Serial << F("Starting connection to server...\n");
 	Udp.begin(localPort);
 
- strip.begin();
+  strip.begin();
   strip.setBrightness(255);
   strip.show();
   if (! rtc.begin()) { //verifico la presenza dell'RTC
@@ -396,7 +396,7 @@ void printTime(int hour, int minute, int second) {
     generateWord(1, 2, 5, red);
     generateWord(1, 7, 8, red);
   }
-  Serial.println(minute);
+  Serial.println(second);
   if (hour == 1 || hour == 13){
     generateWord(1, 1, 1, red);
     generateWord(1, 10, 14, red);
@@ -446,41 +446,54 @@ void printTime(int hour, int minute, int second) {
 
   //Minuti
   if(meno == false) {
-    if(diff != 0 && diff != 5) {
-      //+ on
-      //genWord(20, 6, 6, on);
 
-      if (diff != 5 && diff != 0) {
-        generateWord(0, 6, 6, red);
-      }
-      if (diff >= 2 && diff <= 4 || diff >= 7 && diff <= 9) {
-        generateWord(0, 8, 8, red);
-      }
-      if (diff >= 3 && diff <= 4 || diff >= 8 && diff <= 9) {
-        generateWord(0, 10, 10, red);
-      }
-      if (diff == 4 || diff == 9) {
-        generateWord(0, 12, 12, red);
-      }
-
-      if(minute % 5 != 0){
+    if(minute % 5 != 0){
         generateWord(0, 2, 2, red);
         generateWord(0, 4, 4, black);
-      }
-      else{
+    }
+    else{
+        generateWord(0, 4, 4, black);
+        generateWord(0, 2, 2, black);
         generateWord(0, 6, 6, black);
         generateWord(0, 8, 8, black);
         generateWord(0, 10, 10, black);
         generateWord(0, 12, 12, black);
-        generateWord(0, 4, 4, black);
-        generateWord(0, 2, 2, black);
+    }
+    
+    if(diff != 0 && diff != 5) {
+      //+ on
+      //genWord(20, 6, 6, on);
+        generateWord(0, 6, 6, red);
+				generateWord(0, 8, 8, black);
+				generateWord(0, 10, 10, black);
+				generateWord(0, 12, 12, black);
+      
+      if (diff >= 2 && diff <= 4 || diff >= 7 && diff <= 9) {
+				generateWord(0, 6, 6, red);
+				generateWord(0, 8, 8, red);
+				generateWord(0, 10, 10, black);
+				generateWord(0, 12, 12, black);
+      }
+      if (diff >= 3 && diff <= 4 || diff >= 8 && diff <= 9) {
+				generateWord(0, 6, 6, red);
+				generateWord(0, 8, 8, red);
+				generateWord(0, 10, 10, red);
+				generateWord(0, 12, 12, black);
+      }
+      if (diff == 4 || diff == 9) {
+				generateWord(0, 6, 6, red);
+				generateWord(0, 8, 8, red);
+				generateWord(0, 10, 10, red);
+				generateWord(0, 12, 12, red);
       }
     }
+
     //e
     //genWord(80, 0, 0, on);
     generateWord(6, 10, 10, red);
     if(minute < 5){
       //genWord(80, 0, 0, off);//Past off
+      generateWord(9, 1, 4, black);
       generateWord(6, 10, 10, black);
     }else if(minute < 10){
       //genWord(90, 5, 10, on); //Five on
@@ -488,39 +501,46 @@ void printTime(int hour, int minute, int second) {
     }else if (minute < 15){
       //genWord(100, 0, 4, on);
       generateWord(10, 1, 5, red);
+      generateWord(8, 7, 12, black);
     }else if(minute < 20){
       //genWord(80, 2, 3, on);
       //genWord(80, 5, 10, on);
       generateWord(10, 6, 7, red);
       generateWord(10, 9, 14, red);
+      generateWord(10, 1, 5, black);
     }else if(minute < 25){
       //genWord(90, 0, 4, on); //Twenty on
+      generateWord(10, 6, 7, black);
+      generateWord(10, 9, 14, black);
       generateWord(11, 1, 5, red);
     }else if(minute < 30){
       //genWord(90, 0, 10, on); //25 on
       generateWord(12, 4, 14, red);
+      generateWord(11, 1, 5, black);
     }else{
       //genWord(100, 6, 10, on); //Half on
       generateWord(7, 1, 5, red);
+      generateWord(12, 4, 14, black);
     }
   }else{
 
       generateWord(9, 1, 4, red); //Meno
 
-      if(diff != 0 && diff != 5) {
-
-        if(minute % 5 != 0){
+      if(minute % 5 != 0){
             generateWord(0, 2, 2, red);
             generateWord(0, 4, 4, black);
         }
         else{
+          generateWord(0, 4, 4, black);
+          generateWord(0, 2, 2, black);
           generateWord(0, 6, 6, black);
           generateWord(0, 8, 8, black);
           generateWord(0, 10, 10, black);
           generateWord(0, 12, 12, black);
-          generateWord(0, 4, 4, black);
-          generateWord(0, 2, 2, black);
-        }
+       }
+
+      if(diff != 0 && diff != 5) {
+
           if (diff == 2 || diff == 7) {
               generateWord(0, 6, 6, red);
 		          generateWord(0, 8, 8, red);
@@ -542,62 +562,69 @@ void printTime(int hour, int minute, int second) {
 		          generateWord(0, 10, 10, red);
               generateWord(0, 12, 12, red);
           }
-
-          
       }
       if(minute > 55){
-          generateWord(9, 1, 4, black);
+          generateWord(9, 1, 4, red);
           generateWord(0, 4, 4, red);
           generateWord(0, 2, 2, black);
+          generateWord(12, 9, 14, red);
       }else if(minute > 50){
           generateWord(12, 9, 14, red);
+          generateWord(10, 1, 5, black);
       }else if(minute > 45){
           generateWord(10, 1, 5, red);
+          generateWord(10, 6, 7, black);
+          generateWord(10, 9, 14, black);
       }else if(minute > 40){
           generateWord(10, 6, 7, red);
           generateWord(10, 9, 14, red);
+          generateWord(11, 1, 5, black);
       }else if(minute > 35){
           generateWord(11, 1, 5, red);
+          generateWord(12, 4, 14, black);
       }else if(minute > 30){
           generateWord(12, 4, 14, red);
       }
   }
 
   //secondi
-  for(int i = 0; i < 13; i++){
-    generateWord(i, 0, 0, black);
-  }
-  if(second >= 0 && second <= 4){
+  //for(int i = 0; i < 13; i++){
+  //  generateWord(i, 0, 0, black);
+  //}
+  if(second == 0){
+    for(int i = 0; i < 13; i++){
+      generateWord(i, 0, 0, black);
+    }
     generateWord(1, 0, 0, red);
   }
-  else if(second >= 5 && second <= 9){
-    generateWord(1, 0, 0, red);
+  else if(second == 5){
+    //generateWord(1, 0, 0, red);
     generateWord(2, 0, 0, red);
   }
-  else if(second >= 10 && second <= 14){
-    generateWord(1, 0, 0, red);
-    generateWord(2, 0, 0, red);
+  else if(second == 10){
+    //generateWord(1, 0, 0, red);
+    //generateWord(2, 0, 0, red);
     generateWord(3, 0, 0, red);
   }
-  else if(second >= 15 && second <= 19){
-    generateWord(1, 0, 0, red);
-    generateWord(2, 0, 0, red);
-    generateWord(3, 0, 0, red);
+  else if(second == 15){
+    //generateWord(1, 0, 0, red);
+    //generateWord(2, 0, 0, red);
+    //generateWord(3, 0, 0, red);
     generateWord(4, 0, 0, red);
   }
-  else if(second >= 20 && second <= 24){
-    generateWord(1, 0, 0, red);
-    generateWord(2, 0, 0, red);
-    generateWord(3, 0, 0, red);
-    generateWord(4, 0, 0, red);
+  else if(second == 20){
+    //generateWord(1, 0, 0, red);
+    //generateWord(2, 0, 0, red);
+    //generateWord(3, 0, 0, red);
+    //generateWord(4, 0, 0, red);
     generateWord(5, 0, 0, red);
   }
-  else if(second >= 25 && second <= 29){
-    generateWord(1, 0, 0, red);
-    generateWord(2, 0, 0, red);
-    generateWord(3, 0, 0, red);
-    generateWord(4, 0, 0, red);
-    generateWord(5, 0, 0, red);
+  else if(second >= 25){
+    //generateWord(1, 0, 0, red);
+    //generateWord(2, 0, 0, red);
+    //generateWord(3, 0, 0, red);
+    //generateWord(4, 0, 0, red);
+    //generateWord(5, 0, 0, red);
     generateWord(6, 0, 0, red);
   }
   else if(second >= 30 && second <= 34){
@@ -668,6 +695,13 @@ void printTime(int hour, int minute, int second) {
     generateWord(10, 0, 0, red);
     generateWord(11, 0, 0, red);
     generateWord(12, 0, 0, red);
+    
+    //int secondDots = second * 12 / 60;
+    //for (int i = 0; i < secondDots; ++i) {
+
+    //  generateWord(i, 0, 0, red);
+      
+    //}
   }
 }
 void pixelOn(int pixel, uint32_t color) {
