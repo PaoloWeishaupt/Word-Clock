@@ -1,18 +1,18 @@
 /*
 	Udp NTP Client
-	
+
 	Get the time from a Network Time Protocol (NTP) time server
 	Demonstrates use of UDP sendPacket and ReceivePacket
 	For more on NTP time servers and the messages needed to communicate with them,
 	see http://en.wikipedia.org/wiki/Network_Time_Protocol
-	
+
 	created 4 Sep 2010
 	by Michael Margolis
 	modified 9 Apr 2012
 	by Tom Igoe
-	
+
 	This code is in the public domain.
-	
+
 	2016_02_10 Adapted to Fishino by Massimo Del Fedele
 
  */
@@ -148,24 +148,24 @@ unsigned long sendNTPpacket(IPAddress& address)
 	// set all bytes in the buffer to 0
 	// azzera il buffer di ricezione NTP
 	memset(packetBuffer, 0, NTP_PACKET_SIZE);
-	
+
 	// Initialize values needed to form NTP request
 	// (see URL above for details on the packets)
 	// Inizializza i valori da inviare al server NTP
 	// (vedere URL del server per dettagli sul formato pacchetto)
-	
+
 	// LI, Version, Mode
 	packetBuffer[0] = 0b11100011;
-	
+
 	// Stratum, or type of clock
 	packetBuffer[1] = 0;
-	
+
 	// Polling Interval
 	packetBuffer[2] = 6;
-	
+
 	// Peer Clock Precision
 	packetBuffer[3] = 0xEC;
-	
+
 	// 8 bytes of zero for Root Delay & Root Dispersion
 	packetBuffer[12]  = 49;
 	packetBuffer[13]  = 0x4E;
@@ -176,21 +176,21 @@ unsigned long sendNTPpacket(IPAddress& address)
 	// you can send a packet requesting a timestamp:
 	// tutti i campi del paccketto NTP sono stati impostati
 	// è quindi possibile inviare il paccetto di richiesta di data/ora
-	
+
 	// NTP requests are to port 123
 	// beginPacket() just opens the connection
 	// invia la richiesta NTP alla porta 123
 	// beginPacket() apre solo la connessione
 	Udp.beginPacket(address, 123);
-	
+
 	// fill UDP buffer with packet data
 	// riempie il buffer di invio UDP con i dati del pacchetto
 	Udp.write(packetBuffer, NTP_PACKET_SIZE);
-	
+
 	// ends and send the UDP packet
 	// termina ed invia il pacchetto UDP
 	Udp.endPacket();
-	
+
 	return 0;
 }
 
@@ -199,7 +199,7 @@ void setup()
 	// Initialize serial and wait for port to open
 	// Inizializza la porta seriale e ne attende l'apertura
 	Serial.begin(115200);
-	
+
 	// only for Leonardo needed
 	// necessario solo per la Leonardo
 	while (!Serial)
@@ -224,8 +224,8 @@ void setup()
 		delay(2000);
 	}
 	Serial << "OK\n";
-	
-	
+
+
 	// setup IP or start DHCP client
 	// imposta l'IP statico oppure avvia il client DHCP
 #ifdef IPADDR
@@ -242,7 +242,7 @@ void setup()
 		delay(500);
 	}
 	Serial << "OK\n";
-	
+
 	// print connection status on serial port
 	// stampa lo stato della connessione sulla porta seriale
 	printWifiStatus();
@@ -274,22 +274,22 @@ void loop()
 	Serial << F("Sending UDP request...");
 	sendNTPpacket(timeServer);
 	Serial << "OK\n";
-	
-	
+
+
 	// wait to see if a reply is available
 	delay(1000);
-	
+
 	while(Udp.parsePacket())
 	{
 		Serial << F("Packet received\n");
-		
+
 		// print remote port and IP of incoming packet, just to show them
 		// stampa IP e porta remoti per mostrare la provenienza del pacchetto
 		IPAddress remoteIp = Udp.remoteIP();
 		uint32_t remotePort = Udp.remotePort();
 		Serial << F("Remote IP   : ") << remoteIp << "\n";
 		Serial << F("Remote port : ") << remotePort << "\n";
-		
+
 		// We've received a packet, read the data from it and put into a buffer
 		// abbiamo ricevuto un pacchetto, leggiamo i dati ed inseriamoli in un buffer
 		Udp.read(packetBuffer, NTP_PACKET_SIZE);
@@ -300,7 +300,7 @@ void loop()
 		// o due words, long. Innanzitutto estraiamo le due words
 		unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
 		unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);
-		
+
 		// combine the four bytes (two words) into a long integer
 		// this is NTP time (seconds since Jan 1 1900):
 		// combiniamo i 4 bytes (o 2 words) in un long integer
@@ -311,28 +311,28 @@ void loop()
 		// now convert NTP time into everyday time
 		// ora convertiamo il tempo NTP in formato leggibile
 		Serial << F("Unix time = ");
-		
+
 		// Unix time starts on Jan 1 1970. In seconds, that's 2208988800
 		// il tempo Unix inizia dal primo Gennaio 1970. In secondi, sono 2208988800
 		const unsigned long seventyYears = 2208988800UL;
-		
+
 		// subtract seventy years
 		// sottrae dal tempo NTP la base Unix
 		unsigned long epoch = secsSince1900 - seventyYears;
-		
+
 		// print Unix time:
 		// stampa il tempo Unix
 		Serial << epoch << "\n";
 
 		// print the hour, minute and second
 		// stampa ora, minuti e secondi
-		
+
 		// UTC is the time at Greenwich Meridian (GMT)
 		// Tempo UTC (ora al meridiano di Greenwich, GMT)
 		Serial << F("The ETC time is ");
-		
+
 		// print the hour (86400 equals secs per day) + 1 for ETC time
-		// stampa l'ora (contando 86400 secondi al giorno 
+		// stampa l'ora (contando 86400 secondi al giorno
 		Serial << ((epoch  % 86400L) / 3600 + 1);
 		Serial.print(':');
 		if (((epoch % 3600) / 60) < 10)
@@ -341,7 +341,7 @@ void loop()
 			// nei primi 10 minuti di ogni ora vogiamo uno zero iniziale
 			Serial << '0';
 		}
-		
+
 		// print the minute (3600 equals secs per minute)
 		// stampa i minuti (contando 3600 secondi per minuto)
 		Serial << ((epoch  % 3600) / 60);
@@ -356,13 +356,13 @@ void loop()
 		// stampa i secondi
 		Serial << epoch % 60 << "\n";
 	}
-	
+
 	// wait ten seconds before asking for the time again
 	// attende 10 secondi prima di effettuare una nuova richiesta
 	delay(5000);
 
   DateTime now = rtc.now(); //creo istanza ora/data
-  int hour = now.hour(); 
+  int hour = now.hour();
   int minute = now.minute() + 1;
   int second = now.second();
   Serial.print(now.year(), DEC); //stampo anno in decimale
@@ -381,7 +381,7 @@ void loop()
   delay(1000);
 }
 void printTime(int hour, int minute, int second) {
-  int diff; 
+  int diff;
   boolean meno = false;
 
   //Più o meno
@@ -391,7 +391,7 @@ void printTime(int hour, int minute, int second) {
       meno = true;
       hour += 1;
   }
-  
+
   if ((hour != 1 && hour != 13) || minute >= 35) {
     generateWord(1, 2, 5, red);
     generateWord(1, 7, 8, red);
@@ -449,7 +449,7 @@ void printTime(int hour, int minute, int second) {
     if(diff != 0 && diff != 5) {
       //+ on
       //genWord(20, 6, 6, on);
-      
+
       if (diff != 5 && diff != 0) {
         generateWord(0, 6, 6, red);
       }
@@ -504,39 +504,53 @@ void printTime(int hour, int minute, int second) {
       generateWord(7, 1, 5, red);
     }
   }else{
-    
+
       generateWord(9, 1, 4, red); //Meno
 
       if(diff != 0 && diff != 5) {
+
+        if(minute % 5 != 0){
+            generateWord(0, 2, 2, red);
+            generateWord(0, 4, 4, black);
+        }
+        else{
+          generateWord(0, 6, 6, black);
+          generateWord(0, 8, 8, black);
+          generateWord(0, 10, 10, black);
+          generateWord(0, 12, 12, black);
+          generateWord(0, 4, 4, black);
+          generateWord(0, 2, 2, black);
+        }
           if (diff == 2 || diff == 7) {
               generateWord(0, 6, 6, red);
+		          generateWord(0, 8, 8, red);
+		          generateWord(0, 10, 10, red);
+              generateWord(0, 12, 12, black);
           } else if (diff == 3 || diff == 8) {
-              generateWord(0, 8, 8, red);
+              generateWord(0, 6, 6, red);
+		          generateWord(0, 8, 8, red);
+		          generateWord(0, 10, 10, black);
+              generateWord(0, 12, 12, black);
           } else if (diff == 4 || diff == 9) {
-              generateWord(0, 10, 10, red);
+              generateWord(0, 6, 6, red);
+		          generateWord(0, 8, 8, black);
+		          generateWord(0, 10, 10, black);
+              generateWord(0, 12, 12, black);
           } else if (diff == 1 || diff == 6) {
+              generateWord(0, 6, 6, red);
+		          generateWord(0, 8, 8, red);
+		          generateWord(0, 10, 10, red);
               generateWord(0, 12, 12, red);
           }
 
-          if(minute % 5 != 0){
-            generateWord(0, 2, 2, red);
-            generateWord(0, 4, 4, black);
-          }
-          else{
-            generateWord(0, 6, 6, black);
-            generateWord(0, 8, 8, black);
-            generateWord(0, 10, 10, black);
-            generateWord(0, 12, 12, black);
-            generateWord(0, 4, 4, black);
-            generateWord(0, 2, 2, black);
-          }
+          
       }
       if(minute > 55){
           generateWord(9, 1, 4, black);
           generateWord(0, 4, 4, red);
           generateWord(0, 2, 2, black);
       }else if(minute > 50){
-          generateWord(8, 7, 12, red);
+          generateWord(12, 9, 14, red);
       }else if(minute > 45){
           generateWord(10, 1, 5, red);
       }else if(minute > 40){
