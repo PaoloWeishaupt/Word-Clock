@@ -22,7 +22,6 @@
 #define DEBUG_LEVEL_INFO
 #include <FishinoDebug.h>
 //////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
 // CONFIGURAZIONE NEOPIXEL
 #include <Wire.h> //libreria per interfacciare i2c e rtc
 #include "RTClib.h" //libreria rtc
@@ -88,6 +87,12 @@ const uint32_t black = strip.Color(0, 0, 0);
 //                       FINE CONFIGURAZIONE                         //
 ///////////////////////////////////////////////////////////////////////
 
+// delay della richiesta UDP
+unsigned long tempoOp1;
+
+// delay del refresh dei pixel
+unsigned long tempoOp2;
+
 // define ip address if required
 // NOTE : if your network is not of type 255.255.255.0 or your gateway is not xx.xx.xx.1
 // you should set also both netmask and gateway
@@ -108,7 +113,8 @@ const uint32_t black = strip.Color(0, 0, 0);
 // local port to listen for UDP packets
 unsigned int localPort = 2390;
 
-// time.nist.gov NTP Server
+// IP address of the NTP server
+// time.nist.gov
 IPAddress timeServer(129, 6, 15, 28);
 
 // NTP time stamp is in the first 48 bytes of the message
@@ -196,6 +202,12 @@ unsigned long sendNTPpacket(IPAddress& address)
 
 void setup()
 {
+  // set del delay all'orario corrente per fargli fare subito la prima richiesta
+	tempoOp1=millis();
+
+  // set del delay a 1 secondo
+  tempoOp2=millis()+1000; //1 sec
+
 	// Initialize serial and wait for port to open
 	// Inizializza la porta seriale e ne attende l'apertura
 	Serial.begin(115200);
@@ -270,116 +282,118 @@ void setup()
 
 void loop()
 {
-	// send an NTP packet to a time server
-	Serial << F("Sending UDP request...");
-	sendNTPpacket(timeServer);
-	Serial << "OK\n";
+	if (millis()>tempoOp1) {
+    // send an NTP packet to a time server
+	  Serial << F("Sending UDP request...");
+    sendNTPpacket(timeServer);
+	  Serial << "OK\n";
 
+	  // wait to see if a reply is available
+	  delay(1000);
 
-	// wait to see if a reply is available
-	delay(1000);
+	  while(Udp.parsePacket()) {
+      Serial << F("Packet received\n");
 
-	while(Udp.parsePacket())
-	{
-		Serial << F("Packet received\n");
+		  // print remote port and IP of incoming packet, just to show them
+		  // stampa IP e porta remoti per mostrare la provenienza del pacchetto
+	    IPAddress remoteIp = Udp.remoteIP();
+      uint32_t remotePort = Udp.remotePort();
+      Serial << F("Remote IP   : ") << remoteIp << "\n";
+      Serial << F("Remote port : ") << remotePort << "\n";
 
-		// print remote port and IP of incoming packet, just to show them
-		// stampa IP e porta remoti per mostrare la provenienza del pacchetto
-		IPAddress remoteIp = Udp.remoteIP();
-		uint32_t remotePort = Udp.remotePort();
-		Serial << F("Remote IP   : ") << remoteIp << "\n";
-		Serial << F("Remote port : ") << remotePort << "\n";
+      // We've received a packet, read the data from it and put into a buffer
+      // abbiamo ricevuto un pacchetto, leggiamo i dati ed inseriamoli in un buffer
+      Udp.read(packetBuffer, NTP_PACKET_SIZE);
 
-		// We've received a packet, read the data from it and put into a buffer
-		// abbiamo ricevuto un pacchetto, leggiamo i dati ed inseriamoli in un buffer
-		Udp.read(packetBuffer, NTP_PACKET_SIZE);
+      // the timestamp starts at byte 40 of the received packet and is four bytes,
+      // or two words, long. First, extract the two words:
+      // il timestamp inizia dal byte 40 del pacchetto ricevuto, e consiste in 4 bytes
+      // o due words, long. Innanzitutto estraiamo le due words
+      unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
+      unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);
 
-		// the timestamp starts at byte 40 of the received packet and is four bytes,
-		// or two words, long. First, extract the two words:
-		// il timestamp inizia dal byte 40 del pacchetto ricevuto, e consiste in 4 bytes
-		// o due words, long. Innanzitutto estraiamo le due words
-		unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
-		unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);
+      // combine the four bytes (two words) into a long integer
+	    // this is NTP time (seconds since Jan 1 1900):
+		  // combiniamo i 4 bytes (o 2 words) in un long integer
+		  // che è il tempo NTP (secondi dal primo Gennaio 1900)
+	    unsigned long secsSince1900 = highWord << 16 | lowWord;
+      Serial << F("Seconds since Jan 1 1900 = ") << secsSince1900 << "\n";
 
-		// combine the four bytes (two words) into a long integer
-		// this is NTP time (seconds since Jan 1 1900):
-		// combiniamo i 4 bytes (o 2 words) in un long integer
-		// che è il tempo NTP (secondi dal primo Gennaio 1900)
-		unsigned long secsSince1900 = highWord << 16 | lowWord;
-		Serial << F("Seconds since Jan 1 1900 = ") << secsSince1900 << "\n";
+		  // now convert NTP time into everyday time
+		  // ora convertiamo il tempo NTP in formato leggibile
+		  Serial << F("Unix time = ");
 
-		// now convert NTP time into everyday time
-		// ora convertiamo il tempo NTP in formato leggibile
-		Serial << F("Unix time = ");
+      // Unix time starts on Jan 1 1970. In seconds, that's 2208988800
+      // il tempo Unix inizia dal primo Gennaio 1970. In secondi, sono 2208988800
+      const unsigned long seventyYears = 2208988800UL;
 
-		// Unix time starts on Jan 1 1970. In seconds, that's 2208988800
-		// il tempo Unix inizia dal primo Gennaio 1970. In secondi, sono 2208988800
-		const unsigned long seventyYears = 2208988800UL;
+      // subtract seventy years
+      // sottrae dal tempo NTP la base Unix
+      unsigned long epoch = secsSince1900 - seventyYears;
 
-		// subtract seventy years
-		// sottrae dal tempo NTP la base Unix
-		unsigned long epoch = secsSince1900 - seventyYears;
+      // print Unix time:
+      // stampa il tempo Unix
+      Serial << epoch << "\n";
 
-		// print Unix time:
-		// stampa il tempo Unix
-		Serial << epoch << "\n";
+      // print the hour, minute and second
+      // stampa ora, minuti e secondi
 
-		// print the hour, minute and second
-		// stampa ora, minuti e secondi
+      // UTC is the time at Greenwich Meridian (GMT)
+      // Tempo UTC (ora al meridiano di Greenwich, GMT)
+      Serial << F("The ETC time is ");
 
-		// UTC is the time at Greenwich Meridian (GMT)
-		// Tempo UTC (ora al meridiano di Greenwich, GMT)
-		Serial << F("The ETC time is ");
+      // print the hour (86400 equals secs per day) + 1 for ETC time
+      // stampa l'ora (contando 86400 secondi al giorno
+      Serial << ((epoch  % 86400L) / 3600 + 1);
+      Serial.print(':');
+      if (((epoch % 3600) / 60) < 10) {
+        // In the first 10 minutes of each hour, we'll want a leading '0'
+        // nei primi 10 minuti di ogni ora vogiamo uno zero iniziale
+        Serial << '0';
+      }
 
-		// print the hour (86400 equals secs per day) + 1 for ETC time
-		// stampa l'ora (contando 86400 secondi al giorno
-		Serial << ((epoch  % 86400L) / 3600 + 1);
-		Serial.print(':');
-		if (((epoch % 3600) / 60) < 10)
-		{
-			// In the first 10 minutes of each hour, we'll want a leading '0'
-			// nei primi 10 minuti di ogni ora vogiamo uno zero iniziale
-			Serial << '0';
-		}
+      // print the minute (3600 equals secs per minute)
+      // stampa i minuti (contando 3600 secondi per minuto)
+      Serial << ((epoch  % 3600) / 60);
+      Serial << ':';
+      if ((epoch % 60) < 10) {
+        // In the first 10 seconds of each minute, we'll want a leading '0'
+        // nei primi 10 secondi di ogni minuto vogliamo lo zero iniziale
+        Serial << '0';
+      }
+      // print the second
+      // stampa i secondi
+      Serial << epoch % 60 << "\n";
+    }
 
-		// print the minute (3600 equals secs per minute)
-		// stampa i minuti (contando 3600 secondi per minuto)
-		Serial << ((epoch  % 3600) / 60);
-		Serial << ':';
-		if ((epoch % 60) < 10)
-		{
-			// In the first 10 seconds of each minute, we'll want a leading '0'
-			// nei primi 10 secondi di ogni minuto vogliamo lo zero iniziale
-			Serial << '0';
-		}
-		// print the second
-		// stampa i secondi
-		Serial << epoch % 60 << "\n";
-	}
-
-	// wait ten seconds before asking for the time again
-	// attende 10 secondi prima di effettuare una nuova richiesta
-	delay(5000);
-
-  DateTime now = rtc.now(); //creo istanza ora/data
-  int hour = now.hour();
-  int minute = now.minute() + 1;
-  int second = now.second();
-  Serial.print(now.year(), DEC); //stampo anno in decimale
-  Serial.print('/');
-  Serial.print(now.month(), DEC); //stampo mese in decimale
-  Serial.print('/');
-  Serial.print(now.day(), DEC); //stampo giorno in decimale
-  Serial.print(" (");
-  Serial.print(now.hour(), DEC); //stampo ora in decimale
-  Serial.print(':');
-  Serial.print(now.minute(), DEC); //stampo minuto in decimale
-  Serial.print(':');
-  Serial.print(now.second(), DEC); //stampo secondi in decimale
-  Serial.println();
-  printTime(hour, minute, second);
-  delay(1000);
+    // wait ten seconds before asking for the time again
+    // attende 10 secondi prima di effettuare una nuova richiesta
+	  //delay(5000);
+    tempoOp1 = millis() + 300000;
+  }
+  if(millis() > tempoOp2) {
+    DateTime now = rtc.now(); //creo istanza ora/data
+    int hour = now.hour();
+    int minute = now.minute() + 1;
+    int second = now.second();
+    Serial.print(now.year(), DEC); //stampo anno in decimale
+    Serial.print('/');
+    Serial.print(now.month(), DEC); //stampo mese in decimale
+    Serial.print('/');
+    Serial.print(now.day(), DEC); //stampo giorno in decimale
+    Serial.print(" (");
+    Serial.print(now.hour(), DEC); //stampo ora in decimale
+    Serial.print(':');
+    Serial.print(now.minute(), DEC); //stampo minuto in decimale
+    Serial.print(':');
+    Serial.print(now.second(), DEC); //stampo secondi in decimale
+    Serial.println();
+    printTime(hour, minute, second);
+    //delay(1000);
+    tempoOp2 = millis() + 1000;
+  }
 }
+
 void printTime(int hour, int minute, int second) {
   int diff;
   boolean meno = false;
