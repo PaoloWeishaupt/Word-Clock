@@ -1,4 +1,3 @@
-
 # Word Clock | Diario di lavoro - 13.03.2019
 ##### Gabriele Alessi, Mattia Lazzaroni, Paolo Weishaupt
 ### Canobbio, 13.03.2019
@@ -23,10 +22,47 @@ const int pixels[13][15] = {
   {194, 169, 168, 143, 142, 117, 116, 91, 90, 65, 64, 39, 38, 13, 12}
 };
 ```
-Infine siamo parzialmente riusciti a stampare l'ora (solo l'ora) nei led, quindi prossimamente lavoreremo sul resto della tabella.
+Infine siamo parzialmente riusciti a stampare l'ora (solo l'ora) nei led, quindi prossimamente lavoreremo sul resto della tabella.  
+Questo è l'implementazione fatta:
+```arduino
+String printTime(int hour, int minute, int second){
+   String time = "";
+   if(hour != 1 && hour != 13){
+      time += "Sono le ";
+    if(hour == 2 || hour == 14){
+        time += "due ";
+    }else if(hour == 3 || hour == 15){
+        time += "tre ";
+    }else if(hour == 4 || hour == 16){
+        time += "quattro ";
+    }else if(hour == 5 || hour == 17){
+        time += "cinque ";
+    }else if(hour == 6 || hour == 18){
+        time += "sei ";
+    }else if(hour == 7 || hour == 19){
+        time += "sette ";
+    }else if(hour == 8 || hour == 20){
+        time += "otto ";
+    }else if(hour == 9 || hour == 21){
+        time += "nove ";
+    }else if(hour == 10 || hour == 22){
+        time += "dieci ";
+    }else if(hour == 11 || hour == 23){
+        time += "undici ";
+    }else if(hour == 12 || hour == 24){
+        time += "dodici ";
+    }
+   }
+   else{
+      time += "È la una";
+   }
+   return time;
+}
+```
+Il risultato di questo metodo viene usato nel metodo `loop()` che stampa la parola nei led tramite delle condizioni che definiscono i led da accendere.
 
-|Orario        |Lavoro svolto                 |
-|--------------|------------------------------|
+| Orario | Lavori svolti |
+| - | - |
 |13:15 - 16:30 | Progettazione e implementazione |
 
 ##  Problemi riscontrati e soluzioni adottate
