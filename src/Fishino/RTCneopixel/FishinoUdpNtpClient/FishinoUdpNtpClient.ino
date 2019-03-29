@@ -373,8 +373,10 @@ void loop()
   }
   if(millis() > tempoOp2) {
     DateTime now = rtc.now(); //creo istanza ora/data
-    int hour = now.hour();
-    int minute = now.minute() + 1;
+    int hour = 24;
+    //int hour = now.hour();
+    int minute = 59;
+    //int minute = now.minute() + 1;
     int second = now.second();
     Serial.print(now.year(), DEC); //stampo anno in decimale
     Serial.print('/');
@@ -406,7 +408,7 @@ void printTime(int hour, int minute, int second) {
       hour += 1;
   }
 
-  if ((hour != 1 && hour != 13) || minute >= 35) {
+  if ((hour != 1 && hour != 13 && hour != 12 && hour != 24) || minute >= 35) {
     generateWord(1, 2, 5, red);
     generateWord(1, 7, 8, red);
   }
@@ -447,9 +449,11 @@ void printTime(int hour, int minute, int second) {
     generateWord(6, 1, 6, red);
     //time += "undici ";
   } else if (hour == 12) {
+    generateWord(1, 1, 1, red);
     generateWord(2, 1, 11, red);
     //time += "mezzogiorno ";
   } else if (hour == 24) {
+    generateWord(1, 1, 1, red);
     generateWord(7, 1, 10, red);
     //time += "mezzanotte ";
   }
@@ -578,7 +582,6 @@ void printTime(int hour, int minute, int second) {
           }
       }
       if(minute > 55){
-          generateWord(9, 1, 4, red);
           generateWord(0, 4, 4, red);
           generateWord(0, 2, 2, black);
           generateWord(12, 9, 14, red);
