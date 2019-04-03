@@ -374,7 +374,7 @@ void loop()
   if(millis() > tempoOp2) {
     DateTime now = rtc.now(); //creo istanza ora/data
     int hour = now.hour();
-    int minute = 56;
+    int minute = now.minute();
     int second = now.second();
     Serial.print(now.year(), DEC); //stampo anno in decimale
     Serial.print('/');
@@ -387,6 +387,7 @@ void loop()
     Serial.print(now.minute(), DEC); //stampo minuto in decimale
     Serial.print(':');
     Serial.print(now.second(), DEC); //stampo secondi in decimale
+    Serial.print(") ");
     Serial.println();
     printTime(hour, minute, second);
     //delay(1000);
@@ -412,7 +413,6 @@ void printTime(int hour, int minute, int second) {
     generateWord(1, 1, 1, black);
     generateWord(1, 10, 14, black);
   }
-  Serial.println(second);
   if (hour == 1 || hour == 13 || hour == 0 || hour == 12){
     generateWord(1, 2, 5, black);
     generateWord(1, 7, 8, black);
@@ -462,7 +462,6 @@ void printTime(int hour, int minute, int second) {
 
   //Illuminazione dei pallini
   diff = minute - int(minute / 10) * 10;
-  Serial.println(diff);
 
   //Minuti
   if(meno == false) {
