@@ -1,4 +1,3 @@
-
 # Word Clock | Diario di lavoro - 27.03.2019
 ##### Gabriele Alessi, Mattia Lazzaroni, Paolo Weishaupt
 ### Canobbio, 27.03.2019
@@ -25,8 +24,8 @@ for(int i = 0; i < 13; i++){
 ```
 Questa è la base che permette di accendere i led dei secondi: ogni 5 secondi viene acceso un led (12 led). Questa parte non funziona molto bene in quanto a volte i led lampeggiano o se ne accendono due alla volta, quindi prossimamente verrà revisionata e corretta.
 
-|Orario        |Lavoro svolto                 |
-|--------------|------------------------------|
+| Orario | Lavori svolti |
+| - | - |
 |13:15 - 16:30 | Implementazione |
 
 ##  Problemi riscontrati e soluzioni adottate

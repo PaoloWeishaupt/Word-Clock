@@ -4,7 +4,7 @@
 
 ## Lavori svolti
 Durante questa giornata Mattia e Paolo hanno continuato con l'implementazione del word clock. Però non ci sono stati particolari progressi, bensì sono stati riscontrati dei problemi che verranno prossimamente gestiti.  
-Nel frattempo Gabriele si è occupato della gestione generale del progetto, riguardando la documentazione e il codice, rifacendo i diari e aiutando gli altri.
+Nel frattempo Gabriele si è occupato della gestione generale del progetto, riguardando la documentazione e il codice, rifacendo i diari e aiutando nell'implementazione.
 ```arduino
 void printTime(int hour, int minute, int second) {
   int diff;
@@ -22,7 +22,7 @@ void printTime(int hour, int minute, int second) {
     generateWord(1, 7, 8, red);
   }
 ```
-Questa è una delle parti di codice su cui si è maggiormente lavorato, dove si impostano i minuti da stampare e alcune ore.
+Questa è una delle parti di codice su cui si è maggiormente lavorato, dove si impostano i minuti da stampare e l'occasione in cui bisogna stampare "sono le".
 
 | Orario | Lavori svolti |
 | - | - |
