@@ -44,15 +44,11 @@ void setup() {
    Esecuzione delle operazioni in ciclo continuo.
 */
 void loop() {
-  pixelOn(pixels[10][10], white);
+  //pixelOn(pixels[10][10], white);
   delay(3000);
-  colorWipe(red);
-  colorWipe(green);
-  colorWipe(blue);
-  whitePixel();
-  ciao();
+  colorWipe(white);
+  //whitePixel();
   delay(3000);
-  randPixel();
 }
 
 /**
@@ -67,11 +63,11 @@ void pixelOn(int pixel, uint32_t color) {
    Accensione di tutti i led uno dopo l'altro.
 */
 void colorWipe(uint32_t color) {
-  int i = 0;
-  while (i < strip.numPixels()) {
+  int i = 195;
+  while (i > strip.numPixels() /2) {
     pixelOn(i, color);
-    delay(5);
-    i++;
+    delay(10);
+    i--;
   }
 }
 
@@ -79,12 +75,12 @@ void colorWipe(uint32_t color) {
    Accensione di ogni singolo led di bianco in successione.
 */
 void whitePixel() {
-  int i = 0;
-  while (i < strip.numPixels()) {
+  int i = 195;
+  while (i > strip.numPixels() / 2) {
     pixelOn(i, white);
     pixelOn(i, black);
-    delay(5);
-    i++;
+    delay(10);
+    i--;
   }
 }
 
