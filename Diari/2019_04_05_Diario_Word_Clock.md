@@ -20,6 +20,7 @@ Link: https://www.arduino.cc/en/Reference/WiFi
 Se si usa un Fishino è necessario scaricare la libreria dal sito ufficiale per integrarla in Arduino IDE. Questa libreria è essenziale per il funzionamento del dispositivo e integrare i vari moduli come WiFi e RTC.  
 Link: https://www.fishino.it/download-libraries-it.html
 
+Per quanto riguarda il word clock c'è stata una modifica con il foglio delle parole. È stata aggiunta la parola "pausa", quindi durante le due pause verrà accesa la parola.
 
 | Orario | Lavori svolti |
 | - | - |
