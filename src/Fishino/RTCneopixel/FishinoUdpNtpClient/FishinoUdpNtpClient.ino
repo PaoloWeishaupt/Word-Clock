@@ -274,11 +274,11 @@ void setup()
   if (! rtc.isrunning()) { //verifico funzionamento dell'RTC
     Serial.println("RTC non è in funzione!");
     //inserisce l'orario del computer durante la compilazione
-    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
     // Se vuoi un orario personalizzato, togli il commento alla riga successiva
     // l'orario: ANNO, MESE, GIORNI, ORA, MINUTI, SECONDI
     //rtc.adjust(DateTime(2014, 1, 12, 18, 0, 0));
   }
+  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 }
 
 void loop()
@@ -432,56 +432,86 @@ void printTime(int hour, int minute, int second) {
       hour += 1;
   }
 
-  if ((hour != 1 && hour != 13 && hour != 12 && hour != 0) || minute >= 35) {
+  if ((hour != 1 && hour != 13 && hour != 12 && hour != 0) || (minute >= 35 && hour != 11 && hour != 23)) {
     generateWord(1, 2, 5, white);
     generateWord(1, 7, 8, white);
     generateWord(1, 1, 1, black);
     generateWord(1, 10, 14, black);
   }
-  if (hour == 1 || hour == 13 || hour == 0 || hour == 12){
-    generateWord(1, 2, 5, black);
-    generateWord(1, 7, 8, black);
-    generateWord(1, 1, 1, white);
+  if(hour == 1 || hour == 13){
+    generateWord(2, 1, 11, black);
+    generateWord(7, 1, 10, black);
     generateWord(1, 10, 14, white);
-    //time += "È l'una";
-  } else  if (hour == 2 || hour == 14) {
+    if (minute >= 35) {
+      generateWord(1, 2, 5, white);
+      generateWord(1, 7, 8, white);
+      generateWord(1, 1, 1, black);
+      generateWord(1, 10, 14, black);
+    }
+  }
+  else  if (hour == 2 || hour == 14) {
+    generateWord(1, 1, 1, black);
+    generateWord(1, 10, 14, black);
+    generateWord(1, 1, 1, black);
+    generateWord(1, 10, 14, black);
     generateWord(2, 12, 14, white);
     //time += "due ";
   } else if (hour == 3 || hour == 15) {
     //tre();
+    generateWord(2, 12, 14, black);
     generateWord(3, 1, 3, white);
     //time += "tre ";
   } else if (hour == 4 || hour == 16) {
+    generateWord(3, 1, 3, black);
     generateWord(3, 5, 11, white);
     //time += "quattro ";
   } else if (hour == 5 || hour == 17) {
+    generateWord(3, 5, 11, black);
     generateWord(4, 1, 6, white);
     //time += "cinque ";
   } else if (hour == 6 || hour == 18) {
+    generateWord(4, 1, 6, black);
     generateWord(3, 12, 14, white);
     //time += "sei ";
   } else if (hour == 7 || hour == 19) {
+    generateWord(3, 12, 14, black);
     generateWord(4, 10, 14, white);
     //time += "sette ";
   } else if (hour == 8 || hour == 20) {
+    generateWord(4, 10, 14, black);
     generateWord(5, 1, 4, white);
     //time += "otto ";
   } else if (hour == 9 || hour == 21) {
+    generateWord(5, 1, 4, black);
     generateWord(5, 5, 8, white);
     //time += "nove ";
   } else if (hour == 10 || hour == 22) {
+    generateWord(5, 5, 8, black);
     generateWord(5, 10, 14, white);
     //time += "dieci ";
   } else if (hour == 11 || hour == 23) {
+    generateWord(5, 10, 14, black);
     generateWord(6, 1, 6, white);
+    if(minute >= 35){
+      generateWord(1, 2, 5, black);
+      generateWord(1, 7, 8, black);
+    }
     //time += "undici ";
   } else if (hour == 12) {
+    generateWord(6, 1, 6, black);
     generateWord(1, 1, 1, white);
     generateWord(2, 1, 11, white);
+    if(minute >= 35){
+      generateWord(2, 1, 11, black);
+    }
     //time += "mezzogiorno ";
   } else if (hour == 0) {
+    generateWord(6, 1, 6, black);
     generateWord(1, 1, 1, white);
     generateWord(7, 1, 10, white);
+    if(minute >= 35){
+      generateWord(7, 1, 10, black);
+    }
     //time += "mezzanotte ";
   }
 
@@ -614,15 +644,13 @@ void printTime(int hour, int minute, int second) {
       }else if(minute > 35){
           generateWord(11, 1, 5, white);
           generateWord(12, 4, 14, black);
+          generateWord(7, 1, 5, black);
       }else if(minute > 30){
           generateWord(12, 4, 14, white);
       }
   }
 
   //secondi
-  //for(int i = 0; i < 13; i++){
-  //  generateWord(i, 0, 0, black);
-  //}
   if(second >= 0 && second <= 4){
     for(int i = 0; i < 13; i++){
       generateWord(i, 0, 0, black);
