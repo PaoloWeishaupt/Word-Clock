@@ -438,28 +438,23 @@ void printTime(int hour, int minute, int second) {
     generateWord(1, 1, 1, black);
     generateWord(1, 10, 14, black);
   }
-  if (hour == 1 || hour == 13 || hour == 0 || hour == 12){
-    generateWord(1, 2, 5, black);
-    generateWord(1, 7, 8, black);
-    generateWord(1, 1, 1, white);
+  if(hour == 1 || hour == 13){
+    generateWord(2, 1, 11, black);
+    generateWord(7, 1, 10, black);
     generateWord(1, 10, 14, white);
-    if(hour == 0 || hour == 12){
-      generateWord(6, 1, 6, black);
-    }
-    else if(hour == 1){
+    if (minute >= 35) {
+      generateWord(1, 2, 5, white);
+      generateWord(1, 7, 8, white);
       generateWord(1, 1, 1, black);
-      generateWord(7, 1, 10, black);
+      generateWord(1, 10, 14, black);
     }
-    else if (hour == 13){
-      generateWord(1, 1, 1, black);
-      generateWord(2, 1, 11, black);
-    }
-    //time += "È l'una";
-  } else  if (hour == 2 || hour == 14) {
+  }
+  else  if (hour == 2 || hour == 14) {
+    generateWord(1, 1, 1, black);
+    generateWord(1, 10, 14, black);
     generateWord(1, 1, 1, black);
     generateWord(1, 10, 14, black);
     generateWord(2, 12, 14, white);
-
     //time += "due ";
   } else if (hour == 3 || hour == 15) {
     //tre();
@@ -497,16 +492,26 @@ void printTime(int hour, int minute, int second) {
   } else if (hour == 11 || hour == 23) {
     generateWord(5, 10, 14, black);
     generateWord(6, 1, 6, white);
+    if(minute >= 35){
+      generateWord(1, 2, 5, black);
+      generateWord(1, 7, 8, black);
+    }
     //time += "undici ";
   } else if (hour == 12) {
     generateWord(6, 1, 6, black);
     generateWord(1, 1, 1, white);
     generateWord(2, 1, 11, white);
+    if(minute >= 35){
+      generateWord(2, 1, 11, black);
+    }
     //time += "mezzogiorno ";
   } else if (hour == 0) {
     generateWord(6, 1, 6, black);
     generateWord(1, 1, 1, white);
     generateWord(7, 1, 10, white);
+    if(minute >= 35){
+      generateWord(7, 1, 10, black);
+    }
     //time += "mezzanotte ";
   }
 
@@ -639,6 +644,7 @@ void printTime(int hour, int minute, int second) {
       }else if(minute > 35){
           generateWord(11, 1, 5, white);
           generateWord(12, 4, 14, black);
+          generateWord(7, 1, 5, black);
       }else if(minute > 30){
           generateWord(12, 4, 14, white);
       }
