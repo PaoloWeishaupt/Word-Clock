@@ -198,6 +198,7 @@ void setup()
     //rtc.adjust(DateTime(2014, 1, 12, 18, 0, 0));
   }
   rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  //rtc.adjust(DateTime(2019, 1, 12, 14, 34, 30));
 }
 
 /**
@@ -619,20 +620,27 @@ void printTime(int hour, int minute, int second) {
     } else if (minute > 50) {
       generateWord(12, 9, 14, white);
       generateWord(10, 1, 5, black);
+      generateWord(6, 10, 10, black);
     } else if (minute > 45) {
       generateWord(10, 1, 5, white);
       generateWord(10, 6, 7, black);
       generateWord(10, 9, 14, black);
+      generateWord(6, 10, 10, black);
     } else if (minute > 40) {
       generateWord(10, 6, 7, white);
       generateWord(10, 9, 14, white);
       generateWord(11, 1, 5, black);
+      generateWord(6, 10, 10, black);
     } else if (minute > 35) {
       generateWord(11, 1, 5, white);
       generateWord(12, 4, 14, black);
       generateWord(7, 1, 5, black);
+      generateWord(6, 10, 10, black);
     } else if (minute > 30) {
       generateWord(12, 4, 14, white);
+      if(minute == 35){
+        generateWord(6, 10, 10, black);
+      }
     }
   }
 
