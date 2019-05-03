@@ -59,8 +59,9 @@ Grazie a questi elementi siamo riusciti a capire il funzionamento dei 4 display 
 |13:15 - 16:30 | Implementazione |
 
 ##  Problemi riscontrati e soluzioni adottate
-Il Fishino purtroppo da ancora problemi in quanto non funziona quando si collega al pc per caricare un programma e non identifica il dispositivo (timeout).
+Inizialmente, dal software di Arduino collegando il fishino, non riuscivamo a trovare nessuna porta. Per riuscire a trovare la porta abbiamo cambiato la board per poi rimettere quella corretta. A quel punto l'IDE è riuscito a trovare la porta corretta.
+Tuttavia al momento andando ad avviare il nostro programma il word clock non da segni di vita seppur nella console di Arduino esca scritto "FishDude done flashing".
 ##  Punto della situazione rispetto alla pianificazione
-È necessario proseguire con il resto del progetto (documentazione), comunque non dovremmo essere in ritardo nel complessivo.
+A livello di implementazione siamo praticamente giunti alla conclusione (mancano pochi test da svolgere), mentre con la documentazione siamo un po' indietro.
 ## Programma di massima per la prossima giornata di lavoro
-Correzione problemi word clock, documentazione e revisione dei codici sorgente. Implementazione pulsanti fisici.
+Nella prossima giornata di lavoro dovremmo sistemare il problema del word clock che non risponde, procedere con la documentazione e svolgere i test di funzionamento di tutti gli orari dell'orologio.
