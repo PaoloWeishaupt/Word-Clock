@@ -10,21 +10,8 @@ int D2 = 10;
 int D3 = 11;
 int D4 = 12;
 
-byte digit[10][8] =
+void setup()
 {
-  { 1, 1, 1, 1, 1, 1, 0, 0 }, // 0
-  { 0, 1, 1, 0, 0, 0, 0, 0 }, // 1
-  { 1, 1, 0, 1, 1, 0, 1, 0 }, // 2
-  { 1, 1, 1, 1, 0, 0, 1, 0 }, // 3
-  { 0, 0, 1, 0, 0, 1, 1, 0 }, // 4
-  { 1, 0, 1, 1, 0, 1, 1, 0 }, // 5
-  { 1, 0, 1, 1, 1, 1, 1, 0 }, // 6
-  { 1, 1, 1, 0, 0, 0, 0, 0 }, // 7
-  { 1, 1, 1, 1, 1, 1, 1, 0 }, // 8
-  { 1, 1, 1, 0, 0, 1, 1, 0 }  // 9
-};
-
-void setup() {
   pinMode(a, OUTPUT);
   pinMode(b, OUTPUT);
   pinMode(c, OUTPUT);
@@ -36,25 +23,199 @@ void setup() {
   pinMode(D2, OUTPUT);
   pinMode(D3, OUTPUT);
   pinMode(D4, OUTPUT);
-  digitalWrite(D1, LOW);
-  digitalWrite(D2, LOW);
-  digitalWrite(D3, LOW);
-  digitalWrite(D4, LOW);
+  digitalWrite(D1, HIGH);
+  digitalWrite(D2, HIGH);
+  digitalWrite(D3, HIGH);
+  digitalWrite(D4, HIGH);
 }
 
-void loop() {
-  setNum(0, 5);
+void loop()
+{
+  setNum(3, 8);
+  setNum(4, 4);
+  setNum(1, 1);
+  setNum(2, 9);
 }
 
-void setNum(int pos, int N)
+void setNum(int pos, int num)
+{
+  resetNum();
+  resetPos();
+  switch (pos)
+  {
+  case 1:
+    pos1();
+    break;
+  case 2:
+    pos2();
+    break;
+  case 3:
+    pos3();
+    break;
+  case 4:
+    pos4();
+    break;
+  }
+
+  switch (num)
+  {
+  case 0:
+    zero();
+    break;
+  case 1:
+    one();
+    break;
+  case 2:
+    two();
+    break;
+  case 3:
+    three();
+    break;
+  case 4:
+    four();
+    break;
+  case 5:
+    five();
+    break;
+  case 6:
+    six();
+    break;
+  case 7:
+    seven();
+    break;
+  case 8:
+    eight();
+    break;
+  case 9:
+    nine();
+    break;
+  }
+}
+
+void resetNum()
+{
+  digitalWrite(a, LOW);
+  digitalWrite(b, LOW);
+  digitalWrite(c, LOW);
+  digitalWrite(d, LOW);
+  digitalWrite(e, LOW);
+  digitalWrite(f, LOW);
+  digitalWrite(g, LOW);
+}
+
+void resetPos()
 {
   digitalWrite(D1, HIGH);
   digitalWrite(D2, HIGH);
   digitalWrite(D3, HIGH);
   digitalWrite(D4, HIGH);
+}
 
-  for (int i = 0 ; i < 8 ; i++) {
-    digitalWrite(i + 2 , digit[N][i]);
-    digitalWrite(pos + 9, LOW);
-  }
+void pos1()
+{
+  digitalWrite(D1, LOW);
+}
+
+void pos2()
+{
+  digitalWrite(D2, LOW);
+}
+
+void pos3()
+{
+  digitalWrite(D3, LOW);
+}
+
+void pos4()
+{
+  digitalWrite(D4, LOW);
+}
+
+void zero()
+{
+  digitalWrite(a, HIGH);
+  digitalWrite(b, HIGH);
+  digitalWrite(c, HIGH);
+  digitalWrite(d, HIGH);
+  digitalWrite(e, HIGH);
+  digitalWrite(f, HIGH);
+}
+
+void one()
+{
+  digitalWrite(b, HIGH);
+  digitalWrite(c, HIGH);
+}
+
+void two()
+{
+  digitalWrite(a, HIGH);
+  digitalWrite(b, HIGH);
+  digitalWrite(d, HIGH);
+  digitalWrite(e, HIGH);
+  digitalWrite(g, HIGH);
+}
+
+void three()
+{
+  digitalWrite(a, HIGH);
+  digitalWrite(b, HIGH);
+  digitalWrite(c, HIGH);
+  digitalWrite(d, HIGH);
+  digitalWrite(g, HIGH);
+}
+
+void four()
+{
+  digitalWrite(b, HIGH);
+  digitalWrite(c, HIGH);
+  digitalWrite(f, HIGH);
+  digitalWrite(g, HIGH);
+}
+
+void five()
+{
+  digitalWrite(a, HIGH);
+  digitalWrite(c, HIGH);
+  digitalWrite(d, HIGH);
+  digitalWrite(f, HIGH);
+  digitalWrite(g, HIGH);
+}
+
+void six()
+{
+  digitalWrite(a, HIGH);
+  digitalWrite(c, HIGH);
+  digitalWrite(d, HIGH);
+  digitalWrite(e, HIGH);
+  digitalWrite(f, HIGH);
+  digitalWrite(g, HIGH);
+}
+
+void seven()
+{
+  digitalWrite(a, HIGH);
+  digitalWrite(b, HIGH);
+  digitalWrite(c, HIGH);
+}
+
+void eight()
+{
+  digitalWrite(a, HIGH);
+  digitalWrite(b, HIGH);
+  digitalWrite(c, HIGH);
+  digitalWrite(d, HIGH);
+  digitalWrite(e, HIGH);
+  digitalWrite(f, HIGH);
+  digitalWrite(g, HIGH);
+}
+
+void nine()
+{
+  digitalWrite(a, HIGH);
+  digitalWrite(b, HIGH);
+  digitalWrite(c, HIGH);
+  digitalWrite(d, HIGH);
+  digitalWrite(f, HIGH);
+  digitalWrite(g, HIGH);
 }
