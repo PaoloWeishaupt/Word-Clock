@@ -10,8 +10,18 @@ int D2 = 10;
 int D3 = 11;
 int D4 = 12;
 
+int hourButton = 22;
+int hourButtonState = 0;
+int lastHourButtonState = 0;
+
+int hourUnit = 0;
+int hourTen = 0;
+int minuteUnit = 0;
+int minuteTen = 0;
+
 void setup()
 {
+  Serial.begin(115200);
   pinMode(a, OUTPUT);
   pinMode(b, OUTPUT);
   pinMode(c, OUTPUT);
@@ -27,14 +37,48 @@ void setup()
   digitalWrite(D2, HIGH);
   digitalWrite(D3, HIGH);
   digitalWrite(D4, HIGH);
+
+  pinMode(hourButton, INPUT);
 }
+
+// TODO conteggio va da 19 a 21
 
 void loop()
 {
-  setNum(3, 8);
-  setNum(4, 4);
-  setNum(1, 1);
-  setNum(2, 9);
+  setNum(1, hourTen);
+  setNum(2, hourUnit);
+  hourButtonState = isClicked(hourButton);
+  if (hourButtonState != lastHourButtonState && hourButtonState)
+  {
+    if (hourUnit >= 0 && hourUnit <= 8 && hourTen < 2)
+    {
+      hourUnit++;
+    }
+    else if (hourUnit == 9 && (hourTen == 0 || hourTen == 1))
+    {
+      hourUnit = 0;
+      hourTen++;
+    }
+    if (hourTen == 2)
+    {
+      if (hourUnit >= 0 && hourUnit <= 2)
+      {
+        hourUnit++;
+      }
+      else
+      {
+        hourUnit = 0;
+        hourTen = 0;
+      }
+    }
+    delay(50);
+  }
+  lastHourButtonState = hourButtonState;
+}
+
+bool isClicked(int button)
+{
+  return digitalRead(button);
 }
 
 void setNum(int pos, int num)
