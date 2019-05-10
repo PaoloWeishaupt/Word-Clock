@@ -1,3 +1,4 @@
+// Segments pins
 int a = 2;
 int b = 3;
 int c = 4;
@@ -5,18 +6,23 @@ int d = 5;
 int e = 6;
 int f = 7;
 int g = 8;
+// Digits pins
 int D1 = 9;
 int D2 = 10;
 int D3 = 11;
 int D4 = 12;
-
+// Buttons pins
 int hourButton = 22;
+int minuteButton = 23;
+int confirmButton = 24;
+// Buttons states
 int hourButtonState = 0;
 int lastHourButtonState = 0;
-int minuteButton = 23;
 int minuteButtonState = 0;
 int lastMinuteButtonState = 0;
-
+int confirmButtonState = 0;
+int lastConfirmButtonState = 0;
+// Numbers to display
 int hourUnit = 0;
 int hourTen = 0;
 int minuteUnit = 0;
@@ -24,7 +30,7 @@ int minuteTen = 0;
 
 void setup()
 {
-  Serial.begin(115200);
+  // Segments pins to output
   pinMode(a, OUTPUT);
   pinMode(b, OUTPUT);
   pinMode(c, OUTPUT);
@@ -32,26 +38,30 @@ void setup()
   pinMode(e, OUTPUT);
   pinMode(f, OUTPUT);
   pinMode(g, OUTPUT);
+  // Digits pins (displays) to output
   pinMode(D1, OUTPUT);
   pinMode(D2, OUTPUT);
   pinMode(D3, OUTPUT);
   pinMode(D4, OUTPUT);
+  // Buttons pins
+  pinMode(hourButton, INPUT);
+  pinMode(minuteButton, INPUT);
+  pinMode(confirmButton, INPUT);
+  // Turn off digit pins
   digitalWrite(D1, HIGH);
   digitalWrite(D2, HIGH);
   digitalWrite(D3, HIGH);
   digitalWrite(D4, HIGH);
-
-  pinMode(hourButton, INPUT);
-  pinMode(minuteButton, INPUT);
 }
 
 void loop()
 {
-  setNum(1, hourTen);
-  setNum(2, hourUnit);
-  setNum(3, minuteTen);
-  setNum(4, minuteUnit);
+  // Set the display showing the hour and minute
+  setDisplay(hourTen, hourUnit, minuteTen, minuteUnit);
+  // Wait a button click for the increment
   waitIncrement();
+  // Wait the confirm
+  waitConfirm();
 }
 
 void waitIncrement()
@@ -60,9 +70,19 @@ void waitIncrement()
   incrementMinute();
 }
 
+void waitConfirm()
+{
+  confirmButtonState = digitalRead(confirmButton);
+  if (confirmButtonState != lastConfirmButtonState && confirmButtonState)
+  {
+    // TO DO
+  }
+  lastConfirmButtonState = confirmButtonState;
+}
+
 void incrementHour()
 {
-  hourButtonState = isClicked(hourButton);
+  hourButtonState = digitalRead(hourButton);
   if (hourButtonState != lastHourButtonState && hourButtonState)
   {
     if (hourUnit == 9)
@@ -79,14 +99,13 @@ void incrementHour()
     {
       hourUnit++;
     }
-    delay(10);
   }
   lastHourButtonState = hourButtonState;
 }
 
 void incrementMinute()
 {
-  minuteButtonState = isClicked(minuteButton);
+  minuteButtonState = digitalRead(minuteButton);
   if (minuteButtonState != lastMinuteButtonState && minuteButtonState)
   {
     if (minuteUnit == 9)
@@ -110,14 +129,24 @@ void incrementMinute()
     {
       minuteUnit++;
     }
-    delay(10);
   }
   lastMinuteButtonState = minuteButtonState;
 }
 
-bool isClicked(int button)
+void setDisplay(int num1, int num2, int num3, int num4)
 {
-  return digitalRead(button);
+  setNum(1, num1);
+  setNum(2, num2);
+  setNum(3, num3);
+  setNum(4, num4);
+}
+
+void setDisplay(int num)
+{
+  setNum(1, (num / 1000U) % 10);
+  setNum(2, (num / 100U) % 10);
+  setNum(3, (num / 10U) % 10);
+  setNum(4, (num / 1U) % 10);
 }
 
 void setNum(int pos, int num)
