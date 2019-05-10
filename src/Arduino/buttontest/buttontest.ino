@@ -13,6 +13,9 @@ int D4 = 12;
 int hourButton = 22;
 int hourButtonState = 0;
 int lastHourButtonState = 0;
+int minuteButton = 23;
+int minuteButtonState = 0;
+int lastMinuteButtonState = 0;
 
 int hourUnit = 0;
 int hourTen = 0;
@@ -39,39 +42,77 @@ void setup()
   digitalWrite(D4, HIGH);
 
   pinMode(hourButton, INPUT);
+  pinMode(minuteButton, INPUT);
 }
-
-// TODO conteggio va da 19 a 21
 
 void loop()
 {
   setNum(1, hourTen);
   setNum(2, hourUnit);
-  hourButtonState = isClicked(hourButton);
-  if (hourButtonState != lastHourButtonState && hourButtonState)
-  {
-    incrementHour();
-    delay(50);
-  }
-  lastHourButtonState = hourButtonState;
+  setNum(3, minuteTen);
+  setNum(4, minuteUnit);
+  waitIncrement();
+}
+
+void waitIncrement()
+{
+  incrementHour();
+  incrementMinute();
 }
 
 void incrementHour()
 {
-  if (hourUnit == 9)
+  hourButtonState = isClicked(hourButton);
+  if (hourButtonState != lastHourButtonState && hourButtonState)
   {
-    hourUnit = 0;
-    hourTen++;
+    if (hourUnit == 9)
+    {
+      hourUnit = 0;
+      hourTen++;
+    }
+    else if (hourTen == 2 && hourUnit == 3)
+    {
+      hourUnit = 0;
+      hourTen = 0;
+    }
+    else
+    {
+      hourUnit++;
+    }
+    delay(10);
   }
-  else if (hourTen == 2 && hourUnit == 3)
+  lastHourButtonState = hourButtonState;
+}
+
+void incrementMinute()
+{
+  minuteButtonState = isClicked(minuteButton);
+  if (minuteButtonState != lastMinuteButtonState && minuteButtonState)
   {
-    hourUnit = 0;
-    hourTen = 0;
+    if (minuteUnit == 9)
+    {
+      if (minuteTen == 5)
+      {
+        minuteTen = 0;
+      }
+      else
+      {
+        minuteTen++;
+      }
+      minuteUnit = 0;
+    }
+    else if (minuteTen == 5 && minuteUnit == 9)
+    {
+      minuteUnit = 0;
+      minuteTen = 0;
+    }
+    else
+    {
+      minuteUnit++;
+    }
+    delay(10);
   }
-  else
-  {
-    hourUnit++;
-  }
+  lastMinuteButtonState = minuteButtonState;
 }
 
 bool isClicked(int button)
