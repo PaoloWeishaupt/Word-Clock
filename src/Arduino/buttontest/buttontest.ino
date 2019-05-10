@@ -50,30 +50,28 @@ void loop()
   hourButtonState = isClicked(hourButton);
   if (hourButtonState != lastHourButtonState && hourButtonState)
   {
-    if (hourUnit >= 0 && hourUnit <= 8 && hourTen < 2)
-    {
-      hourUnit++;
-    }
-    else if (hourUnit == 9 && (hourTen == 0 || hourTen == 1))
-    {
-      hourUnit = 0;
-      hourTen++;
-    }
-    if (hourTen == 2)
-    {
-      if (hourUnit >= 0 && hourUnit <= 2)
-      {
-        hourUnit++;
-      }
-      else
-      {
-        hourUnit = 0;
-        hourTen = 0;
-      }
-    }
+    incrementHour();
     delay(50);
   }
   lastHourButtonState = hourButtonState;
+}
+
+void incrementHour()
+{
+  if (hourUnit == 9)
+  {
+    hourUnit = 0;
+    hourTen++;
+  }
+  else if (hourTen == 2 && hourUnit == 3)
+  {
+    hourUnit = 0;
+    hourTen = 0;
+  }
+  else
+  {
+    hourUnit++;
+  }
 }
 
 bool isClicked(int button)
