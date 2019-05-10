@@ -636,8 +636,13 @@ void printTime(int hour, int minute, int second) {
     }
 
     //e
-    //genWord(80, 0, 0, on);
-    generateWord(6, 10, 10, white);
+    if (minute >= 5 && minute < 35) {
+      generateWord(6, 10, 10, white);
+    }
+    else{
+      generateWord(6, 10, 10, black);
+    }
+
     if(minute < 5){
       //genWord(80, 0, 0, off);//Past off
       generateWord(6, 10, 10, black);
