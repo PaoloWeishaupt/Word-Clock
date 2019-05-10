@@ -795,9 +795,18 @@ void printTime(int hour, int minute, int second) {
   
   //secondi
   if(second >= 0 && second <= 4){
-    for(int i = 0; i < 13; i++){
-      generateWord(i, 0, 0, black);
-    }
+    generateWord(sec1[], black);
+    generateWord(sec2[], black);
+    generateWord(sec3[], black);
+    generateWord(sec4[], black);
+    generateWord(sec5[], black);
+    generateWord(sec6[], black);
+    generateWord(sec7[], black);
+    generateWord(sec8[], black);
+    generateWord(sec9[], black);
+    generateWord(sec10[], black);
+    generateWord(sec11[], black);
+    generateWord(sec12[], black);
     generateWord(sec1[], white);
   }
   else if(second >= 5 && second <= 9){
