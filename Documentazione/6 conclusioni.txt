@@ -1,0 +1,8 @@
+6. Conclusioni
+Per realizzare questo progetto abbiamo speso molte ore, nonostante ciò non crediamo che si sia trattato di una perdita di tempo dato che questo progetto ci ha aiutati a rafforzare le nostre capacità di lavorare in team e di conoscere dei nuovi componenti elettronici a noi prima sconosciuti, come il fishino. Sicuramente questo progetto non servirà a cambiare il mondo, tuttavia nel suo piccolo può essere utile per coloro che transitano nel quarto piano della SAMT, dando loro la possibilità di sapere velocemente l'ora e di osservare, tramite dei cambi di colore, se sono le pause stanno per finire. Si tratta di un orologio abbastanza basilare da realizzare, tuttavia ci riteniamo soddisfatti del lavoro svolto e delle nozioni ascquisite. 
+
+6.1 Sviluppi futuri
+Nel futuro, tramite il prototipo che abbiamo creato, si potrebbe realizzare una versione più grande di questo word clock, magari da appendere all'esterno della scuola per consentire a tutti di sapere quando è il momento di rientrare dalla pausa. Inoltre si potrebbe eventualmente realizzare delle versioni con lingue differenti, come l'inglese o il tedesco.
+
+6.2 Considerazioni personali
+Da questo progetto abbiamo imparato a gestirci meglio il lavoro, tramite strumenti come Atom. Inoltre abbiamo compreso il funzionamento del Fishino, delle strisce di led NeoPixel Adafruit e come gestire un vero e proprio orologio.
