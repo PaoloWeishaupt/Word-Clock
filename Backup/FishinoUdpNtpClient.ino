@@ -1,44 +1,36 @@
 /*
-	Udp NTP Client
-
-	Get the time from a Network Time Protocol (NTP) time server
-	Demonstrates use of UDP sendPacket and ReceivePacket
-	For more on NTP time servers and the messages needed to communicate with them,
-	see http://en.wikipedia.org/wiki/Network_Time_Protocol
-
-	created 4 Sep 2010
-	by Michael Margolis
-	modified 9 Apr 2012
-	by Tom Igoe
-
-	This code is in the public domain.
-
-	2016_02_10 Adapted to Fishino by Massimo Del Fedele
-
+Udp NTP Client
+Get the time from a Network Time Protocol (NTP) time server
+Demonstrates use of UDP sendPacket and ReceivePacket
+For more on NTP time servers and the messages needed to communicate with them,
+see http://en.wikipedia.org/wiki/Network_Time_Protocol
+created 4 Sep 2010
+by Michael Margolis
+modified 9 Apr 2012
+by Tom Igoe
+This code is in the public domain.
+2016_02_10 Adapted to Fishino by Massimo Del Fedele
 */
-
-// Librerie
 #include <SPI.h>
 #include <Fishino.h>
+
 #define DEBUG_LEVEL_INFO
 #include <FishinoDebug.h>
-#include <Wire.h>
-#include "RTClib.h"
+//////////////////////////////////////////////////////////////////////////////////////////
+// CONFIGURAZIONE NEOPIXEL
+#include <Wire.h> //libreria per interfacciare i2c e rtc
+#include "RTClib.h" //libreria rtc
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
 #include <avr/power.h>
 #endif
 
-// Pin di output dei dati
 #define PIN 6
 
-// RTC
 RTC_DS1307 rtc;
 
-// Striscia di 195 led
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(195, PIN, NEO_GRB + NEO_KHZ800);
 
-// Matrice che definisce ogni led
 const int pixels[13][15] = {
   {182, 181, 156, 155, 130, 129, 104, 103, 78, 77, 52, 51, 26, 25, 0},
   {183, 180, 157, 154, 131, 128, 105, 102, 79, 76, 53, 50, 27, 24, 1},
@@ -55,39 +47,104 @@ const int pixels[13][15] = {
   {194, 169, 168, 143, 142, 117, 116, 91, 90, 65, 64, 39, 38, 13, 12}
 };
 
-// Valori che definiscono i colori principali
 const uint32_t red = strip.Color(255, 0, 0);
 const uint32_t green = strip.Color(0, 255, 0);
 const uint32_t blue = strip.Color(0, 0, 255);
 const uint32_t white = strip.Color(255, 255, 255);
 const uint32_t black = strip.Color(0, 0, 0);
 const uint32_t orange = strip.Color(255, 165, 0);
+//////////////////////////////////////////////////////////////////////////////////////////
 
-// Configurazione della connessione a internet
+//////////////////////////////////////////////////////////////////////////////////////////
+// CONFIGURAZIONE VARIABILI
+int piu[] = {0, 1, 1};
+int simboliPiuPalliniMinuti[] = {0, 1, 6};
+int menoSign[] = {0, 2, 2};
+int primoMin[] = {0, 3, 3};
+int primoSecondoMin[] = {0, 3, 4};
+int primoSecondoTerzoMin[] = {0, 3, 5};
+int tuttiMin[] = {0, 3, 6};
+int secondoTerzoQuartoMin[] = {0, 4, 6};
+int terzoQuartoMin[] = {0, 5, 6};
+int quartoMin[] = {0, 6, 6};
+int pausa[] = {0, 8, 12};
+int eAccentata[] = {1, 1, 1};
+int sono[] = {1, 2, 5};
+int le[] = {1, 7, 8};
+int luna[] = {1, 10, 14};
+int mezzogiorno[] = {2, 1, 11};
+int dueOre[] = {2, 12, 14};
+int treOre[] = {3, 1, 3};
+int quattroOre[] = {3, 5, 11};
+int seiOre[] = {3, 12, 14};
+int cinqueOre[] = {4, 1, 6};
+int setteOre[] = {4, 10, 14};
+int ottoOre[] = {5, 1, 4};
+int noveOre[] = {5, 5, 8};
+int dieciOre[] = {5, 10, 14};
+int undiciOre[] = {6, 1, 6};
+int e[] = {6, 10, 10};
+int mezza[] = {7, 1, 5};
+int mezzanotte[] = {7, 1, 10};
+int cinqueMin[] = {8, 7, 12};
+int menoWord[] = {9, 1, 4};
+int dieciMin[] = {10, 1, 5};
+int un[] = {10, 6, 7};
+int quarto[] = {10, 9, 14};
+int ventiMin[] = {11, 1, 5};
+int venticinqueMin[] = {12, 4, 14};
+int cinque[] = {12, 9, 14};
+int sec1[] = {1, 0, 0};
+int sec2[] = {2, 0, 0};
+int sec3[] = {3, 0, 0};
+int sec4[] = {4, 0, 0};
+int sec5[] = {5, 0, 0};
+int sec6[] = {6, 0, 0};
+int sec7[] = {7, 0, 0};
+int sec8[] = {8, 0, 0};
+int sec9[] = {9, 0, 0};
+int sec10[] = {10, 0, 0};
+int sec11[] = {11, 0, 0};
+int sec12[] = {12, 0, 0};
+//////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+// CONFIGURATION DATA   -- ADAPT TO YOUR NETWORK !!!
+// DATI DI CONFIGURAZIONE -- ADATTARE ALLA PROPRIA RETE WiFi !!!
+
 #ifndef __MY_NETWORK_H
 
-// SSID della rete WiFi
-#define MY_SSID	"Potaspot"
+// here pur SSID of your network
+// inserire qui lo SSID della rete WiFi
+#define MY_SSID "Potaspot"
 
-// Password della rete WiFi
-#define MY_PASS	"MeterPeterPota"
+// here put PASSWORD of your network. Use "" if none
+// inserire qui la PASSWORD della rete WiFi -- Usare "" se la rete non ￨ protetta
+#define MY_PASS "MeterPeterPota"
 
-// Impostazione di un indirizzo statico, lasciare commentato se si usa DHCP
-//#define IPADDR		192, 168,   1, 251
-
-// Definizione di default gateway e maschera di sottorete
-#define GATEWAY		192, 168,   1,   1
-#define NETMASK		255, 255, 255,   0
+// comment this line if you want a dynamic IP through DHCP
+// obtained IP will be printed on serial port monitor
+// commentare la linea seguente per avere un IP dinamico tramite DHCP
+// l'IP ottenuto verrà visualizzato sul monitor seriale
+//#define IPADDR    192, 168,   1, 251
+#define GATEWAY   192, 168,   1,   1
+#define NETMASK   255, 255, 255,   0
 
 #endif
+//                    END OF CONFIGURATION DATA                      //
+//                       FINE CONFIGURAZIONE                         //
+///////////////////////////////////////////////////////////////////////
 
-// Delay della richiesta UDP
+// delay della richiesta UDP
 unsigned long tempoOp1;
 
-// Delay del refresh dei pixel
+// delay del refresh dei pixel
 unsigned long tempoOp2;
 
-// Impostazione della rete
+// define ip address if requiwhite
+// NOTE : if your network is not of type 255.255.255.0 or your gateway is not xx.xx.xx.1
+// you should set also both netmask and gateway
 #ifdef IPADDR
 IPAddress ip(IPADDR);
 #ifdef GATEWAY
@@ -105,115 +162,41 @@ IPAddress nm(255, 255, 255, 0);
 // local port to listen for UDP packets
 unsigned int localPort = 2390;
 
-// Indirizzo IP del server NTP
+// IP address of the NTP server
+// time.nist.gov
 IPAddress timeServer(129, 6, 15, 28);
 
-// I dati sull'orario sono nei primi 48 bytes del messaggio del NTP
+// NTP time stamp is in the first 48 bytes of the message
 const int NTP_PACKET_SIZE = 48;
 
-// Buffer per i pacchetti in entrata e in uscita
+//buffer to hold incoming and outgoing packets
 byte packetBuffer[NTP_PACKET_SIZE];
 
-// Istanza UDP per inviare e ricevere pacchetti UDP
+// A UDP instance to let us send and receive packets over UDP
 FishinoUDP Udp;
 
-/**
- * Metodo di setup
- */
-void setup()
-{
-  // Impostazione del delay all'orario corrente per fargli fare subito la prima richiesta
-  tempoOp1 = millis();
-
-  // set del delay a 1 secondo
-  tempoOp2 = millis() + 1000; //1 sec
-
-  // Initialize serial and wait for port to open
-  // Inizializza la porta seriale e ne attende l'apertura
-  Serial.begin(115200);
-
-  // only for Leonardo needed
-  // necessario solo per la Leonardo
-  while (!Serial)
-    ;
-
-  // reset and test WiFi module
-  // resetta e testa il modulo WiFi
-  while (!Fishino.reset())
-    Serial << F("Fishino RESET FAILED, RETRYING...\n");
-  Serial << F("Fishino WiFi RESET OK\n");
-
-  // go into station mode
-  // imposta la modalità stazione
-  Fishino.setMode(STATION_MODE);
-
-  // try forever to connect to AP
-  // tenta la connessione finchè non riesce
-  Serial << F("Connecting to AP...");
-  while (!Fishino.begin(MY_SSID, MY_PASS))
-  {
-    Serial << ".";
-    delay(2000);
-  }
-  Serial << "OK\n";
-
-
-  // setup IP or start DHCP client
-  // imposta l'IP statico oppure avvia il client DHCP
-#ifdef IPADDR
-  Fishino.config(ip, gw, nm);
-#else
-  Fishino.staStartDHCP();
-#endif
-
-  // wait till connection is established
-  Serial << F("Waiting for IP...");
-  while (Fishino.status() != STATION_GOT_IP)
-  {
-    Serial << ".";
-    delay(500);
-  }
-  Serial << "OK\n";
-
-  // print connection status on serial port
-  // stampa lo stato della connessione sulla porta seriale
-  printWifiStatus();
-
-  Serial << F("Starting connection to server...\n");
-  Udp.begin(localPort);
-
-  strip.begin();
-  strip.setBrightness(255);
-  strip.show();
-  if (! rtc.begin()) { //verifico la presenza dell'RTC
-    Serial.println("Impossibile trovare RTC");
-    while (1);
-  }
-
-  if (! rtc.isrunning()) { //verifico funzionamento dell'RTC
-    Serial.println("RTC non è in funzione!");
-    //inserisce l'orario del computer durante la compilazione
-    // Se vuoi un orario personalizzato, togli il commento alla riga successiva
-    // l'orario: ANNO, MESE, GIORNI, ORA, MINUTI, SECONDI
-    //rtc.adjust(DateTime(2014, 1, 12, 18, 0, 0));
-  }
-  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-  //rtc.adjust(DateTime(2019, 1, 12, 14, 34, 30));
-}
-
-/**
-   Metodo che stampa le informazioni e lo stato della connessione
-*/
 void printWifiStatus()
 {
-  // Stampa il SSID della rete
-  Serial.println("SSID: " + Fishino.SSID());
-  // Stampa l'indirizzo IP della rete
-  Serial.println("IP Address: " + Fishino.localIP());
-  // Stampa la potenza del segnale della connessione
-  Serial.println("Signal strength (RSSI): " + Fishino.RSSI());
+  // print the SSID of the network you're attached to:
+  // stampa lo SSID della rete:
+  Serial.print("SSID: ");
+  Serial.println(Fishino.SSID());
+
+  // print your WiFi shield's IP address:
+  // stampa l'indirizzo IP della rete:
+  IPAddress ip = Fishino.localIP();
+  Serial << F("IP Address: ");
+  Serial.println(ip);
+
+  // print the received signal strength:
+  // stampa la potenza del segnale di rete:
+  long rssi = Fishino.RSSI();
+  Serial << F("signal strength (RSSI):");
+  Serial.print(rssi);
+  Serial << F(" dBm\n");
 }
 
+// send an NTP request to the time server at the given address
 // invia una richiesta al server NTP all'indirizzo fornito
 unsigned long sendNTPpacket(IPAddress& address)
 {
@@ -266,11 +249,89 @@ unsigned long sendNTPpacket(IPAddress& address)
   return 0;
 }
 
+void setup()
+{
+  // set del delay all'orario corrente per fargli fare subito la prima richiesta
+  tempoOp1=millis();
 
+  // set del delay a 1 secondo
+  tempoOp2=millis()+1000; //1 sec
+
+  // Initialize serial and wait for port to open
+  // Inizializza la porta seriale e ne attende l'apertura
+  Serial.begin(115200);
+
+  // only for Leonardo needed
+  // necessario solo per la Leonardo
+  while (!Serial)
+  ;
+
+  // reset and test WiFi module
+  // resetta e testa il modulo WiFi
+  while(!Fishino.reset())
+  Serial << F("Fishino RESET FAILED, RETRYING...\n");
+  Serial << F("Fishino WiFi RESET OK\n");
+
+  // go into station mode
+  // imposta la modalità stazione
+  Fishino.setMode(STATION_MODE);
+
+  // try forever to connect to AP
+  // tenta la connessione finchè non riesce
+  Serial << F("Connecting to AP...");
+  while(!Fishino.begin(MY_SSID, MY_PASS))
+  {
+    Serial << ".";
+    delay(2000);
+  }
+  Serial << "OK\n";
+
+
+  // setup IP or start DHCP client
+  // imposta l'IP statico oppure avvia il client DHCP
+  #ifdef IPADDR
+  Fishino.config(ip, gw, nm);
+  #else
+  Fishino.staStartDHCP();
+  #endif
+
+  // wait till connection is established
+  Serial << F("Waiting for IP...");
+  while(Fishino.status() != STATION_GOT_IP)
+  {
+    Serial << ".";
+    delay(500);
+  }
+  Serial << "OK\n";
+
+  // print connection status on serial port
+  // stampa lo stato della connessione sulla porta seriale
+  printWifiStatus();
+
+  Serial << F("Starting connection to server...\n");
+  Udp.begin(localPort);
+
+  strip.begin();
+  strip.setBrightness(255);
+  strip.show();
+  if (! rtc.begin()) { //verifico la presenza dell'RTC
+  Serial.println("Impossibile trovare RTC");
+  while (1);
+}
+
+if (! rtc.isrunning()) { //verifico funzionamento dell'RTC
+Serial.println("RTC non è in funzione!");
+//inserisce l'orario del computer durante la compilazione
+// Se vuoi un orario personalizzato, togli il commento alla riga successiva
+// l'orario: ANNO, MESE, GIORNI, ORA, MINUTI, SECONDI
+}
+rtc.adjust(DateTime(2014, 1, 12, 11, 59, 40));
+//rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+}
 
 void loop()
 {
-  if (millis() > tempoOp1) {
+  if (millis()>tempoOp1) {
     // send an NTP packet to a time server
     Serial << F("Sending UDP request...");
     sendNTPpacket(timeServer);
@@ -279,7 +340,7 @@ void loop()
     // wait to see if a reply is available
     delay(1000);
 
-    while (Udp.parsePacket()) {
+    while(Udp.parsePacket()) {
       Serial << F("Packet received\n");
 
       // print remote port and IP of incoming packet, just to show them
@@ -359,7 +420,7 @@ void loop()
     //delay(5000);
     tempoOp1 = millis() + 300000;
   }
-  if (millis() > tempoOp2) {
+  if(millis() > tempoOp2) {
     DateTime now = rtc.now(); //creo istanza ora/data
     int hour = now.hour();
     int minute = now.minute();
@@ -393,377 +454,475 @@ void printTime(int hour, int minute, int second) {
   //Mattino
   Serial.println(hour);
   Serial.println(minute);
-  if ((pausaHour == 9 && minute >= 50) || (pausaHour == 10 && minute >= 0 && minute < 2)) {
-    generateWord(0, 8, 12, green);
+  if((pausaHour == 9 && minute >= 50) || (pausaHour == 10 && minute >= 0 && minute < 2)){
+    generateWord(pausa, green);
   }
-  else if (pausaHour == 10 && minute >= 2 && minute <= 4) {
-    generateWord(0, 8, 12, red);
+  else if(pausaHour == 10 && minute >= 2 && minute <= 4){
+    generateWord(pausa, red);
   }
   //Pomeriggio
-  else if (pausaHour == 14 && minute >= 45 && minute <= 56) {
-    generateWord(0, 8, 12, green);
+  else if(pausaHour == 14 && minute >= 45 && minute <= 56){
+    generateWord(pausa, green);
   }
-  else if (pausaHour == 14 && minute >= 57 && minute <= 59) {
-    generateWord(0, 8, 12, red);
+  else if(pausaHour == 14 && minute >= 57 && minute <= 59){
+    generateWord(pausa, red);
   }
   //Non pausa
-  else {
-    generateWord(0, 8, 12, black);
+  else{
+    generateWord(pausa, black);
   }
 
   //Più o meno
-  if (minute < 35) {
+  if(minute < 35){
     meno = false;
-  } else {
+  }else{
     meno = true;
-    hour += 1;
   }
 
-  if ((hour != 1 && hour != 13 && hour != 12 && hour != 0) || (minute >= 35 && hour != 11 && hour != 23)) {
-    generateWord(1, 2, 5, white);
-    generateWord(1, 7, 8, white);
-    generateWord(1, 1, 1, black);
-    generateWord(1, 10, 14, black);
-  }
-  if (hour == 1 || hour == 13) {
-    generateWord(2, 1, 11, black);
-    generateWord(7, 1, 10, black);
-    generateWord(1, 10, 14, white);
-    if (minute >= 35) {
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(1, 1, 1, black);
-      generateWord(1, 10, 14, black);
+  if (hour == 12) {
+    if(minute <= 35){
+      generateWord(eAccentata, white);
+      generateWord(mezzogiorno, white);
     }
-  }
-  else  if (hour == 2 || hour == 14) {
-    generateWord(1, 1, 1, black);
-    generateWord(1, 10, 14, black);
-    generateWord(1, 1, 1, black);
-    generateWord(1, 10, 14, black);
-    generateWord(2, 12, 14, white);
-    //time += "due ";
-  } else if (hour == 3 || hour == 15) {
-    //tre();
-    generateWord(2, 12, 14, black);
-    generateWord(3, 1, 3, white);
-    //time += "tre ";
-  } else if (hour == 4 || hour == 16) {
-    generateWord(3, 1, 3, black);
-    generateWord(3, 5, 11, white);
-    //time += "quattro ";
-  } else if (hour == 5 || hour == 17) {
-    generateWord(3, 5, 11, black);
-    generateWord(4, 1, 6, white);
-    //time += "cinque ";
-  } else if (hour == 6 || hour == 18) {
-    generateWord(4, 1, 6, black);
-    generateWord(3, 12, 14, white);
-    //time += "sei ";
-  } else if (hour == 7 || hour == 19) {
-    generateWord(3, 12, 14, black);
-    generateWord(4, 10, 14, white);
-    //time += "sette ";
-  } else if (hour == 8 || hour == 20) {
-    generateWord(4, 10, 14, black);
-    generateWord(5, 1, 4, white);
-    //time += "otto ";
-  } else if (hour == 9 || hour == 21) {
-    generateWord(5, 1, 4, black);
-    generateWord(5, 5, 8, white);
-    //time += "nove ";
-  } else if (hour == 10 || hour == 22) {
-    generateWord(5, 5, 8, black);
-    generateWord(5, 10, 14, white);
-    //time += "dieci ";
-  } else if (hour == 11 || hour == 23) {
-    generateWord(5, 10, 14, black);
-    generateWord(6, 1, 6, white);
-    if (minute >= 35) {
-      generateWord(1, 2, 5, black);
-      generateWord(1, 7, 8, black);
-    }
-    //time += "undici ";
-  } else if (hour == 12) {
-    generateWord(6, 1, 6, black);
-    generateWord(1, 1, 1, white);
-    generateWord(2, 1, 11, white);
-    if (minute >= 35) {
-      generateWord(2, 1, 11, black);
+    if(minute > 35){
+      generateWord(eAccentata, white);
+      generateWord(mezzogiorno, black);
+      generateWord(luna, white);
     }
     //time += "mezzogiorno ";
   } else if (hour == 0) {
-    generateWord(6, 1, 6, black);
-    generateWord(1, 1, 1, white);
-    generateWord(7, 1, 10, white);
-    if (minute >= 35) {
-      generateWord(7, 1, 10, black);
+    if(minute <= 35){
+      generateWord(eAccentata, white);
+      generateWord(mezzanotte, white);
+    }
+    if(minute > 35){
+      generateWord(mezzanotte, black);
+      generateWord(luna, white);
+      generateWord(eAccentata, white);
     }
     //time += "mezzanotte ";
+  } else if(hour == 1 || hour == 13){
+    if (minute <= 35) {
+      generateWord(eAccentata, white);
+      generateWord(luna, white);
+    }
+    if (minute > 35) {
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(eAccentata, black);
+      generateWord(luna, black);
+      generateWord(dueOre, white);
+    }
+  } else  if (hour == 2 || hour == 14) {
+    if (minute <= 35) {
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(dueOre, white);
+    }
+    if (minute > 35) {
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(dueOre, black);
+      generateWord(treOre, white);
+    }
+    //time += "due ";
+  } else if (hour == 3 || hour == 15) {
+    //tre();
+    if (minute <= 35) {
+      generateWord(treOre, white);
+      generateWord(sono, white);
+      generateWord(le, white);
+    }
+    if (minute > 35) {
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(treOre, black);
+      generateWord(quattroOre, white);
+    }
+    //time += "tre ";
+  } else if (hour == 4 || hour == 16) {
+    generateWord(quattroOre, white);
+    generateWord(sono, white);
+    generateWord(le, white);
+    if (minute <= 35) {
+      generateWord(quattroOre, white);
+      generateWord(sono, white);
+      generateWord(le, white);
+    }
+    if (minute > 35) {
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(quattroOre, black);
+      generateWord(cinqueOre, white);
+    }
+    //time += "quattro ";
+  } else if (hour == 5 || hour == 17) {
+    if (minute <= 35) {
+      generateWord(cinqueOre, white);
+      generateWord(sono, white);
+      generateWord(le, white);
+    }
+    if (minute > 35) {
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(cinqueOre, black);
+      generateWord(seiOre, white);
+    }
+    //time += "cinque ";
+  } else if (hour == 6 || hour == 18) {
+    if (minute <= 35) {
+      generateWord(seiOre, white);
+      generateWord(sono, white);
+      generateWord(le, white);
+    }
+    if (minute > 35) {
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(seiOre, black);
+      generateWord(setteOre, white);
+    }
+    //time += "sei ";
+  } else if (hour == 7 || hour == 19) {
+    if(minute <= 35){
+      generateWord(setteOre, white);
+      generateWord(sono, white);
+      generateWord(le, white);
+    }
+    if (minute > 35) {
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(setteOre, black);
+      generateWord(ottoOre, white);
+    }
+    //time += "sette ";
+  } else if (hour == 8 || hour == 20) {
+    if(minute <= 35){
+      generateWord(ottoOre, white);
+      generateWord(sono, white);
+      generateWord(le, white);
+    }
+    if (minute > 35) {
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(ottoOre, black);
+      generateWord(noveOre, white);
+    }
+    //time += "otto ";
+  } else if (hour == 9 || hour == 21) {
+    if(minute <= 35){
+      generateWord(noveOre, white);
+      generateWord(sono, white);
+      generateWord(le, white);
+    }
+    if (minute > 35) {
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(noveOre, black);
+      generateWord(dieciOre, white);
+    }
+    //time += "nove ";
+  } else if (hour == 10 || hour == 22) {
+    if(minute <= 35){
+      generateWord(dieciOre, white);
+      generateWord(sono, white);
+      generateWord(le, white);
+    }
+    if (minute > 35) {
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(dieciOre, black);
+      generateWord(undiciOre, white);
+    }
+    //time += "dieci ";
+  } else if (hour == 11 || hour == 23) {
+    if(minute <= 35){
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(undiciOre, white);
+    }
+    else if(minute > 35){
+      generateWord(sono, black);
+      generateWord(le, black);
+      generateWord(undiciOre, black);
+      generateWord(eAccentata, white);
+      if (hour == 11) {
+        generateWord(mezzogiorno, white);
+      }
+      else if (hour == 23){
+        generateWord(mezzanotte, white);
+      }
+    }
+    //time += "undici ";
   }
 
   //Illuminazione dei pallini
   diff = minute - int(minute / 10) * 10;
 
   //Minuti
-  if (meno == false) {
+  if(meno == false) {
 
-    if (minute % 5 != 0) {
-      generateWord(0, 1, 1, white);
-      generateWord(0, 2, 2, black);
+    if(minute % 5 != 0){
+      generateWord(piu, white);
+      generateWord(menoSign, black);
     }
-    else {
-      generateWord(0, 1, 6, black);
+    else{
+      generateWord(simboliPiuPalliniMinuti, black);
     }
 
-    if (diff != 0 && diff != 5) {
+    if(diff != 0 && diff != 5) {
       //+ on
       //genWord(20, 6, 6, on);
-      generateWord(0, 3, 3, white);
-      generateWord(0, 4, 6, black);
-
+      if(diff >= 1 && diff <= 4 || diff >= 6 && diff <= 9){
+        generateWord(primoMin, white);
+        generateWord(secondoTerzoQuartoMin, black);
+      }
       if (diff >= 2 && diff <= 4 || diff >= 7 && diff <= 9) {
-        generateWord(0, 3, 4, white);
-        generateWord(0, 5, 6, black);
+        generateWord(primoSecondoMin, white);
+        generateWord(terzoQuartoMin, black);
       }
       if (diff >= 3 && diff <= 4 || diff >= 8 && diff <= 9) {
-        generateWord(0, 3, 5, white);
-        generateWord(0, 6, 6, black);
+        generateWord(primoSecondoTerzoMin, white);
+        generateWord(quartoMin, black);
       }
       if (diff == 4 || diff == 9) {
-        generateWord(0, 3, 6, white);
+        generateWord(tuttiMin, white);
       }
     }
 
     //e
-    //genWord(80, 0, 0, on);
-    generateWord(6, 10, 10, white);
-    if (minute < 5) {
+    if (minute >= 5 && minute < 35) {
+      generateWord(e, white);
+    }
+    else{
+      generateWord(e, black);
+    }
+
+    if(minute < 5){
       //genWord(80, 0, 0, off);//Past off
-      generateWord(6, 10, 10, black);
-    } else if (minute < 10) {
+      generateWord(e, black);
+    }else if(minute < 10){
       //genWord(90, 5, 10, on); //Five on
-      generateWord(8, 7, 12, white);
-    } else if (minute < 15) {
+      generateWord(cinqueMin, white);
+    }else if (minute < 15){
       //genWord(100, 0, 4, on);
-      generateWord(10, 1, 5, white);
-      generateWord(8, 7, 12, black);
-    } else if (minute < 20) {
+      generateWord(dieciMin, white);
+      generateWord(cinqueMin, black);
+    }else if(minute < 20){
       //genWord(80, 2, 3, on);
       //genWord(80, 5, 10, on);
-      generateWord(10, 6, 7, white);
-      generateWord(10, 9, 14, white);
-      generateWord(10, 1, 5, black);
-    } else if (minute < 25) {
+      generateWord(un, white);
+      generateWord(quarto, white);
+      generateWord(dieciMin, black);
+    }else if(minute < 25){
       //genWord(90, 0, 4, on); //Twenty on
-      generateWord(10, 6, 7, black);
-      generateWord(10, 9, 14, black);
-      generateWord(11, 1, 5, white);
-    } else if (minute < 30) {
+      generateWord(un, black);
+      generateWord(quarto, black);
+      generateWord(ventiMin, white);
+    }else if(minute < 30){
       //genWord(90, 0, 10, on); //25 on
-      generateWord(12, 4, 14, white);
-      generateWord(11, 1, 5, black);
-    } else {
+      generateWord(venticinqueMin, white);
+      generateWord(ventiMin, black);
+    }else{
       //genWord(100, 6, 10, on); //Half on
-      generateWord(7, 1, 5, white);
-      generateWord(12, 4, 14, black);
+      generateWord(mezza, white);
+      generateWord(venticinqueMin, black);
     }
-  } else {
+  }else{
 
-    if (minute < 55) {
-      generateWord(9, 1, 4, white); //Meno
+    if(minute < 55){
+      generateWord(menoWord, white); //Meno
     }
 
-    if (minute % 5 != 0) {
-      if (minute < 55) {
-        generateWord(0, 1, 1, white);
+    if(minute % 5 != 0){
+      if(minute < 55){
+        generateWord(piu, white);
       }
     }
-    else {
-      generateWord(0, 1, 6, black);
+    else{
+      generateWord(simboliPiuPalliniMinuti, black);
     }
 
-    if (diff != 0 && diff != 5) {
+    if(diff != 0 && diff != 5) {
 
       if (diff == 2 || diff == 7) {
-        generateWord(0, 3, 5, white);
-        generateWord(0, 6, 6, black);
-        if (minute > 55) {
-          generateWord(9, 1, 4, black);
+        generateWord(primoSecondoTerzoMin, white);
+        generateWord(quartoMin, black);
+        if(minute > 55){
+          generateWord(menoWord, black);
         }
       } else if (diff == 3 || diff == 8) {
-        generateWord(0, 3, 4, white);
-        generateWord(0, 5, 6, black);
-        if (minute > 55) {
-          generateWord(9, 1, 4, black);
+        generateWord(primoSecondoMin, white);
+        generateWord(terzoQuartoMin, black);
+        if(minute > 55){
+          generateWord(menoWord, black);
         }
       } else if (diff == 4 || diff == 9) {
-        generateWord(0, 3, 3, white);
-        generateWord(0, 4, 6, black);
-        if (minute > 55) {
-          generateWord(9, 1, 4, black);
+        generateWord(primoMin, white);
+        generateWord(secondoTerzoQuartoMin, black);
+        if(minute > 55){
+          generateWord(menoWord, black);
         }
       } else if (diff == 1 || diff == 6) {
-        generateWord(0, 3, 6, white);
-        if (minute > 55) {
-          generateWord(9, 1, 4, black);
+        generateWord(tuttiMin, white);
+        if(minute > 55){
+          generateWord(menoWord, black);
         }
       }
     }
-    if (minute > 55) {
-      generateWord(0, 2, 2, white);
-      generateWord(0, 1, 1, black);
-      generateWord(12, 9, 14, black);
-      generateWord(6, 10, 10, black);
-      generateWord(9, 1, 4, black);
+    if(minute > 55){
+      generateWord(menoSign, white);
+      generateWord(piu, black);
+      generateWord(cinque, black);
+      generateWord(menoWord, black);
       //generateWord(12, 9, 14, white);
-    } else if (minute > 50) {
-      generateWord(12, 9, 14, white);
-      generateWord(10, 1, 5, black);
-      generateWord(6, 10, 10, black);
-    } else if (minute > 45) {
-      generateWord(10, 1, 5, white);
-      generateWord(10, 6, 7, black);
-      generateWord(10, 9, 14, black);
-      generateWord(6, 10, 10, black);
-    } else if (minute > 40) {
-      generateWord(10, 6, 7, white);
-      generateWord(10, 9, 14, white);
-      generateWord(11, 1, 5, black);
-      generateWord(6, 10, 10, black);
-    } else if (minute > 35) {
-      generateWord(11, 1, 5, white);
-      generateWord(12, 4, 14, black);
-      generateWord(7, 1, 5, black);
-      generateWord(6, 10, 10, black);
-    } else if (minute > 30) {
-      generateWord(12, 4, 14, white);
-      if(minute == 35){
-        generateWord(6, 10, 10, black);
-      }
+    }else if(minute > 50){
+      generateWord(cinque, white);
+      generateWord(dieciMin, black);
+    }else if(minute > 45){
+      generateWord(dieciMin, white);
+      generateWord(un, black);
+      generateWord(quarto, black);
+    }else if(minute > 40){
+      generateWord(un, white);
+      generateWord(quarto, white);
+      generateWord(ventiMin, black);
+    }else if(minute >= 35){
+      generateWord(ventiMin, white);
+      generateWord(venticinqueMin, black);
+      generateWord(mezza, black);
+      generateWord(e, black);
     }
   }
 
   //secondi
-  if (second >= 0 && second <= 4) {
-    for (int i = 0; i < 13; i++) {
-      generateWord(i, 0, 0, black);
-    }
-    generateWord(1, 0, 0, white);
+  if(second >= 0 && second <= 4){
+    generateWord(sec1, black);
+    generateWord(sec2, black);
+    generateWord(sec3, black);
+    generateWord(sec4, black);
+    generateWord(sec5, black);
+    generateWord(sec6, black);
+    generateWord(sec7, black);
+    generateWord(sec8, black);
+    generateWord(sec9, black);
+    generateWord(sec10, black);
+    generateWord(sec11, black);
+    generateWord(sec12, black);
+    generateWord(sec1, white);
   }
-  else if (second >= 5 && second <= 9) {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
+  else if(second >= 5 && second <= 9){
+    generateWord(sec1, white);
+    generateWord(sec2, white);
   }
-  else if (second >= 10 && second <= 14) {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
+  else if(second >= 10 && second <= 14){
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
   }
-  else if (second >= 15 && second <= 19) {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
+  else if(second >= 15 && second <= 19){
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
   }
-  else if (second >= 20 && second <= 24) {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
-    generateWord(5, 0, 0, white);
+  else if(second >= 20 && second <= 24){
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
+    generateWord(sec5, white);
   }
-  else if (second >= 25 && second <= 29) {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
-    generateWord(5, 0, 0, white);
-    generateWord(6, 0, 0, white);
+  else if(second >= 25 && second <= 29){
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
+    generateWord(sec5, white);
+    generateWord(sec6, white);
   }
-  else if (second >= 30 && second <= 34) {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
-    generateWord(5, 0, 0, white);
-    generateWord(6, 0, 0, white);
-    generateWord(7, 0, 0, white);
+  else if(second >= 30 && second <= 34){
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
+    generateWord(sec5, white);
+    generateWord(sec6, white);
+    generateWord(sec7, white);
   }
-  else if (second >= 35 && second <= 39) {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
-    generateWord(5, 0, 0, white);
-    generateWord(6, 0, 0, white);
-    generateWord(7, 0, 0, white);
-    generateWord(8, 0, 0, white);
+  else if(second >= 35 && second <= 39){
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
+    generateWord(sec5, white);
+    generateWord(sec6, white);
+    generateWord(sec7, white);
+    generateWord(sec8, white);
   }
-  else if (second >= 40 && second <= 44) {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
-    generateWord(5, 0, 0, white);
-    generateWord(6, 0, 0, white);
-    generateWord(7, 0, 0, white);
-    generateWord(8, 0, 0, white);
-    generateWord(9, 0, 0, white);
+  else if(second >= 40 && second <= 44){
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
+    generateWord(sec5, white);
+    generateWord(sec6, white);
+    generateWord(sec7, white);
+    generateWord(sec8, white);
+    generateWord(sec9, white);
   }
-  else if (second >= 45 && second <= 49) {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
-    generateWord(5, 0, 0, white);
-    generateWord(6, 0, 0, white);
-    generateWord(7, 0, 0, white);
-    generateWord(8, 0, 0, white);
-    generateWord(9, 0, 0, white);
-    generateWord(10, 0, 0, white);
+  else if(second >= 45 && second <= 49){
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
+    generateWord(sec5, white);
+    generateWord(sec6, white);
+    generateWord(sec7, white);
+    generateWord(sec8, white);
+    generateWord(sec9, white);
+    generateWord(sec10, white);
   }
-  else if (second >= 50 && second <= 54) {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
-    generateWord(5, 0, 0, white);
-    generateWord(6, 0, 0, white);
-    generateWord(7, 0, 0, white);
-    generateWord(8, 0, 0, white);
-    generateWord(9, 0, 0, white);
-    generateWord(10, 0, 0, white);
-    generateWord(11, 0, 0, white);
+  else if(second >= 50 && second <= 54){
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
+    generateWord(sec5, white);
+    generateWord(sec6, white);
+    generateWord(sec7, white);
+    generateWord(sec8, white);
+    generateWord(sec9, white);
+    generateWord(sec10, white);
+    generateWord(sec11, white);
   }
-  else if (second >= 55 && second <= 59) {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
-    generateWord(5, 0, 0, white);
-    generateWord(6, 0, 0, white);
-    generateWord(7, 0, 0, white);
-    generateWord(8, 0, 0, white);
-    generateWord(9, 0, 0, white);
-    generateWord(10, 0, 0, white);
-    generateWord(11, 0, 0, white);
-    generateWord(12, 0, 0, white);
+  else if(second >= 55 && second <= 59){
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
+    generateWord(sec5, white);
+    generateWord(sec6, white);
+    generateWord(sec7, white);
+    generateWord(sec8, white);
+    generateWord(sec9, white);
+    generateWord(sec10, white);
+    generateWord(sec11, white);
+    generateWord(sec12, white);
   }
 }
 void pixelOn(int pixel, uint32_t color) {
   strip.setPixelColor(pixel, color);
   strip.show();
 }
-void generateWord(int row, int min, int max, uint32_t color) {
-  if (min == 0 && max == 0) {
-    for (int i = min; i <= (max - min); i++) {
-      pixelOn(pixels[row][i], color);
+void generateWord(int word[], uint32_t color) {
+  if(word[1] == 0 && word[2] == 0){
+    for (int i = word[1]; i <= (word[2] - word[1]); i++) {
+      pixelOn(pixels[word[0]][i], color);
     }
   }
-  else {
-    for (int i = min; i <= max; i++) {
-      pixelOn(pixels[row][i], color);
+  else{
+    for (int i = word[1]; i <= word[2]; i++) {
+      pixelOn(pixels[word[0]][i], color);
     }
   }
 }
