@@ -913,7 +913,7 @@ void pixelOn(int pixel, uint32_t color) {
   strip.setPixelColor(pixel, color);
   strip.show();
 }
-void generateWord(int[] word row, int min, int max, uint32_t color) {
+void generateWord(int[] word, uint32_t color) {
   if(word[1] == 0 && word[2] == 0){
     for (int i = word[1]; i <= (word[2] - word[1]); i++) {
       pixelOn(pixels[word[0]][i], color);
