@@ -181,13 +181,13 @@ void printWifiStatus()
   // stampa lo SSID della rete:
   Serial.print("SSID: ");
   Serial.println(Fishino.SSID());
-  
+
   // print your WiFi shield's IP address:
   // stampa l'indirizzo IP della rete:
   IPAddress ip = Fishino.localIP();
   Serial << F("IP Address: ");
   Serial.println(ip);
-  
+
   // print the received signal strength:
   // stampa la potenza del segnale di rete:
   long rssi = Fishino.RSSI();
@@ -203,49 +203,49 @@ unsigned long sendNTPpacket(IPAddress& address)
   // set all bytes in the buffer to 0
   // azzera il buffer di ricezione NTP
   memset(packetBuffer, 0, NTP_PACKET_SIZE);
-  
+
   // Initialize values needed to form NTP request
   // (see URL above for details on the packets)
   // Inizializza i valori da inviare al server NTP
   // (vedere URL del server per dettagli sul formato pacchetto)
-  
+
   // LI, Version, Mode
   packetBuffer[0] = 0b11100011;
-  
+
   // Stratum, or type of clock
   packetBuffer[1] = 0;
-  
+
   // Polling Interval
   packetBuffer[2] = 6;
-  
+
   // Peer Clock Precision
   packetBuffer[3] = 0xEC;
-  
+
   // 8 bytes of zero for Root Delay & Root Dispersion
   packetBuffer[12]  = 49;
   packetBuffer[13]  = 0x4E;
   packetBuffer[14]  = 49;
   packetBuffer[15]  = 52;
-  
+
   // all NTP fields have been given values, now
   // you can send a packet requesting a timestamp:
   // tutti i campi del paccketto NTP sono stati impostati
   // è quindi possibile inviare il paccetto di richiesta di data/ora
-  
+
   // NTP requests are to port 123
   // beginPacket() just opens the connection
   // invia la richiesta NTP alla porta 123
   // beginPacket() apre solo la connessione
   Udp.beginPacket(address, 123);
-  
+
   // fill UDP buffer with packet data
   // riempie il buffer di invio UDP con i dati del pacchetto
   Udp.write(packetBuffer, NTP_PACKET_SIZE);
-  
+
   // ends and send the UDP packet
   // termina ed invia il pacchetto UDP
   Udp.endPacket();
-  
+
   return 0;
 }
 
@@ -253,29 +253,29 @@ void setup()
 {
   // set del delay all'orario corrente per fargli fare subito la prima richiesta
   tempoOp1=millis();
-  
+
   // set del delay a 1 secondo
   tempoOp2=millis()+1000; //1 sec
-  
+
   // Initialize serial and wait for port to open
   // Inizializza la porta seriale e ne attende l'apertura
   Serial.begin(115200);
-  
+
   // only for Leonardo needed
   // necessario solo per la Leonardo
   while (!Serial)
   ;
-  
+
   // reset and test WiFi module
   // resetta e testa il modulo WiFi
   while(!Fishino.reset())
   Serial << F("Fishino RESET FAILED, RETRYING...\n");
   Serial << F("Fishino WiFi RESET OK\n");
-  
+
   // go into station mode
   // imposta la modalità stazione
   Fishino.setMode(STATION_MODE);
-  
+
   // try forever to connect to AP
   // tenta la connessione finchè non riesce
   Serial << F("Connecting to AP...");
@@ -285,8 +285,8 @@ void setup()
     delay(2000);
   }
   Serial << "OK\n";
-  
-  
+
+
   // setup IP or start DHCP client
   // imposta l'IP statico oppure avvia il client DHCP
   #ifdef IPADDR
@@ -294,7 +294,7 @@ void setup()
   #else
   Fishino.staStartDHCP();
   #endif
-  
+
   // wait till connection is established
   Serial << F("Waiting for IP...");
   while(Fishino.status() != STATION_GOT_IP)
@@ -303,14 +303,14 @@ void setup()
     delay(500);
   }
   Serial << "OK\n";
-  
+
   // print connection status on serial port
   // stampa lo stato della connessione sulla porta seriale
   printWifiStatus();
-  
+
   Serial << F("Starting connection to server...\n");
   Udp.begin(localPort);
-  
+
   strip.begin();
   strip.setBrightness(255);
   strip.show();
@@ -336,61 +336,61 @@ void loop()
     Serial << F("Sending UDP request...");
     sendNTPpacket(timeServer);
     Serial << "OK\n";
-    
+
     // wait to see if a reply is available
     delay(1000);
-    
+
     while(Udp.parsePacket()) {
       Serial << F("Packet received\n");
-      
+
       // print remote port and IP of incoming packet, just to show them
       // stampa IP e porta remoti per mostrare la provenienza del pacchetto
       IPAddress remoteIp = Udp.remoteIP();
       uint32_t remotePort = Udp.remotePort();
       Serial << F("Remote IP   : ") << remoteIp << "\n";
       Serial << F("Remote port : ") << remotePort << "\n";
-      
+
       // We've received a packet, read the data from it and put into a buffer
       // abbiamo ricevuto un pacchetto, leggiamo i dati ed inseriamoli in un buffer
       Udp.read(packetBuffer, NTP_PACKET_SIZE);
-      
+
       // the timestamp starts at byte 40 of the received packet and is four bytes,
       // or two words, long. First, extract the two words:
       // il timestamp inizia dal byte 40 del pacchetto ricevuto, e consiste in 4 bytes
       // o due words, long. Innanzitutto estraiamo le due words
       unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
       unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);
-      
+
       // combine the four bytes (two words) into a long integer
       // this is NTP time (seconds since Jan 1 1900):
       // combiniamo i 4 bytes (o 2 words) in un long integer
       // che è il tempo NTP (secondi dal primo Gennaio 1900)
       unsigned long secsSince1900 = highWord << 16 | lowWord;
       Serial << F("Seconds since Jan 1 1900 = ") << secsSince1900 << "\n";
-      
+
       // now convert NTP time into everyday time
       // ora convertiamo il tempo NTP in formato leggibile
       Serial << F("Unix time = ");
-      
+
       // Unix time starts on Jan 1 1970. In seconds, that's 2208988800
       // il tempo Unix inizia dal primo Gennaio 1970. In secondi, sono 2208988800
       const unsigned long seventyYears = 2208988800UL;
-      
+
       // subtract seventy years
       // sottrae dal tempo NTP la base Unix
       unsigned long epoch = secsSince1900 - seventyYears;
-      
+
       // print Unix time:
       // stampa il tempo Unix
       Serial << epoch << "\n";
-      
+
       // print the hour, minute and second
       // stampa ora, minuti e secondi
-      
+
       // UTC is the time at Greenwich Meridian (GMT)
       // Tempo UTC (ora al meridiano di Greenwich, GMT)
       Serial << F("The ETC time is ");
-      
+
       // print the hour (86400 equals secs per day) + 1 for ETC time
       // stampa l'ora (contando 86400 secondi al giorno
       Serial << ((epoch  % 86400L) / 3600 + 1);
@@ -400,7 +400,7 @@ void loop()
         // nei primi 10 minuti di ogni ora vogiamo uno zero iniziale
         Serial << '0';
       }
-      
+
       // print the minute (3600 equals secs per minute)
       // stampa i minuti (contando 3600 secondi per minuto)
       Serial << ((epoch  % 3600) / 60);
@@ -414,7 +414,7 @@ void loop()
       // stampa i secondi
       Serial << epoch % 60 << "\n";
     }
-    
+
     // wait ten seconds before asking for the time again
     // attende 10 secondi prima di effettuare una nuova richiesta
     //delay(5000);
@@ -447,9 +447,9 @@ void loop()
 void printTime(int hour, int minute, int second) {
   int diff;
   boolean meno = false;
-  
+
   int pausaHour = hour;
-  
+
   //PAUSA
   //Mattino
   Serial.println(hour);
@@ -471,42 +471,42 @@ void printTime(int hour, int minute, int second) {
   else{
     generateWord(pausa, black);
   }
-  
+
   //Più o meno
   if(minute < 35){
     meno = false;
   }else{
     meno = true;
   }
-  
+
   if (hour == 12) {
-    if(minute < 35){
+    if(minute <= 35){
       generateWord(eAccentata, white);
       generateWord(mezzogiorno, white);
     }
-    if(minute >= 35){
+    if(minute > 35){
       generateWord(eAccentata, white);
       generateWord(mezzogiorno, black);
       generateWord(luna, white);
     }
     //time += "mezzogiorno ";
   } else if (hour == 0) {
-    if(minute < 35){
+    if(minute <= 35){
       generateWord(eAccentata, white);
       generateWord(mezzanotte, white);
     }
-    if(minute >= 35){
+    if(minute > 35){
       generateWord(mezzanotte, black);
       generateWord(luna, white);
       generateWord(eAccentata, white);
     }
     //time += "mezzanotte ";
   } else if(hour == 1 || hour == 13){
-    if (minute < 35) {
+    if (minute <= 35) {
       generateWord(eAccentata, white);
       generateWord(luna, white);
     }
-    if (minute >= 35) {
+    if (minute > 35) {
       generateWord(sono, white);
       generateWord(le, white);
       generateWord(eAccentata, black);
@@ -514,12 +514,12 @@ void printTime(int hour, int minute, int second) {
       generateWord(dueOre, white);
     }
   } else  if (hour == 2 || hour == 14) {
-    if (minute < 35) {
+    if (minute <= 35) {
       generateWord(sono, white);
       generateWord(le, white);
       generateWord(dueOre, white);
     }
-    if (minute >= 35) {
+    if (minute > 35) {
       generateWord(sono, white);
       generateWord(le, white);
       generateWord(dueOre, black);
@@ -528,12 +528,12 @@ void printTime(int hour, int minute, int second) {
     //time += "due ";
   } else if (hour == 3 || hour == 15) {
     //tre();
-    if (minute < 35) {
+    if (minute <= 35) {
       generateWord(treOre, white);
       generateWord(sono, white);
       generateWord(le, white);
     }
-    if (minute >= 35) {
+    if (minute > 35) {
       generateWord(sono, white);
       generateWord(le, white);
       generateWord(treOre, black);
@@ -544,12 +544,12 @@ void printTime(int hour, int minute, int second) {
     generateWord(quattroOre, white);
     generateWord(sono, white);
     generateWord(le, white);
-    if (minute < 35) {
+    if (minute <= 35) {
       generateWord(quattroOre, white);
       generateWord(sono, white);
       generateWord(le, white);
     }
-    if (minute >= 35) {
+    if (minute > 35) {
       generateWord(sono, white);
       generateWord(le, white);
       generateWord(quattroOre, black);
@@ -557,12 +557,12 @@ void printTime(int hour, int minute, int second) {
     }
     //time += "quattro ";
   } else if (hour == 5 || hour == 17) {
-    if (minute < 35) {
+    if (minute <= 35) {
       generateWord(cinqueOre, white);
       generateWord(sono, white);
       generateWord(le, white);
     }
-    if (minute >= 35) {
+    if (minute > 35) {
       generateWord(sono, white);
       generateWord(le, white);
       generateWord(cinqueOre, black);
@@ -570,12 +570,12 @@ void printTime(int hour, int minute, int second) {
     }
     //time += "cinque ";
   } else if (hour == 6 || hour == 18) {
-    if (minute < 35) {
+    if (minute <= 35) {
       generateWord(seiOre, white);
       generateWord(sono, white);
       generateWord(le, white);
     }
-    if (minute >= 35) {
+    if (minute > 35) {
       generateWord(sono, white);
       generateWord(le, white);
       generateWord(seiOre, black);
@@ -583,12 +583,12 @@ void printTime(int hour, int minute, int second) {
     }
     //time += "sei ";
   } else if (hour == 7 || hour == 19) {
-    if(minute < 35){
+    if(minute <= 35){
       generateWord(setteOre, white);
       generateWord(sono, white);
       generateWord(le, white);
     }
-    if (minute >= 35) {
+    if (minute > 35) {
       generateWord(sono, white);
       generateWord(le, white);
       generateWord(setteOre, black);
@@ -596,12 +596,12 @@ void printTime(int hour, int minute, int second) {
     }
     //time += "sette ";
   } else if (hour == 8 || hour == 20) {
-    if(minute < 35){
+    if(minute <= 35){
       generateWord(ottoOre, white);
       generateWord(sono, white);
       generateWord(le, white);
     }
-    if (minute >= 35) {
+    if (minute > 35) {
       generateWord(sono, white);
       generateWord(le, white);
       generateWord(ottoOre, black);
@@ -609,12 +609,12 @@ void printTime(int hour, int minute, int second) {
     }
     //time += "otto ";
   } else if (hour == 9 || hour == 21) {
-    if(minute < 35){
+    if(minute <= 35){
       generateWord(noveOre, white);
       generateWord(sono, white);
       generateWord(le, white);
     }
-    if (minute >= 35) {
+    if (minute > 35) {
       generateWord(sono, white);
       generateWord(le, white);
       generateWord(noveOre, black);
@@ -622,12 +622,12 @@ void printTime(int hour, int minute, int second) {
     }
     //time += "nove ";
   } else if (hour == 10 || hour == 22) {
-    if(minute < 35){
+    if(minute <= 35){
       generateWord(dieciOre, white);
       generateWord(sono, white);
       generateWord(le, white);
     }
-    if (minute >= 35) {
+    if (minute > 35) {
       generateWord(sono, white);
       generateWord(le, white);
       generateWord(dieciOre, black);
@@ -635,12 +635,12 @@ void printTime(int hour, int minute, int second) {
     }
     //time += "dieci ";
   } else if (hour == 11 || hour == 23) {
-    if(minute < 35){
+    if(minute <= 35){
       generateWord(sono, white);
       generateWord(le, white);
       generateWord(undiciOre, white);
     }
-    else if(minute >= 35){
+    else if(minute > 35){
       generateWord(sono, black);
       generateWord(le, black);
       generateWord(undiciOre, black);
@@ -654,13 +654,13 @@ void printTime(int hour, int minute, int second) {
     }
     //time += "undici ";
   }
-  
+
   //Illuminazione dei pallini
   diff = minute - int(minute / 10) * 10;
-  
+
   //Minuti
   if(meno == false) {
-    
+
     if(minute % 5 != 0){
       generateWord(piu, white);
       generateWord(menoSign, black);
@@ -668,13 +668,14 @@ void printTime(int hour, int minute, int second) {
     else{
       generateWord(simboliPiuPalliniMinuti, black);
     }
-    
+
     if(diff != 0 && diff != 5) {
       //+ on
       //genWord(20, 6, 6, on);
-      generateWord(primoMin, white);
-      generateWord(secondoTerzoQuartoMin, black);
-      
+      if(diff >= 1 && diff <= 4 || diff >= 6 && diff <= 9){
+        generateWord(primoMin, white);
+        generateWord(secondoTerzoQuartoMin, black);
+      }
       if (diff >= 2 && diff <= 4 || diff >= 7 && diff <= 9) {
         generateWord(primoSecondoMin, white);
         generateWord(terzoQuartoMin, black);
@@ -687,7 +688,7 @@ void printTime(int hour, int minute, int second) {
         generateWord(tuttiMin, white);
       }
     }
-    
+
     //e
     if (minute >= 5 && minute < 35) {
       generateWord(e, white);
@@ -695,7 +696,7 @@ void printTime(int hour, int minute, int second) {
     else{
       generateWord(e, black);
     }
-    
+
     if(minute < 5){
       //genWord(80, 0, 0, off);//Past off
       generateWord(e, black);
@@ -727,11 +728,11 @@ void printTime(int hour, int minute, int second) {
       generateWord(venticinqueMin, black);
     }
   }else{
-    
+
     if(minute < 55){
       generateWord(menoWord, white); //Meno
     }
-    
+
     if(minute % 5 != 0){
       if(minute < 55){
         generateWord(piu, white);
@@ -740,9 +741,9 @@ void printTime(int hour, int minute, int second) {
     else{
       generateWord(simboliPiuPalliniMinuti, black);
     }
-    
+
     if(diff != 0 && diff != 5) {
-      
+
       if (diff == 2 || diff == 7) {
         generateWord(primoSecondoTerzoMin, white);
         generateWord(quartoMin, black);
@@ -792,7 +793,7 @@ void printTime(int hour, int minute, int second) {
       generateWord(e, black);
     }
   }
-  
+
   //secondi
   if(second >= 0 && second <= 4){
     generateWord(sec1, black);
