@@ -87,7 +87,7 @@ int e[] = {6, 10, 10};
 int mezza[] = {7, 1, 5};
 int mezzanotte[] = {7, 1, 10};
 int cinqueMin[] = {8, 7, 12};
-int meno[] = {9, 1, 4};
+int menoWord[] = {9, 1, 4};
 int dieciMin[] = {10, 1, 5};
 int un[] = {10, 6, 7};
 int quarto[] = {10, 9, 14};
@@ -455,21 +455,21 @@ void printTime(int hour, int minute, int second) {
   Serial.println(hour);
   Serial.println(minute);
   if((pausaHour == 9 && minute >= 50) || (pausaHour == 10 && minute >= 0 && minute < 2)){
-    generateWord(pausa[], green);
+    generateWord(pausa, green);
   }
   else if(pausaHour == 10 && minute >= 2 && minute <= 4){
-    generateWord(pausa[], red);
+    generateWord(pausa, red);
   }
   //Pomeriggio
   else if(pausaHour == 14 && minute >= 45 && minute <= 56){
-    generateWord(pausa[], green);
+    generateWord(pausa, green);
   }
   else if(pausaHour == 14 && minute >= 57 && minute <= 59){
-    generateWord(pausa[], red);
+    generateWord(pausa, red);
   }
   //Non pausa
   else{
-    generateWord(pausa[], black);
+    generateWord(pausa, black);
   }
   
   //Più o meno
@@ -481,175 +481,175 @@ void printTime(int hour, int minute, int second) {
   
   if (hour == 12) {
     if(minute < 35){
-      generateWord(eAccentata[], white);
-      generateWord(mezzogiorno[], white);
+      generateWord(eAccentata, white);
+      generateWord(mezzogiorno, white);
     }
     if(minute >= 35){
-      generateWord(eAccentata[], white);
-      generateWord(mezzogiorno[], black);
-      generateWord(luna[], white);
+      generateWord(eAccentata, white);
+      generateWord(mezzogiorno, black);
+      generateWord(luna, white);
     }
     //time += "mezzogiorno ";
   } else if (hour == 0) {
     if(minute < 35){
-      generateWord(eAccentata[], white);
-      generateWord(mezzanotte[], white);
+      generateWord(eAccentata, white);
+      generateWord(mezzanotte, white);
     }
     if(minute >= 35){
-      generateWord(mezzanotte[], black);
-      generateWord(luna[], white);
-      generateWord(eAccentata[], white);
+      generateWord(mezzanotte, black);
+      generateWord(luna, white);
+      generateWord(eAccentata, white);
     }
     //time += "mezzanotte ";
   } else if(hour == 1 || hour == 13){
     if (minute < 35) {
-      generateWord(eAccentata[], white);
-      generateWord(luna[], white);
+      generateWord(eAccentata, white);
+      generateWord(luna, white);
     }
     if (minute >= 35) {
-      generateWord(sono[], white);
-      generateWord(le[], white);
-      generateWord(eAccentata[], black);
-      generateWord(luna[], black);
-      generateWord(dueOre[], white);
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(eAccentata, black);
+      generateWord(luna, black);
+      generateWord(dueOre, white);
     }
   } else  if (hour == 2 || hour == 14) {
     if (minute < 35) {
-      generateWord(sono[], white);
-      generateWord(le[], white);
-      generateWord(dueOre[], white);
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(dueOre, white);
     }
     if (minute >= 35) {
-      generateWord(sono[], white);
-      generateWord(le[], white);
-      generateWord(dueOre[], black);
-      generateWord(treOre[], white);
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(dueOre, black);
+      generateWord(treOre, white);
     }
     //time += "due ";
   } else if (hour == 3 || hour == 15) {
     //tre();
     if (minute < 35) {
-      generateWord(treOre[], white);
-      generateWord(sono[], white);
-      generateWord(le[], white);
+      generateWord(treOre, white);
+      generateWord(sono, white);
+      generateWord(le, white);
     }
     if (minute >= 35) {
-      generateWord(sono[], white);
-      generateWord(le[], white);
-      generateWord(treOre[], black);
-      generateWord(quattroOre[], white);
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(treOre, black);
+      generateWord(quattroOre, white);
     }
     //time += "tre ";
   } else if (hour == 4 || hour == 16) {
-    generateWord(quattroOre[], white);
-    generateWord(sono[], white);
-    generateWord(le[], white);
+    generateWord(quattroOre, white);
+    generateWord(sono, white);
+    generateWord(le, white);
     if (minute < 35) {
-      generateWord(quattroOre[], white);
-      generateWord(sono[], white);
-      generateWord(le[], white);
+      generateWord(quattroOre, white);
+      generateWord(sono, white);
+      generateWord(le, white);
     }
     if (minute >= 35) {
-      generateWord(sono[], white);
-      generateWord(le[], white);
-      generateWord(quattroOre[], black);
-      generateWord(cinqueOre[], white);
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(quattroOre, black);
+      generateWord(cinqueOre, white);
     }
     //time += "quattro ";
   } else if (hour == 5 || hour == 17) {
     if (minute < 35) {
-      generateWord(cinqueOre[], white);
-      generateWord(sono[], white);
-      generateWord(le[], white);
+      generateWord(cinqueOre, white);
+      generateWord(sono, white);
+      generateWord(le, white);
     }
     if (minute >= 35) {
-      generateWord(sono[], white);
-      generateWord(le[], white);
-      generateWord(cinqueOre[], black);
-      generateWord(seiOre[], white);
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(cinqueOre, black);
+      generateWord(seiOre, white);
     }
     //time += "cinque ";
   } else if (hour == 6 || hour == 18) {
     if (minute < 35) {
-      generateWord(seiOre[], white);
-      generateWord(sono[], white);
-      generateWord(le[], white);
+      generateWord(seiOre, white);
+      generateWord(sono, white);
+      generateWord(le, white);
     }
     if (minute >= 35) {
-      generateWord(sono[], white);
-      generateWord(le[], white);
-      generateWord(seiOre[], black);
-      generateWord(setteOre[], white);
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(seiOre, black);
+      generateWord(setteOre, white);
     }
     //time += "sei ";
   } else if (hour == 7 || hour == 19) {
     if(minute < 35){
-      generateWord(setteOre[], white);
-      generateWord(sono[], white);
-      generateWord(le[], white);
+      generateWord(setteOre, white);
+      generateWord(sono, white);
+      generateWord(le, white);
     }
     if (minute >= 35) {
-      generateWord(sono[], white);
-      generateWord(le[], white);
-      generateWord(setteOre[], black);
-      generateWord(ottoOre[], white);
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(setteOre, black);
+      generateWord(ottoOre, white);
     }
     //time += "sette ";
   } else if (hour == 8 || hour == 20) {
     if(minute < 35){
-      generateWord(ottoOre[], white);
-      generateWord(sono[], white);
-      generateWord(le[], white);
+      generateWord(ottoOre, white);
+      generateWord(sono, white);
+      generateWord(le, white);
     }
     if (minute >= 35) {
-      generateWord(sono[], white);
-      generateWord(le[], white);
-      generateWord(ottoOre[], black);
-      generateWord(noveOre[], white);
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(ottoOre, black);
+      generateWord(noveOre, white);
     }
     //time += "otto ";
   } else if (hour == 9 || hour == 21) {
     if(minute < 35){
-      generateWord(noveOre[], white);
-      generateWord(sono[], white);
-      generateWord(le[], white);
+      generateWord(noveOre, white);
+      generateWord(sono, white);
+      generateWord(le, white);
     }
     if (minute >= 35) {
-      generateWord(sono[], white);
-      generateWord(le[], white);
-      generateWord(noveOre[], black);
-      generateWord(dieciOre[], white);
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(noveOre, black);
+      generateWord(dieciOre, white);
     }
     //time += "nove ";
   } else if (hour == 10 || hour == 22) {
     if(minute < 35){
-      generateWord(dieciOre[], white);
-      generateWord(sono[], white);
-      generateWord(le[], white);
+      generateWord(dieciOre, white);
+      generateWord(sono, white);
+      generateWord(le, white);
     }
     if (minute >= 35) {
-      generateWord(sono[], white);
-      generateWord(le[], white);
-      generateWord(dieciOre[], black);
-      generateWord(undiciOre[], white);
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(dieciOre, black);
+      generateWord(undiciOre, white);
     }
     //time += "dieci ";
   } else if (hour == 11 || hour == 23) {
     if(minute < 35){
-      generateWord(sono[], white);
-      generateWord(le[], white);
-      generateWord(undiciOre[], white);
+      generateWord(sono, white);
+      generateWord(le, white);
+      generateWord(undiciOre, white);
     }
     else if(minute >= 35){
-      generateWord(sono[], black);
-      generateWord(le[], black);
-      generateWord(undiciOre[], black);
-      generateWord(eAccentata[], white);
+      generateWord(sono, black);
+      generateWord(le, black);
+      generateWord(undiciOre, black);
+      generateWord(eAccentata, white);
       if (hour == 11) {
-        generateWord(mezzogiorno[], white);
+        generateWord(mezzogiorno, white);
       }
       else if (hour == 23){
-        generateWord(mezzanotte[], white);
+        generateWord(mezzanotte, white);
       }
     }
     //time += "undici ";
@@ -662,258 +662,258 @@ void printTime(int hour, int minute, int second) {
   if(meno == false) {
     
     if(minute % 5 != 0){
-      generateWord(piu[], white);
-      generateWord(menoSign[], black);
+      generateWord(piu, white);
+      generateWord(menoSign, black);
     }
     else{
-      generateWord(simboliPiuPalliniMinuti[], black);
+      generateWord(simboliPiuPalliniMinuti, black);
     }
     
     if(diff != 0 && diff != 5) {
       //+ on
       //genWord(20, 6, 6, on);
-      generateWord(primoMin[], white);
-      generateWord(secondoTerzoQuartoMin[], black);
+      generateWord(primoMin, white);
+      generateWord(secondoTerzoQuartoMin, black);
       
       if (diff >= 2 && diff <= 4 || diff >= 7 && diff <= 9) {
-        generateWord(primoSecondoMin[], white);
-        generateWord(terzoQuartoMin[], black);
+        generateWord(primoSecondoMin, white);
+        generateWord(terzoQuartoMin, black);
       }
       if (diff >= 3 && diff <= 4 || diff >= 8 && diff <= 9) {
-        generateWord(primoSecondoTerzoMin[], white);
-        generateWord(quartoMin[], black);
+        generateWord(primoSecondoTerzoMin, white);
+        generateWord(quartoMin, black);
       }
       if (diff == 4 || diff == 9) {
-        generateWord(tuttiMin[], white);
+        generateWord(tuttiMin, white);
       }
     }
     
     //e
     if (minute >= 5 && minute < 35) {
-      generateWord(e[], white);
+      generateWord(e, white);
     }
     else{
-      generateWord(e[], black);
+      generateWord(e, black);
     }
     
     if(minute < 5){
       //genWord(80, 0, 0, off);//Past off
-      generateWord(e[], black);
+      generateWord(e, black);
     }else if(minute < 10){
       //genWord(90, 5, 10, on); //Five on
-      generateWord(cinqueMin[], white);
+      generateWord(cinqueMin, white);
     }else if (minute < 15){
       //genWord(100, 0, 4, on);
-      generateWord(dieciMin[], white);
-      generateWord(cinqueMin[], black);
+      generateWord(dieciMin, white);
+      generateWord(cinqueMin, black);
     }else if(minute < 20){
       //genWord(80, 2, 3, on);
       //genWord(80, 5, 10, on);
-      generateWord(un[], white);
-      generateWord(quarto[], white);
-      generateWord(dieciMin[], black);
+      generateWord(un, white);
+      generateWord(quarto, white);
+      generateWord(dieciMin, black);
     }else if(minute < 25){
       //genWord(90, 0, 4, on); //Twenty on
-      generateWord(un[], black);
-      generateWord(quarto[], black);
-      generateWord(ventiMin[], white);
+      generateWord(un, black);
+      generateWord(quarto, black);
+      generateWord(ventiMin, white);
     }else if(minute < 30){
       //genWord(90, 0, 10, on); //25 on
-      generateWord(venticinqueMin[], white);
-      generateWord(ventiMin[], black);
+      generateWord(venticinqueMin, white);
+      generateWord(ventiMin, black);
     }else{
       //genWord(100, 6, 10, on); //Half on
-      generateWord(mezza[], white);
-      generateWord(venticinqueMin[], black);
+      generateWord(mezza, white);
+      generateWord(venticinqueMin, black);
     }
   }else{
     
     if(minute < 55){
-      generateWord(meno[] , white); //Meno
+      generateWord(menoWord, white); //Meno
     }
     
     if(minute % 5 != 0){
       if(minute < 55){
-        generateWord(piu[], white);
+        generateWord(piu, white);
       }
     }
     else{
-      generateWord(simboliPiuPalliniMinuti[], black);
+      generateWord(simboliPiuPalliniMinuti, black);
     }
     
     if(diff != 0 && diff != 5) {
       
       if (diff == 2 || diff == 7) {
-        generateWord(primoSecondoTerzoMin[], white);
-        generateWord(quartoMin[], black);
+        generateWord(primoSecondoTerzoMin, white);
+        generateWord(quartoMin, black);
         if(minute > 55){
-          generateWord(meno[] , black);
+          generateWord(menoWord, black);
         }
       } else if (diff == 3 || diff == 8) {
-        generateWord(primoSecondoMin[], white);
-        generateWord(terzoQuartoMin[], black);
+        generateWord(primoSecondoMin, white);
+        generateWord(terzoQuartoMin, black);
         if(minute > 55){
-          generateWord(meno[] , black);
+          generateWord(menoWord, black);
         }
       } else if (diff == 4 || diff == 9) {
-        generateWord(primoMin[], white);
-        generateWord(secondoTerzoQuartoMin[], black);
+        generateWord(primoMin, white);
+        generateWord(secondoTerzoQuartoMin, black);
         if(minute > 55){
-          generateWord(meno[] , black);
+          generateWord(menoWord, black);
         }
       } else if (diff == 1 || diff == 6) {
-        generateWord(tuttiMin[], white);
+        generateWord(tuttiMin, white);
         if(minute > 55){
-          generateWord(meno[] , black);
+          generateWord(menoWord, black);
         }
       }
     }
     if(minute > 55){
-      generateWord(menoSign[], white);
-      generateWord(piu[], black);
-      generateWord(cinque[], black);
-      generateWord(meno[] , black);
+      generateWord(menoSign, white);
+      generateWord(piu, black);
+      generateWord(cinque, black);
+      generateWord(menoWord, black);
       //generateWord(12, 9, 14, white);
     }else if(minute > 50){
-      generateWord(cinque[], white);
-      generateWord(dieciMin[], black);
+      generateWord(cinque, white);
+      generateWord(dieciMin, black);
     }else if(minute > 45){
-      generateWord(dieciMin[], white);
-      generateWord(un[], black);
-      generateWord(quarto[], black);
+      generateWord(dieciMin, white);
+      generateWord(un, black);
+      generateWord(quarto, black);
     }else if(minute > 40){
-      generateWord(un[], white);
-      generateWord(quarto[], white);
-      generateWord(ventiMin[], black);
+      generateWord(un, white);
+      generateWord(quarto, white);
+      generateWord(ventiMin, black);
     }else if(minute >= 35){
-      generateWord(ventiMin[], white);
-      generateWord(venticinqueMin[], black);
-      generateWord(mezza[], black);
-      generateWord(e[], black);
+      generateWord(ventiMin, white);
+      generateWord(venticinqueMin, black);
+      generateWord(mezza, black);
+      generateWord(e, black);
     }
   }
   
   //secondi
   if(second >= 0 && second <= 4){
-    generateWord(sec1[], black);
-    generateWord(sec2[], black);
-    generateWord(sec3[], black);
-    generateWord(sec4[], black);
-    generateWord(sec5[], black);
-    generateWord(sec6[], black);
-    generateWord(sec7[], black);
-    generateWord(sec8[], black);
-    generateWord(sec9[], black);
-    generateWord(sec10[], black);
-    generateWord(sec11[], black);
-    generateWord(sec12[], black);
-    generateWord(sec1[], white);
+    generateWord(sec1, black);
+    generateWord(sec2, black);
+    generateWord(sec3, black);
+    generateWord(sec4, black);
+    generateWord(sec5, black);
+    generateWord(sec6, black);
+    generateWord(sec7, black);
+    generateWord(sec8, black);
+    generateWord(sec9, black);
+    generateWord(sec10, black);
+    generateWord(sec11, black);
+    generateWord(sec12, black);
+    generateWord(sec1, white);
   }
   else if(second >= 5 && second <= 9){
-    generateWord(sec1[], white);
-    generateWord(sec2[], white);
+    generateWord(sec1, white);
+    generateWord(sec2, white);
   }
   else if(second >= 10 && second <= 14){
-    generateWord(sec1[], white);
-    generateWord(sec2[], white);
-    generateWord(sec3[], white);
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
   }
   else if(second >= 15 && second <= 19){
-    generateWord(sec1[], white);
-    generateWord(sec2[], white);
-    generateWord(sec3[], white);
-    generateWord(sec4[], white);
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
   }
   else if(second >= 20 && second <= 24){
-    generateWord(sec1[], white);
-    generateWord(sec2[], white);
-    generateWord(sec3[], white);
-    generateWord(sec4[], white);
-    generateWord(sec5[], white);
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
+    generateWord(sec5, white);
   }
   else if(second >= 25 && second <= 29){
-    generateWord(sec1[], white);
-    generateWord(sec2[], white);
-    generateWord(sec3[], white);
-    generateWord(sec4[], white);
-    generateWord(sec5[], white);
-    generateWord(sec6[], white);
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
+    generateWord(sec5, white);
+    generateWord(sec6, white);
   }
   else if(second >= 30 && second <= 34){
-    generateWord(sec1[], white);
-    generateWord(sec2[], white);
-    generateWord(sec3[], white);
-    generateWord(sec4[], white);
-    generateWord(sec5[], white);
-    generateWord(sec6[], white);
-    generateWord(sec7[], white);
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
+    generateWord(sec5, white);
+    generateWord(sec6, white);
+    generateWord(sec7, white);
   }
   else if(second >= 35 && second <= 39){
-    generateWord(sec1[], white);
-    generateWord(sec2[], white);
-    generateWord(sec3[], white);
-    generateWord(sec4[], white);
-    generateWord(sec5[], white);
-    generateWord(sec6[], white);
-    generateWord(sec7[], white);
-    generateWord(sec8[], white);
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
+    generateWord(sec5, white);
+    generateWord(sec6, white);
+    generateWord(sec7, white);
+    generateWord(sec8, white);
   }
   else if(second >= 40 && second <= 44){
-    generateWord(sec1[], white);
-    generateWord(sec2[], white);
-    generateWord(sec3[], white);
-    generateWord(sec4[], white);
-    generateWord(sec5[], white);
-    generateWord(sec6[], white);
-    generateWord(sec7[], white);
-    generateWord(sec8[], white);
-    generateWord(sec9[], white);
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
+    generateWord(sec5, white);
+    generateWord(sec6, white);
+    generateWord(sec7, white);
+    generateWord(sec8, white);
+    generateWord(sec9, white);
   }
   else if(second >= 45 && second <= 49){
-    generateWord(sec1[], white);
-    generateWord(sec2[], white);
-    generateWord(sec3[], white);
-    generateWord(sec4[], white);
-    generateWord(sec5[], white);
-    generateWord(sec6[], white);
-    generateWord(sec7[], white);
-    generateWord(sec8[], white);
-    generateWord(sec9[], white);
-    generateWord(sec10[], white);
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
+    generateWord(sec5, white);
+    generateWord(sec6, white);
+    generateWord(sec7, white);
+    generateWord(sec8, white);
+    generateWord(sec9, white);
+    generateWord(sec10, white);
   }
   else if(second >= 50 && second <= 54){
-    generateWord(sec1[], white);
-    generateWord(sec2[], white);
-    generateWord(sec3[], white);
-    generateWord(sec4[], white);
-    generateWord(sec5[], white);
-    generateWord(sec6[], white);
-    generateWord(sec7[], white);
-    generateWord(sec8[], white);
-    generateWord(sec9[], white);
-    generateWord(sec10[], white);
-    generateWord(sec11[], white);
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
+    generateWord(sec5, white);
+    generateWord(sec6, white);
+    generateWord(sec7, white);
+    generateWord(sec8, white);
+    generateWord(sec9, white);
+    generateWord(sec10, white);
+    generateWord(sec11, white);
   }
   else if(second >= 55 && second <= 59){
-    generateWord(sec1[], white);
-    generateWord(sec2[], white);
-    generateWord(sec3[], white);
-    generateWord(sec4[], white);
-    generateWord(sec5[], white);
-    generateWord(sec6[], white);
-    generateWord(sec7[], white);
-    generateWord(sec8[], white);
-    generateWord(sec9[], white);
-    generateWord(sec10[], white);
-    generateWord(sec11[], white);
-    generateWord(sec12[], white);
+    generateWord(sec1, white);
+    generateWord(sec2, white);
+    generateWord(sec3, white);
+    generateWord(sec4, white);
+    generateWord(sec5, white);
+    generateWord(sec6, white);
+    generateWord(sec7, white);
+    generateWord(sec8, white);
+    generateWord(sec9, white);
+    generateWord(sec10, white);
+    generateWord(sec11, white);
+    generateWord(sec12, white);
   }
 }
 void pixelOn(int pixel, uint32_t color) {
   strip.setPixelColor(pixel, color);
   strip.show();
 }
-void generateWord(int[] word, uint32_t color) {
+void generateWord(int word[], uint32_t color) {
   if(word[1] == 0 && word[2] == 0){
     for (int i = word[1]; i <= (word[2] - word[1]); i++) {
       pixelOn(pixels[word[0]][i], color);
