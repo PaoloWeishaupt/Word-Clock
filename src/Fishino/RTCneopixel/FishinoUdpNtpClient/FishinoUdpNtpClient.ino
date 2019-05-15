@@ -913,15 +913,15 @@ void pixelOn(int pixel, uint32_t color) {
   strip.setPixelColor(pixel, color);
   strip.show();
 }
-void generateWord(int row, int min, int max, uint32_t color) {
-  if(min == 0 && max == 0){
-    for (int i = min; i <= (max - min); i++) {
-      pixelOn(pixels[row][i], color);
+void generateWord(int[] word row, int min, int max, uint32_t color) {
+  if(word[1] == 0 && word[2] == 0){
+    for (int i = word[1]; i <= (word[2] - word[1]); i++) {
+      pixelOn(pixels[word[0]][i], color);
     }
   }
   else{
-    for (int i = min; i <= max; i++) {
-      pixelOn(pixels[row][i], color);
+    for (int i = word[1]; i <= word[2]; i++) {
+      pixelOn(pixels[word[0]][i], color);
     }
   }
 }
