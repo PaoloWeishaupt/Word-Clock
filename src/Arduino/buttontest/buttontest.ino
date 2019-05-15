@@ -27,9 +27,13 @@ int hourUnit = 0;
 int hourTen = 0;
 int minuteUnit = 0;
 int minuteTen = 0;
+// Hour and minute to set up
+int confirmedHour = 0;
+int confirmedMinute = 0;
 
 void setup()
 {
+  Serial.begin(115200);
   // Segments pins to output
   pinMode(a, OUTPUT);
   pinMode(b, OUTPUT);
@@ -61,7 +65,7 @@ void loop()
   // Wait a button click for the increment
   waitIncrement();
   // Wait the confirm
-  waitConfirm();
+  waitConfirm(5000);
 }
 
 void waitIncrement()
@@ -70,12 +74,15 @@ void waitIncrement()
   incrementMinute();
 }
 
-void waitConfirm()
+void waitConfirm(long waitTime)
 {
   confirmButtonState = digitalRead(confirmButton);
   if (confirmButtonState != lastConfirmButtonState && confirmButtonState)
   {
-    // TO DO
+    // Set the time
+    confirmedHour = hourTen * 10 + hourUnit;
+    confirmedMinute = minuteTen * 10 + minuteUnit;
+    Serial.println(String(confirmedHour) + ":" + String(confirmedMinute));
   }
   lastConfirmButtonState = confirmButtonState;
 }
