@@ -439,12 +439,10 @@ void printTime(int hour, int minute, int second)
     }
     else if (minute == 35)
     {
-      generateWord(6, 10, 10, white);
       generateWord(8, 1, 12, white);
     }
     if (minute > 35)
     {
-      generateWord(6, 10, 10, black);
       generateWord(8, 1, 12, black);
       generateWord(1, 1, 1, white);
       generateWord(2, 1, 11, black);
@@ -707,7 +705,7 @@ void printTime(int hour, int minute, int second)
     }
 
     //e
-    if (minute >= 5 && minute < 35)
+    if (minute >= 5 && minute <= 35)
     {
       generateWord(6, 10, 10, white);
     }
@@ -716,12 +714,7 @@ void printTime(int hour, int minute, int second)
       generateWord(6, 10, 10, black);
     }
 
-    if (minute < 5)
-    {
-      //genWord(80, 0, 0, off);//Past off
-      generateWord(6, 10, 10, black);
-    }
-    else if (minute < 10)
+    if (minute >= 5 && minute < 10)
     {
       //genWord(90, 5, 10, on); //Five on
       generateWord(8, 7, 12, white);
@@ -855,7 +848,6 @@ void printTime(int hour, int minute, int second)
       }
       generateWord(12, 4, 14, black);
       generateWord(7, 1, 5, black);
-      generateWord(6, 10, 10, black);
     }
   }
 
