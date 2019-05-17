@@ -272,7 +272,7 @@ Serial.println("RTC non è in funzione!");
 // Se vuoi un orario personalizzato, togli il commento alla riga successiva
 // l'orario: ANNO, MESE, GIORNI, ORA, MINUTI, SECONDI
 }
-rtc.adjust(DateTime(2014, 1, 12, 11, 59, 40));
+rtc.adjust(DateTime(2014, 1, 12, 12, 34, 40));
 //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 }
 
@@ -427,11 +427,17 @@ void printTime(int hour, int minute, int second) {
   }
 
     if (hour == 12) {
-     if(minute <= 35){
+     if(minute < 35){
        generateWord(1, 1, 1, white);
        generateWord(2, 1, 11, white);
      }
+     else if(minute == 35){
+       generateWord(6, 10, 10, white);
+       generateWord(8, 1, 12, white);
+     }
      if(minute > 35){
+       generateWord(6, 10, 10, black);
+       generateWord(8, 1, 12, black);
        generateWord(1, 1, 1, white);
        generateWord(2, 1, 11, black);
        generateWord(1, 10, 14, white);
@@ -675,7 +681,9 @@ void printTime(int hour, int minute, int second) {
   }else{
 
     if(minute < 55){
-      generateWord(9, 1, 4, white); //Meno
+      if(minute != 35){
+        generateWord(9, 1, 4, white); //Meno
+      }
     }
 
     if(minute % 5 != 0){
@@ -732,7 +740,9 @@ void printTime(int hour, int minute, int second) {
       generateWord(10, 9, 14, white);
       generateWord(11, 1, 5, black);
     }else if(minute >= 35){
-      generateWord(11, 1, 5, white);
+      if(minute != 35){
+        generateWord(11, 1, 5, white);
+      }
       generateWord(12, 4, 14, black);
       generateWord(7, 1, 5, black);
       generateWord(6, 10, 10, black);
