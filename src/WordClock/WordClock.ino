@@ -51,6 +51,9 @@ int hour = 0;
 int minute = 0;
 int second = 0;
 
+// Se si deve usare la parola "meno" cambiano le parole sul word clock
+bool meno = false;
+
 // Definizione network
 #ifndef __MY_NETWORK_H
 // SSID della rete WiFi
@@ -342,14 +345,6 @@ void setWordClock()
 }
 
 /*
-Accendo "pausa" del colore passato
-*/
-void pausa(uint32_t color)
-{
-  generateWord(0, 8, 12, color);
-}
-
-/*
 Stampa della parola "pausa" sul word clock
 */
 void printBreak(int hour, int minute)
@@ -377,6 +372,233 @@ void printBreak(int hour, int minute)
   }
   // Imposto la parola
   pausa(color);
+}
+
+/*
+Accendo "pausa" del colore passato
+*/
+void pausa(uint32_t color)
+{
+  generateWord(0, 8, 12, color);
+}
+
+/*
+Accendo "è" del colore passato
+*/
+void egrave(uint32_t color)
+{
+  generateWord(1, 1, 1, color);
+}
+
+/*
+Accendo "sono le" del colore passato
+*/
+void sonoLe(uint32_t color)
+{
+  generateWord(1, 2, 5, color);
+  generateWord(1, 7, 8, color);
+}
+
+/*
+Accendo "l'una" del colore passato
+*/
+void una(uint32_t color)
+{
+  generateWord(1, 10, 14, color);
+}
+
+/*
+Accendo "mezzogiorno" del colore passato
+*/
+void mezzogiorno(uint32_t color)
+{
+  generateWord(2, 1, 11, color);
+}
+
+/*
+Accendo "due" del colore passato
+*/
+void due(uint32_t color)
+{
+  generateWord(2, 12, 14, color);
+}
+
+/*
+Accendo "tre" del colore passato
+*/
+void tre(uint32_t color)
+{
+  generateWord(3, 1, 3, color);
+}
+
+/*
+Accendo "quattro" del colore passato
+*/
+void quattro(uint32_t color)
+{
+  generateWord(3, 5, 11, color);
+}
+
+/*
+Accendo "cinque" del colore passato
+*/
+void cinque(uint32_t color)
+{
+  // Decido se accendere il "cinque" dopo il meno o viceversa
+  if (meno)
+  {
+    generateWord(9, 9, 14, color);
+    generateWord(4, 1, 6, black);
+  }
+  else
+  {
+    generateWord(9, 9, 14, black);
+    generateWord(4, 1, 6, color);
+  }
+}
+
+/*
+Accendo "sei" del colore passato
+*/
+void sei(uint32_t color)
+{
+  generateWord(3, 12, 14, color);
+}
+
+/*
+Accendo "sette" del colore passato
+*/
+void sette(uint32_t color)
+{
+  generateWord(4, 10, 14, color);
+}
+
+/*
+Accendo "otto" del colore passato
+*/
+void otto(uint32_t color)
+{
+  generateWord(5, 1, 4, color);
+}
+
+/*
+Accendo "nove" del colore passato
+*/
+void nove(uint32_t color)
+{
+  generateWord(5, 5, 8, color);
+}
+
+/*
+Accendo "dieci" del colore passato
+*/
+void dieci(uint32_t color)
+{
+  // Decido se accendere il "dieci" dopo il meno o viceversa
+  if (meno)
+  {
+    generateWord(5, 10, 14, black);
+    generateWord(10, 1, 5, color);
+  }
+  else
+  {
+    generateWord(5, 10, 14, color);
+    generateWord(10, 1, 5, black);
+  }
+}
+
+/*
+Accendo "undici" del colore passato
+*/
+void undici(uint32_t color)
+{
+  generateWord(6, 1, 6, color);
+}
+
+/*
+Accendo "undici" del colore passato
+*/
+void undici(uint32_t color)
+{
+  generateWord(6, 1, 6, color);
+}
+
+/*
+Accendo "e" del colore passato
+*/
+void e(uint32_t color)
+{
+  generateWord(6, 10, 10, color);
+}
+
+/*
+Accendo "mezzanotte" del colore passato
+*/
+void mezzanotte(uint32_t color)
+{
+  generateWord(7, 1, 10, color);
+}
+
+/*
+Accendo "trentacinque" del colore passato
+*/
+void trentacinque(uint32_t color)
+{
+  generateWord(8, 1, 12, color);
+}
+
+/*
+Accendo "meno" del colore passato
+*/
+void meno(uint32_t color)
+{
+  generateWord(9, 1, 4, color);
+  meno = true;
+}
+
+/*
+Accendo "un quarto" del colore passato
+*/
+void unQuarto(uint32_t color)
+{
+  generateWord(10, 6, 7, color);
+  generateWord(10, 9, 14, color);
+}
+
+/*
+Accendo "venti" del colore passato
+*/
+void venti(uint32_t color)
+{
+  generateWord(11, 1, 5, color);
+}
+
+/*
+Accendo "e mezza" del colore passato
+*/
+void eMezza(uint32_t color)
+{
+  generateWord(11, 1, 5, color);
+  generateWord(11, 1, 5, color);
+}
+
+/*
+Accendo "venticinque" del colore passato
+*/
+void venticinque(uint32_t color)
+{
+  generateWord(12, 4, 14, color);
+}
+
+/*
+Spengo tutti i led del word clock
+*/
+void turnAllOff()
+{
+  for (int i = 0; i < strip.numPixels(); i++)
+  {
+    pixelOn(i, black);
+  }
 }
 
 /*
