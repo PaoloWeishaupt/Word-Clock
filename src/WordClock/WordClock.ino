@@ -95,6 +95,105 @@ byte packetBuffer[NTP_PACKET_SIZE];
 FishinoUDP Udp;
 
 /*
+Setup del sistema
+*/
+void setup()
+{
+  // Delay all'orario corrente per fargli fare subito la prima richiesta
+  delayUDP = millis();
+  // Delay dei led a 1 secondo
+  delayPixels = millis() + 1000;
+  // Inizializza la porta seriale e ne attende l'apertura
+  Serial.begin(115200);
+  // Riavvia e testa il modulo WiFi
+  while (!Fishino.reset())
+  {
+    Serial << F("Fishino RESET FAILED, RETRYING...\n");
+  }
+  Serial << F("Fishino WiFi RESET OK\n");
+  // Imposta la modalità stazione (default per una connessione WiFi)
+  Fishino.setMode(STATION_MODE);
+  // Tenta la connessione finchè non riesce
+  Serial << F("Connessione al AP...");
+  while (!Fishino.begin(MY_SSID, MY_PASS))
+  {
+    Serial << ".";
+    delay(2000);
+  }
+  Serial << "OK\n";
+// Imposta l'IP statico oppure avvia il client DHCP
+#ifdef IPADDR
+  Fishino.config(ip, gw, nm);
+#else
+  Fishino.staStartDHCP();
+#endif
+
+  // Aspetta finché non c'è una connessione stabile
+  Serial << F("Aspettando un IP...");
+  while (Fishino.status() != STATION_GOT_IP)
+  {
+    Serial << ".";
+    delay(500);
+  }
+  Serial << "OK\n";
+  // Stampa lo stato della connessione sulla porta seriale
+  printWifiStatus();
+  // Inizia la connessione con il server e ascolta i pacchetti
+  Serial << F("Inizio connessione al server...\n");
+  Udp.begin(localPort);
+  // Inizializzazione della striscia di led
+  strip.begin();
+  strip.setBrightness(255);
+  strip.show();
+  // Impostazione del RTC
+  if (!rtc.begin())
+  {
+    Serial.println("Impossibile trovare RTC");
+    while (1)
+      ;
+  }
+  // Verifica funzionamento RTC
+  // Inserisce l'orario del computer durante la compilazione
+  else if (!rtc.isrunning())
+  {
+    Serial.println("RTC non è in funzione!");
+  }
+  else
+  {
+    // Se vuoi un orario personalizzato, togli il commento alla riga successiva
+    // l'orario: ANNO, MESE, GIORNI, ORA, MINUTI, SECONDI
+    //rtc.adjust(DateTime(2014, 1, 12, 0, 59, 40));
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  }
+}
+
+/*
+Esecuzione del sistema
+*/
+void loop()
+{
+  // Controllo la richiesta iniziale
+  if (millis() > delayUDP)
+  {
+    // Invio richiesta pacchetto
+    sendRequest(1000);
+    while (Udp.parsePacket())
+    {
+      // Stampo il tempo iniziale
+      unsigned long secsSince1900 = getPacket();
+      setInitialTime(secsSince1900);
+    }
+    // Attende prima di effettuare una nuova richiesta
+    delayUDP = millis() + 300000;
+  }
+  else
+  {
+    // Stampo l'orario sul word clock
+    setWordClock();
+  }
+}
+
+/*
 Stampa lo stato della connessione WiFi
 */
 void printWifiStatus()
@@ -140,77 +239,6 @@ void sendNTPpacket(IPAddress &address)
   Udp.write(packetBuffer, NTP_PACKET_SIZE);
   // Termina e invia il pacchetto
   Udp.endPacket();
-}
-
-/*
-Setup del sistema
-*/
-void setup()
-{
-  // Delay all'orario corrente per fargli fare subito la prima richiesta
-  delayUDP = millis();
-  // Delay dei led a 1 secondo
-  delayPixels = millis() + 1000;
-  // Inizializza la porta seriale e ne attende l'apertura
-  Serial.begin(115200);
-  // Riavvia e testa il modulo WiFi
-  while (!Fishino.reset())
-    Serial << F("Fishino RESET FAILED, RETRYING...\n");
-  Serial << F("Fishino WiFi RESET OK\n");
-  // Imposta la modalità stazione (default per una connessione WiFi)
-  Fishino.setMode(STATION_MODE);
-  // Tenta la connessione finchè non riesce
-  Serial << F("Connessione al AP...");
-  while (!Fishino.begin(MY_SSID, MY_PASS))
-  {
-    Serial << ".";
-    delay(2000);
-  }
-  Serial << "OK\n";
-// Imposta l'IP statico oppure avvia il client DHCP
-#ifdef IPADDR
-  Fishino.config(ip, gw, nm);
-#else
-  Fishino.staStartDHCP();
-#endif
-
-  // Aspetta finché non c'è una connessione stabile
-  Serial << F("Aspettando un IP...");
-  while (Fishino.status() != STATION_GOT_IP)
-  {
-    Serial << ".";
-    delay(500);
-  }
-  Serial << "OK\n";
-  // Stampa lo stato della connessione sulla porta seriale
-  printWifiStatus();
-  // Inizia la connessione con il server e ascolta i pacchetti
-  Serial << F("Inizio connessione al server...\n");
-  Udp.begin(localPort);
-  // Inizializzazione della striscia di led
-  strip.begin();
-  strip.setBrightness(255);
-  strip.show();
-  // Impostazione del RTC
-  if (!rtc.begin())
-  {
-    Serial.println("Impossibile trovare RTC");
-    while (1)
-      ;
-  }
-  // Verifica funzionamento RTC
-  // Inserisce l'orario del computer durante la compilazione
-  if (!rtc.isrunning())
-  {
-    Serial.println("RTC non è in funzione!");
-  }
-  else
-  {
-    // Se vuoi un orario personalizzato, togli il commento alla riga successiva
-    // l'orario: ANNO, MESE, GIORNI, ORA, MINUTI, SECONDI
-    //rtc.adjust(DateTime(2014, 1, 12, 0, 59, 40));
-    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-  }
 }
 
 /*
@@ -314,99 +342,53 @@ void setWordClock()
 }
 
 /*
-Esecuzione del sistema
+Accendo "pausa" del colore passato
 */
-void loop()
+void pausa(uint32_t color)
 {
-  // Controllo la richiesta iniziale
-  if (millis() > delayUDP)
-  {
-    // Invio richiesta pacchetto
-    sendRequest(1000);
-    while (Udp.parsePacket())
-    {
-      // Stampo il tempo iniziale
-      unsigned long secsSince1900 = getPacket();
-      setInitialTime(secsSince1900);
-    }
-    // Attende prima di effettuare una nuova richiesta
-    delayUDP = millis() + 300000;
-  }
-  else
-  {
-    // Stampo l'orario sul word clock
-    setWordClock();
-  }
+  generateWord(0, 8, 12, color);
 }
 
+/*
+Stampa della parola "pausa" sul word clock
+*/
+void printBreak(int hour, int minute)
+{
+  uint32_t color = black;
+  // Pausa OK (9:50 - 10:01 / 14:45 - 14:56)
+  if (
+      (hour == 9 && minute >= 50) ||
+      (hour == 10 && minute >= 0 && minute < 2) ||
+      (hour == 14 && minute >= 45 && minute < 57))
+  {
+    color = green;
+  }
+  // Pausa sta per finire (10:02 - 10:05 / 14:57 - 15:00)
+  else if (
+      (hour == 10 && minute >= 2 && minute < 5) ||
+      (hour == 14 && minute >= 57 && minute <= 59))
+  {
+    color = red;
+  }
+  // Pausa non c'è, led spenti
+  else
+  {
+    color = black;
+  }
+  // Imposto la parola
+  pausa(color);
+}
+
+/*
+Metodo che accende i led del word clock in base all'orario passato
+*/
 void printTime(int hour, int minute, int second)
 {
-  int diff;
-  boolean meno = false;
-
-  int pausaHour = hour;
-
-  //PAUSA
-  //Mattino
-  Serial.println(hour);
-  Serial.println(minute);
-  if ((pausaHour == 9 && minute >= 50) || (pausaHour == 10 && minute >= 0 && minute < 2))
+  printBreak(hour, minute);
+  // Casi dell'ora corrente
+  switch (hour)
   {
-    generateWord(0, 8, 12, green);
-  }
-  else if (pausaHour == 10 && minute >= 2 && minute <= 4)
-  {
-    generateWord(0, 8, 12, red);
-  }
-  //Pomeriggio
-  else if (pausaHour == 14 && minute >= 45 && minute <= 56)
-  {
-    generateWord(0, 8, 12, green);
-  }
-  else if (pausaHour == 14 && minute >= 57 && minute <= 59)
-  {
-    generateWord(0, 8, 12, red);
-  }
-  //Non pausa
-  else
-  {
-    generateWord(0, 8, 12, black);
-  }
-
-  //Più o meno
-  if (minute < 35)
-  {
-    meno = false;
-  }
-  else
-  {
-    meno = true;
-  }
-
-  if (hour == 12)
-  {
-    if (minute < 35)
-    {
-      generateWord(1, 1, 1, white);
-      generateWord(2, 1, 11, white);
-    }
-    else if (minute == 35)
-    {
-      generateWord(1, 1, 1, white);
-      generateWord(2, 1, 11, white);
-      generateWord(8, 1, 12, white);
-    }
-    if (minute > 35)
-    {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 1, 1, white);
-      generateWord(2, 1, 11, black);
-      generateWord(1, 10, 14, white);
-    }
-    //time += "mezzogiorno ";
-  }
-  else if (hour == 0)
-  {
+  case 0:
     if (minute < 35)
     {
       generateWord(1, 1, 1, white);
@@ -425,10 +407,31 @@ void printTime(int hour, int minute, int second)
       generateWord(1, 10, 14, white);
       generateWord(1, 1, 1, white);
     }
-    //time += "mezzanotte ";
-  }
-  else if (hour == 1 || hour == 13)
-  {
+    break;
+
+  case 12:
+    if (minute < 35)
+    {
+      generateWord(1, 1, 1, white);
+      generateWord(2, 1, 11, white);
+    }
+    else if (minute == 35)
+    {
+      generateWord(1, 1, 1, white);
+      generateWord(2, 1, 11, white);
+      generateWord(8, 1, 12, white);
+    }
+    if (minute > 35)
+    {
+      generateWord(8, 1, 12, black);
+      generateWord(1, 1, 1, white);
+      generateWord(2, 1, 11, black);
+      generateWord(1, 10, 14, white);
+    }
+    break;
+
+  case 1:
+  case 13:
     if (minute < 35)
     {
       generateWord(1, 1, 1, white);
@@ -449,9 +452,10 @@ void printTime(int hour, int minute, int second)
       generateWord(1, 10, 14, black);
       generateWord(2, 12, 14, white);
     }
-  }
-  else if (hour == 2 || hour == 14)
-  {
+    break;
+
+  case 2:
+  case 14:
     if (minute < 35)
     {
       generateWord(1, 2, 5, white);
@@ -473,11 +477,10 @@ void printTime(int hour, int minute, int second)
       generateWord(2, 12, 14, black);
       generateWord(3, 1, 3, white);
     }
-    //time += "due ";
-  }
-  else if (hour == 3 || hour == 15)
-  {
-    //tre();
+    break;
+
+  case 3:
+  case 15:
     if (minute < 35)
     {
       generateWord(3, 1, 3, white);
@@ -499,10 +502,10 @@ void printTime(int hour, int minute, int second)
       generateWord(3, 1, 3, black);
       generateWord(3, 5, 11, white);
     }
-    //time += "tre ";
-  }
-  else if (hour == 4 || hour == 16)
-  {
+    break;
+
+  case 4:
+  case 16:
     generateWord(3, 5, 11, white);
     generateWord(1, 2, 5, white);
     generateWord(1, 7, 8, white);
@@ -527,10 +530,10 @@ void printTime(int hour, int minute, int second)
       generateWord(3, 5, 11, black);
       generateWord(4, 1, 6, white);
     }
-    //time += "quattro ";
-  }
-  else if (hour == 5 || hour == 17)
-  {
+    break;
+
+  case 5:
+  case 17:
     if (minute < 35)
     {
       generateWord(4, 1, 6, white);
@@ -552,10 +555,10 @@ void printTime(int hour, int minute, int second)
       generateWord(4, 1, 6, black);
       generateWord(3, 12, 14, white);
     }
-    //time += "cinque ";
-  }
-  else if (hour == 6 || hour == 18)
-  {
+    break;
+
+  case 6:
+  case 18:
     if (minute < 35)
     {
       generateWord(3, 12, 14, white);
@@ -577,10 +580,10 @@ void printTime(int hour, int minute, int second)
       generateWord(3, 12, 14, black);
       generateWord(4, 10, 14, white);
     }
-    //time += "sei ";
-  }
-  else if (hour == 7 || hour == 19)
-  {
+    break;
+
+  case 7:
+  case 19:
     if (minute < 35)
     {
       generateWord(4, 10, 14, white);
@@ -602,10 +605,10 @@ void printTime(int hour, int minute, int second)
       generateWord(4, 10, 14, black);
       generateWord(5, 1, 4, white);
     }
-    //time += "sette ";
-  }
-  else if (hour == 8 || hour == 20)
-  {
+    break;
+
+  case 8:
+  case 20:
     if (minute < 35)
     {
       generateWord(5, 1, 4, white);
@@ -627,10 +630,10 @@ void printTime(int hour, int minute, int second)
       generateWord(5, 1, 4, black);
       generateWord(5, 5, 8, white);
     }
-    //time += "otto ";
-  }
-  else if (hour == 9 || hour == 21)
-  {
+    break;
+
+  case 9:
+  case 21:
     if (minute < 35)
     {
       generateWord(5, 5, 8, white);
@@ -652,10 +655,10 @@ void printTime(int hour, int minute, int second)
       generateWord(5, 5, 8, black);
       generateWord(5, 10, 14, white);
     }
-    //time += "nove ";
-  }
-  else if (hour == 10 || hour == 22)
-  {
+    break;
+
+  case 10:
+  case 22:
     if (minute < 35)
     {
       generateWord(5, 10, 14, white);
@@ -677,10 +680,10 @@ void printTime(int hour, int minute, int second)
       generateWord(5, 10, 14, black);
       generateWord(6, 1, 6, white);
     }
-    //time += "dieci ";
-  }
-  else if (hour == 11 || hour == 23)
-  {
+    break;
+
+  case 11:
+  case 23:
     if (minute < 35)
     {
       generateWord(1, 2, 5, white);
@@ -709,8 +712,12 @@ void printTime(int hour, int minute, int second)
       {
         generateWord(7, 1, 10, white);
       }
+      break;
+
+    default:
+
+      break;
     }
-    //time += "undici ";
   }
 
   //e
@@ -724,10 +731,10 @@ void printTime(int hour, int minute, int second)
   }
 
   //Illuminazione dei pallini
-  diff = minute - int(minute / 10) * 10;
+  int diff = minute - int(minute / 10) * 10;
 
   //Minuti
-  if (meno == false)
+  if (minute < 35)
   {
 
     if (minute % 5 != 0)
