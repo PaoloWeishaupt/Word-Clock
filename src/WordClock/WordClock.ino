@@ -544,6 +544,7 @@ Accendo "trentacinque" del colore passato
 */
 void trentacinque(uint32_t color)
 {
+  e(color);
   generateWord(8, 1, 12, color);
 }
 
@@ -606,353 +607,246 @@ Metodo che accende i led del word clock in base all'orario passato
 */
 void printTime(int hour, int minute, int second)
 {
+  // Stampo "pausa"
   printBreak(hour, minute);
-  // Casi dell'ora corrente
+  // Casi dell'ora
   switch (hour)
   {
   case 0:
-    if (minute < 35)
+    egrave(white);
+    mezzanotte(white);
+    if (minute == 35)
     {
-      generateWord(1, 1, 1, white);
-      generateWord(7, 1, 10, white);
+      trentacinque(white);
     }
-    else if (minute == 35)
+    else if (minute > 35)
     {
-      generateWord(1, 1, 1, white);
-      generateWord(7, 1, 10, white);
-      generateWord(8, 1, 12, white);
-    }
-    if (minute > 35)
-    {
-      generateWord(8, 1, 12, black);
-      generateWord(7, 1, 10, black);
-      generateWord(1, 10, 14, white);
-      generateWord(1, 1, 1, white);
+      // L'una
+      turnAllOff();
+      egrave(white);
+      una(white);
     }
     break;
 
   case 12:
-    if (minute < 35)
+    egrave(white);
+    mezzogiorno(white);
+    if (minute == 35)
     {
-      generateWord(1, 1, 1, white);
-      generateWord(2, 1, 11, white);
+      trentacinque(white);
     }
-    else if (minute == 35)
+    else if (minute > 35)
     {
-      generateWord(1, 1, 1, white);
-      generateWord(2, 1, 11, white);
-      generateWord(8, 1, 12, white);
-    }
-    if (minute > 35)
-    {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 1, 1, white);
-      generateWord(2, 1, 11, black);
-      generateWord(1, 10, 14, white);
+      // L'una
+      turnAllOff();
+      egrave(white);
+      una(white);
     }
     break;
 
   case 1:
   case 13:
-    if (minute < 35)
+    egrave(white);
+    una(white);
+    if (minute == 35)
     {
-      generateWord(1, 1, 1, white);
-      generateWord(1, 10, 14, white);
+      trentacinque(white);
     }
-    else if (minute == 35)
+    else if (minute > 35)
     {
-      generateWord(1, 1, 1, white);
-      generateWord(1, 10, 14, white);
-      generateWord(8, 1, 12, white);
-    }
-    if (minute > 35)
-    {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(1, 1, 1, black);
-      generateWord(1, 10, 14, black);
-      generateWord(2, 12, 14, white);
+      // Due
+      turnAllOff();
+      sonoLe(white);
+      due(white);
     }
     break;
 
   case 2:
   case 14:
-    if (minute < 35)
+    sonoLe(white);
+    due(white);
+    if (minute == 35)
     {
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(2, 12, 14, white);
+      trentacinque(white);
     }
-    else if (minute == 35)
+    else if (minute > 35)
     {
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(2, 12, 14, white);
-      generateWord(8, 1, 12, white);
-    }
-    if (minute > 35)
-    {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(2, 12, 14, black);
-      generateWord(3, 1, 3, white);
+      // Tre
+      turnAllOff();
+      sonoLe(white);
+      tre(white);
     }
     break;
 
   case 3:
   case 15:
-    if (minute < 35)
+    sonoLe(white);
+    tre(white);
+    if (minute == 35)
     {
-      generateWord(3, 1, 3, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
+      trentacinque(white);
     }
-    else if (minute == 35)
+    else if (minute > 35)
     {
-      generateWord(3, 1, 3, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(8, 1, 12, white);
-    }
-    if (minute > 35)
-    {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(3, 1, 3, black);
-      generateWord(3, 5, 11, white);
+      // Quattro
+      turnAllOff();
+      sonoLe(white);
+      quattro(white);
     }
     break;
 
   case 4:
   case 16:
-    generateWord(3, 5, 11, white);
-    generateWord(1, 2, 5, white);
-    generateWord(1, 7, 8, white);
-    if (minute < 35)
+    sonoLe(white);
+    quattro(white);
+    if (minute == 35)
     {
-      generateWord(3, 5, 11, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
+      trentacinque(white);
     }
-    else if (minute == 35)
+    else if (minute > 35)
     {
-      generateWord(3, 5, 11, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(8, 1, 12, white);
-    }
-    if (minute > 35)
-    {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(3, 5, 11, black);
-      generateWord(4, 1, 6, white);
+      // Cinque
+      turnAllOff();
+      sonoLe(white);
+      cinque(white);
     }
     break;
 
   case 5:
   case 17:
-    if (minute < 35)
+    sonoLe(white);
+    cinque(white);
+    if (minute == 35)
     {
-      generateWord(4, 1, 6, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
+      trentacinque(white);
     }
-    else if (minute == 35)
+    else if (minute > 35)
     {
-      generateWord(4, 1, 6, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(8, 1, 12, white);
-    }
-    if (minute > 35)
-    {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(4, 1, 6, black);
-      generateWord(3, 12, 14, white);
+      turnAllOff();
+      sonoLe(white);
+      sei(white);
     }
     break;
 
   case 6:
   case 18:
-    if (minute < 35)
+    sonoLe(white);
+    sei(white);
+    if (minute == 35)
     {
-      generateWord(3, 12, 14, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
+      trentacinque(white);
     }
-    else if (minute == 35)
+    else if (minute > 35)
     {
-      generateWord(3, 12, 14, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(8, 1, 12, white);
-    }
-    if (minute > 35)
-    {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(3, 12, 14, black);
-      generateWord(4, 10, 14, white);
+      turnAllOff();
+      sonoLe(white);
+      sette(white);
     }
     break;
 
   case 7:
   case 19:
-    if (minute < 35)
+    sonoLe(white);
+    sette(white);
+    if (minute == 35)
     {
-      generateWord(4, 10, 14, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
+      trentacinque(white);
     }
-    else if (minute == 35)
+    else if (minute > 35)
     {
-      generateWord(4, 10, 14, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(8, 1, 12, white);
-    }
-    if (minute > 35)
-    {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(4, 10, 14, black);
-      generateWord(5, 1, 4, white);
+      turnAllOff();
+      sonoLe(white);
+      otto(white);
     }
     break;
 
   case 8:
   case 20:
-    if (minute < 35)
+    sonoLe(white);
+    otto(white);
+    if (minute == 35)
     {
-      generateWord(5, 1, 4, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
+      trentacinque(white);
     }
-    else if (minute == 35)
+    else if (minute > 35)
     {
-      generateWord(5, 1, 4, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(8, 1, 12, white);
-    }
-    if (minute > 35)
-    {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(5, 1, 4, black);
-      generateWord(5, 5, 8, white);
+      turnAllOff();
+      sonoLe(white);
+      nove(white);
     }
     break;
 
   case 9:
   case 21:
-    if (minute < 35)
+    sonoLe(white);
+    nove(white);
+    if (minute == 35)
     {
-      generateWord(5, 5, 8, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
+      trentacinque(white);
     }
-    else if (minute == 35)
+    else if (minute > 35)
     {
-      generateWord(5, 5, 8, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(8, 1, 12, white);
-    }
-    if (minute > 35)
-    {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(5, 5, 8, black);
-      generateWord(5, 10, 14, white);
+      turnAllOff();
+      sonoLe(white);
+      dieci(white);
     }
     break;
 
   case 10:
   case 22:
-    if (minute < 35)
+    sonoLe(white);
+    dieci(white);
+    if (minute == 35)
     {
-      generateWord(5, 10, 14, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
+      trentacinque(white);
     }
-    else if (minute == 35)
+    else if (minute > 35)
     {
-      generateWord(5, 10, 14, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(8, 1, 12, white);
-    }
-    if (minute > 35)
-    {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(5, 10, 14, black);
-      generateWord(6, 1, 6, white);
+      turnAllOff();
+      sonoLe(white);
+      undici(white);
     }
     break;
 
   case 11:
   case 23:
-    if (minute < 35)
+    sonoLe(white);
+    undici(white);
+    if (minute == 35)
     {
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(6, 1, 6, white);
-    }
-    else if (minute == 35)
-    {
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(6, 1, 6, white);
-      generateWord(8, 1, 12, white);
+      trentacinque(white);
     }
     else if (minute > 35)
     {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, black);
-      generateWord(1, 7, 8, black);
-      generateWord(6, 1, 6, black);
-      generateWord(1, 1, 1, white);
+      turnAllOff();
+      egrave(white);
       if (hour == 11)
       {
-        generateWord(2, 1, 11, white);
+        mezzogiorno(white);
       }
       else if (hour == 23)
       {
-        generateWord(7, 1, 10, white);
+        mezzanotte(white);
       }
       break;
 
     default:
-
+      turnAllOff();
       break;
     }
   }
 
-  //e
+  // E
   if (minute >= 5 && minute <= 35)
   {
-    generateWord(6, 10, 10, white);
+    e(white);
   }
   else
   {
-    generateWord(6, 10, 10, black);
+    e(black);
   }
 
-  //Illuminazione dei pallini
+  // Illuminazione dei pallini
   int diff = minute - int(minute / 10) * 10;
 
   //Minuti
@@ -1249,23 +1143,32 @@ void printTime(int hour, int minute, int second)
     generateWord(12, 0, 0, white);
   }
 }
+
+/*
+Accensione di un led di un certo colore
+*/
 void pixelOn(int pixel, uint32_t color)
 {
   strip.setPixelColor(pixel, color);
   strip.show();
 }
-void generateWord(int row, int min, int max, uint32_t color)
+
+/*
+Generazione di una parola nel word clock
+Si fa riferimento alla riga, l'indice d'inizio e quello di fine
+*/
+void generateWord(int row, int start, int end, uint32_t color)
 {
-  if (min == 0 && max == 0)
+  if (start == 0 && end == 0)
   {
-    for (int i = min; i <= (max - min); i++)
+    for (int i = start; i <= (end - start); i++)
     {
       pixelOn(pixels[row][i], color);
     }
   }
   else
   {
-    for (int i = min; i <= max; i++)
+    for (int i = start; i <= end; i++)
     {
       pixelOn(pixels[row][i], color);
     }
