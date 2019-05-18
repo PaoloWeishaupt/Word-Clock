@@ -3,23 +3,26 @@ Word Clock
 Gabriele Alessi, Mattia Lazzaroni, Paolo Claudio Weishaupt
 https://github.com/PaoloWeishaupt/Word-Clock
 */
+
 #include <SPI.h>
 #include <Fishino.h>
 #define DEBUG_LEVEL_INFO
 #include <FishinoDebug.h>
-#include <Wire.h>   //libreria per interfacciare i2c e rtc
-#include "RTClib.h" //libreria rtc
+#include <Wire.h>
+#include "RTClib.h"
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
 #include <avr/power.h>
 #endif
 
+// Pin dei dati
 #define PIN 6
-
+// RTC
 RTC_DS1307 rtc;
-
+// Striscia di led
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(195, PIN, NEO_GRB + NEO_KHZ800);
 
+// Matrice che identifica i led
 const int pixels[13][15] = {
     {182, 181, 156, 155, 130, 129, 104, 103, 78, 77, 52, 51, 26, 25, 0},
     {183, 180, 157, 154, 131, 128, 105, 102, 79, 76, 53, 50, 27, 24, 1},
@@ -35,51 +38,32 @@ const int pixels[13][15] = {
     {193, 170, 167, 144, 141, 118, 115, 92, 89, 66, 63, 40, 37, 14, 11},
     {194, 169, 168, 143, 142, 117, 116, 91, 90, 65, 64, 39, 38, 13, 12}};
 
+// Colori principali dei led
 const uint32_t red = strip.Color(255, 0, 0);
 const uint32_t green = strip.Color(0, 255, 0);
 const uint32_t blue = strip.Color(0, 0, 255);
 const uint32_t white = strip.Color(255, 255, 255);
 const uint32_t black = strip.Color(0, 0, 0);
 const uint32_t orange = strip.Color(255, 165, 0);
-//////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
-// CONFIGURATION DATA   -- ADAPT TO YOUR NETWORK !!!
-// DATI DI CONFIGURAZIONE -- ADATTARE ALLA PROPRIA RETE WiFi !!!
-
+// Definizione network
 #ifndef __MY_NETWORK_H
-
-// here pur SSID of your network
-// inserire qui lo SSID della rete WiFi
+// SSID della rete WiFi
 #define MY_SSID "Potaspot"
-
-// here put PASSWORD of your network. Use "" if none
-// inserire qui la PASSWORD della rete WiFi -- Usare "" se la rete non ￨ protetta
+// Password della rete WiFi (Usare "" per rete non protetta)
 #define MY_PASS "MeterPeterPota"
-
-// comment this line if you want a dynamic IP through DHCP
-// obtained IP will be printed on serial port monitor
-// commentare la linea seguente per avere un IP dinamico tramite DHCP
-// l'IP ottenuto verrà visualizzato sul monitor seriale
+// Commentare la linea seguente per usare DHCP
 //#define IPADDR    192, 168,   1, 251
 #define GATEWAY 192, 168, 1, 1
 #define NETMASK 255, 255, 255, 0
-
 #endif
-//                    END OF CONFIGURATION DATA                      //
-//                       FINE CONFIGURAZIONE                         //
-///////////////////////////////////////////////////////////////////////
 
-// delay della richiesta UDP
-unsigned long tempoOp1;
+// Delay della richiesta UDP
+unsigned long delayUDP;
+// Delay del refresh dei pixel
+unsigned long delayPixels;
 
-// delay del refresh dei pixel
-unsigned long tempoOp2;
-
-// define ip address if requiwhite
-// NOTE : if your network is not of type 255.255.255.0 or your gateway is not xx.xx.xx.1
-// you should set also both netmask and gateway
+// Impostazione network
 #ifdef IPADDR
 IPAddress ip(IPADDR);
 #ifdef GATEWAY
@@ -94,125 +78,83 @@ IPAddress nm(255, 255, 255, 0);
 #endif
 #endif
 
-// local port to listen for UDP packets
-unsigned int localPort = 2390;
-
-// IP address of the NTP server
-// time.nist.gov
+// Porta che ascolta i pacchetti UDP
+unsigned const int localPort = 2390;
+// Indirizzo IP time server - time.nist.gov
 IPAddress timeServer(129, 6, 15, 28);
-
-// NTP time stamp is in the first 48 bytes of the message
+// Informazioni sull'orario NTP sono nei primi 48 bytes del messaggio
 const int NTP_PACKET_SIZE = 48;
-
-//buffer to hold incoming and outgoing packets
+// Buffer che individua i pacchetti
 byte packetBuffer[NTP_PACKET_SIZE];
-
-// A UDP instance to let us send and receive packets over UDP
+// Istanza UPD che gestisce l'invio e la ricezione di pacchetti
 FishinoUDP Udp;
 
+/*
+Stampa lo stato della connessione WiFi
+*/
 void printWifiStatus()
 {
-  // print the SSID of the network you're attached to:
-  // stampa lo SSID della rete:
+  // Stampa lo SSID della rete
   Serial.print("SSID: ");
   Serial.println(Fishino.SSID());
-
-  // print your WiFi shield's IP address:
-  // stampa l'indirizzo IP della rete:
+  // Stampa l'indirizzo IP della rete
   IPAddress ip = Fishino.localIP();
   Serial << F("IP Address: ");
   Serial.println(ip);
-
-  // print the received signal strength:
-  // stampa la potenza del segnale di rete:
+  // Stampa la potenza del segnale di rete
   long rssi = Fishino.RSSI();
   Serial << F("signal strength (RSSI):");
   Serial.print(rssi);
   Serial << F(" dBm\n");
 }
 
-// send an NTP request to the time server at the given address
-// invia una richiesta al server NTP all'indirizzo fornito
-unsigned long sendNTPpacket(IPAddress &address)
+/*
+Invia una richiesta al server NTP all'indirizzo fornito
+*/
+void sendNTPpacket(IPAddress &address)
 {
-  // set all bytes in the buffer to 0
-  // azzera il buffer di ricezione NTP
+  // Azzera il buffer di ricezione NTP
   memset(packetBuffer, 0, NTP_PACKET_SIZE);
-
-  // Initialize values needed to form NTP request
-  // (see URL above for details on the packets)
   // Inizializza i valori da inviare al server NTP
   // (vedere URL del server per dettagli sul formato pacchetto)
-
-  // LI, Version, Mode
   packetBuffer[0] = 0b11100011;
-
-  // Stratum, or type of clock
   packetBuffer[1] = 0;
-
-  // Polling Interval
   packetBuffer[2] = 6;
-
-  // Peer Clock Precision
   packetBuffer[3] = 0xEC;
-
-  // 8 bytes of zero for Root Delay & Root Dispersion
   packetBuffer[12] = 49;
   packetBuffer[13] = 0x4E;
   packetBuffer[14] = 49;
   packetBuffer[15] = 52;
+  // Tutti i campi del paccketto NTP sono stati impostati
+  // è quindi possibile inviare il pacchetto di richiesta di data/ora
 
-  // all NTP fields have been given values, now
-  // you can send a packet requesting a timestamp:
-  // tutti i campi del paccketto NTP sono stati impostati
-  // è quindi possibile inviare il paccetto di richiesta di data/ora
-
-  // NTP requests are to port 123
-  // beginPacket() just opens the connection
   // invia la richiesta NTP alla porta 123
   // beginPacket() apre solo la connessione
   Udp.beginPacket(address, 123);
-
-  // fill UDP buffer with packet data
-  // riempie il buffer di invio UDP con i dati del pacchetto
+  // Riempie il buffer di invio UDP con i dati del pacchetto
   Udp.write(packetBuffer, NTP_PACKET_SIZE);
-
-  // ends and send the UDP packet
-  // termina ed invia il pacchetto UDP
+  // Termina e invia il pacchetto
   Udp.endPacket();
-
-  return 0;
 }
 
+/*
+Setup del sistema
+*/
 void setup()
 {
-  // set del delay all'orario corrente per fargli fare subito la prima richiesta
-  tempoOp1 = millis();
-
-  // set del delay a 1 secondo
-  tempoOp2 = millis() + 1000; //1 sec
-
-  // Initialize serial and wait for port to open
+  // Delay all'orario corrente per fargli fare subito la prima richiesta
+  delayUDP = millis();
+  // Delay dei led a 1 secondo
+  delayPixels = millis() + 1000;
   // Inizializza la porta seriale e ne attende l'apertura
   Serial.begin(115200);
-
-  // only for Leonardo needed
-  // necessario solo per la Leonardo
-  while (!Serial)
-    ;
-
-  // reset and test WiFi module
-  // resetta e testa il modulo WiFi
+  // Riavvia e testa il modulo WiFi
   while (!Fishino.reset())
     Serial << F("Fishino RESET FAILED, RETRYING...\n");
   Serial << F("Fishino WiFi RESET OK\n");
-
-  // go into station mode
-  // imposta la modalità stazione
+  // Imposta la modalità stazione (default per una connessione WiFi)
   Fishino.setMode(STATION_MODE);
-
-  // try forever to connect to AP
-  // tenta la connessione finchè non riesce
+  // Tenta la connessione finchè non riesce
   Serial << F("Connecting to AP...");
   while (!Fishino.begin(MY_SSID, MY_PASS))
   {
@@ -220,16 +162,14 @@ void setup()
     delay(2000);
   }
   Serial << "OK\n";
-
-// setup IP or start DHCP client
-// imposta l'IP statico oppure avvia il client DHCP
+// Imposta l'IP statico oppure avvia il client DHCP
 #ifdef IPADDR
   Fishino.config(ip, gw, nm);
 #else
   Fishino.staStartDHCP();
 #endif
 
-  // wait till connection is established
+  // Aspetta finché non c'è una connessione stabile
   Serial << F("Waiting for IP...");
   while (Fishino.status() != STATION_GOT_IP)
   {
@@ -237,38 +177,43 @@ void setup()
     delay(500);
   }
   Serial << "OK\n";
-
-  // print connection status on serial port
-  // stampa lo stato della connessione sulla porta seriale
+  // Stampa lo stato della connessione sulla porta seriale
   printWifiStatus();
-
+  // Inizia la connessione con il server e ascolta i pacchetti
   Serial << F("Starting connection to server...\n");
   Udp.begin(localPort);
-
+  // Inizializzazione della striscia di led
   strip.begin();
   strip.setBrightness(255);
   strip.show();
+  // Impostazione del RTC
   if (!rtc.begin())
-  { //verifico la presenza dell'RTC
+  {
     Serial.println("Impossibile trovare RTC");
     while (1)
       ;
   }
-
+  // Verifica funzionamento RTC
+  // Inserisce l'orario del computer durante la compilazione
   if (!rtc.isrunning())
-  { //verifico funzionamento dell'RTC
+  {
     Serial.println("RTC non è in funzione!");
-    //inserisce l'orario del computer durante la compilazione
+  }
+  else
+  {
     // Se vuoi un orario personalizzato, togli il commento alla riga successiva
     // l'orario: ANNO, MESE, GIORNI, ORA, MINUTI, SECONDI
+    //rtc.adjust(DateTime(2014, 1, 12, 0, 59, 40));
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
-  //rtc.adjust(DateTime(2014, 1, 12, 0, 59, 40));
-  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 }
 
+/*
+Esecuzione del sistema
+*/
 void loop()
 {
-  if (millis() > tempoOp1)
+  if (millis() > delayUDP)
   {
     // send an NTP packet to a time server
     Serial << F("Sending UDP request...");
@@ -359,9 +304,9 @@ void loop()
     // wait ten seconds before asking for the time again
     // attende 10 secondi prima di effettuare una nuova richiesta
     //delay(5000);
-    tempoOp1 = millis() + 300000;
+    delayUDP = millis() + 300000;
   }
-  if (millis() > tempoOp2)
+  if (millis() > delayPixels)
   {
     DateTime now = rtc.now(); //creo istanza ora/data
     int hour = now.hour();
@@ -382,7 +327,7 @@ void loop()
     Serial.println();
     printTime(hour, minute, second);
     //delay(1000);
-    tempoOp2 = millis() + 1000;
+    delayPixels = millis() + 1000;
   }
 }
 
