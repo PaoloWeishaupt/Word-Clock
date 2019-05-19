@@ -179,7 +179,7 @@ void loop()
   if (millis() > delayUDP)
   {
     // Invio richiesta pacchetto
-    sendRequest(1000);
+    sendNTPpacket(timeServer, 1000);
     while (Udp.parsePacket())
     {
       // Stampo il tempo iniziale
@@ -218,8 +218,10 @@ void printWifiStatus()
 /*
 Invia una richiesta al server NTP all'indirizzo fornito
 */
-void sendNTPpacket(IPAddress &address)
+void sendNTPpacket(IPAddress &address, unsigned long waitTime)
 {
+  // Invio pacchetto al server NTP
+  Serial << F("Invio richiesta UDP...");
   // Azzera il buffer di ricezione NTP
   memset(packetBuffer, 0, NTP_PACKET_SIZE);
   // Inizializza i valori da inviare al server NTP
@@ -232,26 +234,15 @@ void sendNTPpacket(IPAddress &address)
   packetBuffer[13] = 0x4E;
   packetBuffer[14] = 49;
   packetBuffer[15] = 52;
-  // Tutti i campi del paccketto NTP sono stati impostati
-  // è quindi possibile inviare il pacchetto di richiesta di data/ora
-
-  // invia la richiesta NTP alla porta 123
-  // beginPacket() apre solo la connessione
+  /* Tutti i campi del paccketto NTP sono stati impostati
+  è quindi possibile inviare il pacchetto di richiesta di data/ora */
+  /* Invia la richiesta NTP alla porta 123
+  beginPacket() apre solo la connessione */
   Udp.beginPacket(address, 123);
   // Riempie il buffer di invio UDP con i dati del pacchetto
   Udp.write(packetBuffer, NTP_PACKET_SIZE);
   // Termina e invia il pacchetto
   Udp.endPacket();
-}
-
-/*
-Invio di una richiesta al server
-*/
-void sendRequest(unsigned long waitTime)
-{
-  // Invio pacchetto al server NTP
-  Serial << F("Invio richiesta UDP...");
-  sendNTPpacket(timeServer);
   Serial << "OK\n";
   // Attesa per vedere se una risposta è disponibile
   delay(waitTime);
