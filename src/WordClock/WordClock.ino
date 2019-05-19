@@ -1112,18 +1112,8 @@ Si fa riferimento alla riga, l'indice d'inizio e quello di fine
 */
 void generateWord(int row, int start, int end, uint32_t color)
 {
-  if (start == 0 && end == 0)
+  for (int i = start; i <= end; i++)
   {
-    for (int i = start; i <= (end - start); i++)
-    {
-      pixelOn(pixels[row][i], color);
-    }
-  }
-  else
-  {
-    for (int i = start; i <= end; i++)
-    {
-      pixelOn(pixels[row][i], color);
-    }
+    pixelOn(pixels[row][i], color);
   }
 }
