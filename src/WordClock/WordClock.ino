@@ -694,14 +694,6 @@ void undici(uint32_t color)
 }
 
 /*
-Accendo "undici" del colore passato
-*/
-void undici(uint32_t color)
-{
-  generateWord(6, 1, 6, color);
-}
-
-/*
 Accendo "e" del colore passato
 */
 void e(uint32_t color)
