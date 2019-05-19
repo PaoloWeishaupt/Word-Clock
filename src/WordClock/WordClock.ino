@@ -349,235 +349,12 @@ Metodo che accende i led del word clock in base all'orario passato
 */
 void printTime(int hour, int minute, int second)
 {
+  meno = false;
   // Stampo "pausa"
   printBreak(hour, minute);
 
-  // Casi dell'ora
-  switch (hour)
-  {
-  case 0:
-    egrave(white);
-    mezzanotte(white);
-    if (minute == 35)
-    {
-      eTrentacinque(white);
-    }
-    else if (minute > 35)
-    {
-      // L'una
-      turnAllOff();
-      egrave(white);
-      una(white);
-    }
-    break;
-
-  case 12:
-    egrave(white);
-    mezzogiorno(white);
-    if (minute == 35)
-    {
-      eTrentacinque(white);
-    }
-    else if (minute > 35)
-    {
-      // L'una
-      turnAllOff();
-      egrave(white);
-      una(white);
-    }
-    break;
-
-  case 1:
-  case 13:
-    egrave(white);
-    una(white);
-    if (minute == 35)
-    {
-      eTrentacinque(white);
-    }
-    else if (minute > 35)
-    {
-      // Due
-      turnAllOff();
-      sonoLe(white);
-      due(white);
-    }
-    break;
-
-  case 2:
-  case 14:
-    sonoLe(white);
-    due(white);
-    if (minute == 35)
-    {
-      eTrentacinque(white);
-    }
-    else if (minute > 35)
-    {
-      // Tre
-      turnAllOff();
-      sonoLe(white);
-      tre(white);
-    }
-    break;
-
-  case 3:
-  case 15:
-    sonoLe(white);
-    tre(white);
-    if (minute == 35)
-    {
-      eTrentacinque(white);
-    }
-    else if (minute > 35)
-    {
-      // Quattro
-      turnAllOff();
-      sonoLe(white);
-      quattro(white);
-    }
-    break;
-
-  case 4:
-  case 16:
-    sonoLe(white);
-    quattro(white);
-    if (minute == 35)
-    {
-      eTrentacinque(white);
-    }
-    else if (minute > 35)
-    {
-      // Cinque
-      turnAllOff();
-      sonoLe(white);
-      cinque(white);
-    }
-    break;
-
-  case 5:
-  case 17:
-    sonoLe(white);
-    cinque(white);
-    if (minute == 35)
-    {
-      eTrentacinque(white);
-    }
-    else if (minute > 35)
-    {
-      turnAllOff();
-      sonoLe(white);
-      sei(white);
-    }
-    break;
-
-  case 6:
-  case 18:
-    sonoLe(white);
-    sei(white);
-    if (minute == 35)
-    {
-      eTrentacinque(white);
-    }
-    else if (minute > 35)
-    {
-      turnAllOff();
-      sonoLe(white);
-      sette(white);
-    }
-    break;
-
-  case 7:
-  case 19:
-    sonoLe(white);
-    sette(white);
-    if (minute == 35)
-    {
-      eTrentacinque(white);
-    }
-    else if (minute > 35)
-    {
-      turnAllOff();
-      sonoLe(white);
-      otto(white);
-    }
-    break;
-
-  case 8:
-  case 20:
-    sonoLe(white);
-    otto(white);
-    if (minute == 35)
-    {
-      eTrentacinque(white);
-    }
-    else if (minute > 35)
-    {
-      turnAllOff();
-      sonoLe(white);
-      nove(white);
-    }
-    break;
-
-  case 9:
-  case 21:
-    sonoLe(white);
-    nove(white);
-    if (minute == 35)
-    {
-      eTrentacinque(white);
-    }
-    else if (minute > 35)
-    {
-      turnAllOff();
-      sonoLe(white);
-      dieci(white);
-    }
-    break;
-
-  case 10:
-  case 22:
-    sonoLe(white);
-    dieci(white);
-    if (minute == 35)
-    {
-      eTrentacinque(white);
-    }
-    else if (minute > 35)
-    {
-      turnAllOff();
-      sonoLe(white);
-      undici(white);
-    }
-    break;
-
-  case 11:
-  case 23:
-    sonoLe(white);
-    undici(white);
-    if (minute == 35)
-    {
-      eTrentacinque(white);
-    }
-    else if (minute > 35)
-    {
-      turnAllOff();
-      egrave(white);
-      if (hour == 11)
-      {
-        mezzogiorno(white);
-      }
-      else if (hour == 23)
-      {
-        mezzanotte(white);
-      }
-      break;
-
-    default:
-      turnAllOff();
-      break;
-    }
-  }
+  // Stampo l'ora
+  printHour(hour, minute);
 
   // E
   if (minute >= 5 && minute <= 35)
@@ -665,7 +442,9 @@ void printTime(int hour, int minute, int second)
     {
       if (minute != 35)
       {
-        generateWord(9, 1, 4, white); //Meno
+        // Meno
+        meno(white);
+        meno = true;
       }
     }
 
@@ -970,7 +749,6 @@ Accendo "meno" del colore passato
 void meno(uint32_t color)
 {
   generateWord(9, 1, 4, color);
-  meno = true;
 }
 
 /*
@@ -1015,6 +793,238 @@ void turnAllOff()
   for (int i = 0; i < strip.numPixels(); i++)
   {
     pixelOn(i, black);
+  }
+}
+
+/*
+Accensione dell'ora
+*/
+printHour(int hour, int minute)
+{
+  switch (hour)
+  {
+  case 0:
+    egrave(white);
+    mezzanotte(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      // L'una
+      turnAllOff();
+      egrave(white);
+      una(white);
+    }
+    break;
+
+  case 12:
+    egrave(white);
+    mezzogiorno(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      // L'una
+      turnAllOff();
+      egrave(white);
+      una(white);
+    }
+    break;
+
+  case 1:
+  case 13:
+    egrave(white);
+    una(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      // Due
+      turnAllOff();
+      sonoLe(white);
+      due(white);
+    }
+    break;
+
+  case 2:
+  case 14:
+    sonoLe(white);
+    due(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      // Tre
+      turnAllOff();
+      sonoLe(white);
+      tre(white);
+    }
+    break;
+
+  case 3:
+  case 15:
+    sonoLe(white);
+    tre(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      // Quattro
+      turnAllOff();
+      sonoLe(white);
+      quattro(white);
+    }
+    break;
+
+  case 4:
+  case 16:
+    sonoLe(white);
+    quattro(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      // Cinque
+      turnAllOff();
+      sonoLe(white);
+      cinque(white);
+    }
+    break;
+
+  case 5:
+  case 17:
+    sonoLe(white);
+    cinque(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      turnAllOff();
+      sonoLe(white);
+      sei(white);
+    }
+    break;
+
+  case 6:
+  case 18:
+    sonoLe(white);
+    sei(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      turnAllOff();
+      sonoLe(white);
+      sette(white);
+    }
+    break;
+
+  case 7:
+  case 19:
+    sonoLe(white);
+    sette(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      turnAllOff();
+      sonoLe(white);
+      otto(white);
+    }
+    break;
+
+  case 8:
+  case 20:
+    sonoLe(white);
+    otto(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      turnAllOff();
+      sonoLe(white);
+      nove(white);
+    }
+    break;
+
+  case 9:
+  case 21:
+    sonoLe(white);
+    nove(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      turnAllOff();
+      sonoLe(white);
+      dieci(white);
+    }
+    break;
+
+  case 10:
+  case 22:
+    sonoLe(white);
+    dieci(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      turnAllOff();
+      sonoLe(white);
+      undici(white);
+    }
+    break;
+
+  case 11:
+  case 23:
+    sonoLe(white);
+    undici(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      turnAllOff();
+      egrave(white);
+      if (hour == 11)
+      {
+        mezzogiorno(white);
+      }
+      else if (hour == 23)
+      {
+        mezzanotte(white);
+      }
+      break;
+
+    default:
+      turnAllOff();
+      break;
+    }
   }
 }
 
