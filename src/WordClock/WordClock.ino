@@ -307,32 +307,24 @@ void setInitialTime(unsigned long secsSince1900)
 }
 
 /*
-Stampo l'orario sul word clock
+Accensione di un led di un certo colore
 */
-void setWordClock()
+void pixelOn(int pixel, uint32_t color)
 {
-  // Istanza data e ora
-  DateTime now = rtc.now();
-  hour = now.hour();
-  minute = now.minute();
-  second = now.second();
-  // Stampo le informazioni in decimale
-  Serial.print(now.year(), DEC);
-  Serial.print('/');
-  Serial.print(now.month(), DEC);
-  Serial.print('/');
-  Serial.print(now.day(), DEC);
-  Serial.print(" (");
-  Serial.print(now.hour(), DEC);
-  Serial.print(':');
-  Serial.print(now.minute(), DEC);
-  Serial.print(':');
-  Serial.print(now.second(), DEC);
-  Serial.print(") ");
-  Serial.println();
-  // Stampo l'orario sul word clock
-  printTime(hour, minute, second);
-  delayPixels = millis() + 1000;
+  strip.setPixelColor(pixel, color);
+  strip.show();
+}
+
+/*
+Generazione di una parola nel word clock
+Si fa riferimento alla riga, l'indice d'inizio e quello di fine
+*/
+void generateWord(int row, int start, int end, uint32_t color)
+{
+  for (int i = start; i <= end; i++)
+  {
+    pixelOn(pixels[row][i], color);
+  }
 }
 
 /*
@@ -1089,22 +1081,30 @@ void printSecond(int second)
 }
 
 /*
-Accensione di un led di un certo colore
+Stampo l'orario sul word clock
 */
-void pixelOn(int pixel, uint32_t color)
+void setWordClock()
 {
-  strip.setPixelColor(pixel, color);
-  strip.show();
-}
-
-/*
-Generazione di una parola nel word clock
-Si fa riferimento alla riga, l'indice d'inizio e quello di fine
-*/
-void generateWord(int row, int start, int end, uint32_t color)
-{
-  for (int i = start; i <= end; i++)
-  {
-    pixelOn(pixels[row][i], color);
-  }
+  // Istanza data e ora
+  DateTime now = rtc.now();
+  hour = now.hour();
+  minute = now.minute();
+  second = now.second();
+  // Stampo le informazioni in decimale
+  Serial.print(now.year(), DEC);
+  Serial.print('/');
+  Serial.print(now.month(), DEC);
+  Serial.print('/');
+  Serial.print(now.day(), DEC);
+  Serial.print(" (");
+  Serial.print(now.hour(), DEC);
+  Serial.print(':');
+  Serial.print(now.minute(), DEC);
+  Serial.print(':');
+  Serial.print(now.second(), DEC);
+  Serial.print(") ");
+  Serial.println();
+  // Stampo l'orario sul word clock
+  printTime(hour, minute, second);
+  delayPixels = millis() + 1000;
 }
