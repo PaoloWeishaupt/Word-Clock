@@ -1,8 +1,9 @@
 /*
 Word Clock
-Gabriele Alessi, Mattia Lazzaroni, Paolo Claudio Weishaupt
+Mattia Lazzaroni, Paolo Claudio Weishaupt, Gabriele Alessi
 https://github.com/PaoloWeishaupt/Word-Clock
 */
+
 #include <SPI.h>
 #include <Fishino.h>
 #define DEBUG_LEVEL_INFO
@@ -14,12 +15,14 @@ https://github.com/PaoloWeishaupt/Word-Clock
 #include <avr/power.h>
 #endif
 
+// Pin dei dati
 #define PIN 6
-
+// RTC
 RTC_DS1307 rtc;
-
+// Striscia di led
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(195, PIN, NEO_GRB + NEO_KHZ800);
 
+// Matrice che identifica i led
 const int pixels[13][15] = {
     {182, 181, 156, 155, 130, 129, 104, 103, 78, 77, 52, 51, 26, 25, 0},
     {183, 180, 157, 154, 131, 128, 105, 102, 79, 76, 53, 50, 27, 24, 1},
@@ -35,47 +38,35 @@ const int pixels[13][15] = {
     {193, 170, 167, 144, 141, 118, 115, 92, 89, 66, 63, 40, 37, 14, 11},
     {194, 169, 168, 143, 142, 117, 116, 91, 90, 65, 64, 39, 38, 13, 12}};
 
+// Colori principali dei led
 const uint32_t red = strip.Color(255, 0, 0);
 const uint32_t green = strip.Color(0, 255, 0);
 const uint32_t blue = strip.Color(0, 0, 255);
 const uint32_t white = strip.Color(255, 255, 255);
 const uint32_t black = strip.Color(0, 0, 0);
 const uint32_t orange = strip.Color(255, 165, 0);
-//////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
-// CONFIGURATION DATA   -- ADAPT TO YOUR NETWORK !!!
-// DATI DI CONFIGURAZIONE -- ADATTARE ALLA PROPRIA RETE WiFi !!!
-
+// Definizione network
 #ifndef __MY_NETWORK_H
 
-// here pur SSID of your network
-// inserire qui lo SSID della rete WiFi
+// SSID della rete WiFi
 #define MY_SSID "Potaspot"
 
-// here put PASSWORD of your network. Use "" if none
-// inserire qui la PASSWORD della rete WiFi -- Usare "" se la rete non ￨ protetta
+// Password della rete WiFi (Usare "" per rete non protetta)
 #define MY_PASS "MeterPeterPota"
 
-// comment this line if you want a dynamic IP through DHCP
-// obtained IP will be printed on serial port monitor
-// commentare la linea seguente per avere un IP dinamico tramite DHCP
-// l'IP ottenuto verrà visualizzato sul monitor seriale
+// Commentare la linea seguente per usare DHCP
 //#define IPADDR    192, 168,   1, 251
 #define GATEWAY 192, 168, 1, 1
 #define NETMASK 255, 255, 255, 0
 
 #endif
-//                    END OF CONFIGURATION DATA                      //
-//                       FINE CONFIGURAZIONE                         //
-///////////////////////////////////////////////////////////////////////
 
 // delay della richiesta UDP
-unsigned long tempoOp1;
+unsigned long delayUDP;
 
 // delay del refresh dei pixel
-unsigned long tempoOp2;
+unsigned long delayPixels;
 
 // define ip address if requiwhite
 // NOTE : if your network is not of type 255.255.255.0 or your gateway is not xx.xx.xx.1
@@ -110,96 +101,20 @@ byte packetBuffer[NTP_PACKET_SIZE];
 // A UDP instance to let us send and receive packets over UDP
 FishinoUDP Udp;
 
-void printWifiStatus()
-{
-  // print the SSID of the network you're attached to:
-  // stampa lo SSID della rete:
-  Serial.print("SSID: ");
-  Serial.println(Fishino.SSID());
-
-  // print your WiFi shield's IP address:
-  // stampa l'indirizzo IP della rete:
-  IPAddress ip = Fishino.localIP();
-  Serial << F("IP Address: ");
-  Serial.println(ip);
-
-  // print the received signal strength:
-  // stampa la potenza del segnale di rete:
-  long rssi = Fishino.RSSI();
-  Serial << F("signal strength (RSSI):");
-  Serial.print(rssi);
-  Serial << F(" dBm\n");
-}
-
-// send an NTP request to the time server at the given address
-// invia una richiesta al server NTP all'indirizzo fornito
-unsigned long sendNTPpacket(IPAddress &address)
-{
-  // set all bytes in the buffer to 0
-  // azzera il buffer di ricezione NTP
-  memset(packetBuffer, 0, NTP_PACKET_SIZE);
-
-  // Initialize values needed to form NTP request
-  // (see URL above for details on the packets)
-  // Inizializza i valori da inviare al server NTP
-  // (vedere URL del server per dettagli sul formato pacchetto)
-
-  // LI, Version, Mode
-  packetBuffer[0] = 0b11100011;
-
-  // Stratum, or type of clock
-  packetBuffer[1] = 0;
-
-  // Polling Interval
-  packetBuffer[2] = 6;
-
-  // Peer Clock Precision
-  packetBuffer[3] = 0xEC;
-
-  // 8 bytes of zero for Root Delay & Root Dispersion
-  packetBuffer[12] = 49;
-  packetBuffer[13] = 0x4E;
-  packetBuffer[14] = 49;
-  packetBuffer[15] = 52;
-
-  // all NTP fields have been given values, now
-  // you can send a packet requesting a timestamp:
-  // tutti i campi del paccketto NTP sono stati impostati
-  // è quindi possibile inviare il paccetto di richiesta di data/ora
-
-  // NTP requests are to port 123
-  // beginPacket() just opens the connection
-  // invia la richiesta NTP alla porta 123
-  // beginPacket() apre solo la connessione
-  Udp.beginPacket(address, 123);
-
-  // fill UDP buffer with packet data
-  // riempie il buffer di invio UDP con i dati del pacchetto
-  Udp.write(packetBuffer, NTP_PACKET_SIZE);
-
-  // ends and send the UDP packet
-  // termina ed invia il pacchetto UDP
-  Udp.endPacket();
-
-  return 0;
-}
-
+/*
+Setup del sistema
+*/
 void setup()
 {
   // set del delay all'orario corrente per fargli fare subito la prima richiesta
-  tempoOp1 = millis();
+  delayUDP = millis();
 
   // set del delay a 1 secondo
-  tempoOp2 = millis() + 1000; //1 sec
+  delayPixels = millis() + 1000; //1 sec
 
   // Initialize serial and wait for port to open
   // Inizializza la porta seriale e ne attende l'apertura
   Serial.begin(115200);
-
-  // only for Leonardo needed
-  // necessario solo per la Leonardo
-  while (!Serial)
-    ;
 
   // reset and test WiFi module
   // resetta e testa il modulo WiFi
@@ -266,13 +181,123 @@ void setup()
   rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 }
 
+/*
+Stampa lo stato della connessione WiFi
+*/
+void printWifiStatus()
+{
+  // Stampa lo SSID della rete
+  Serial.print("SSID: ");
+  Serial.println(Fishino.SSID());
+  // Stampa l'indirizzo IP della rete
+  IPAddress ip = Fishino.localIP();
+  Serial << F("IP Address: ");
+  Serial.println(ip);
+  // Stampa la potenza del segnale di rete
+  long rssi = Fishino.RSSI();
+  Serial << F("Potenza segnale (RSSI):");
+  Serial.print(rssi);
+  Serial << F(" dBm\n");
+}
+
+/*
+Invia una richiesta al server NTP all'indirizzo fornito
+*/
+void sendNTPpacket(IPAddress &address, unsigned long waitTime)
+{
+  // Invio pacchetto al server NTP
+  Serial << F("Invio richiesta UDP...");
+  // Azzera il buffer di ricezione NTP
+  memset(packetBuffer, 0, NTP_PACKET_SIZE);
+  // Inizializza i valori da inviare al server NTP
+  // (vedere URL del server per dettagli sul formato pacchetto)
+  packetBuffer[0] = 0b11100011;
+  packetBuffer[1] = 0;
+  packetBuffer[2] = 6;
+  packetBuffer[3] = 0xEC;
+  packetBuffer[12] = 49;
+  packetBuffer[13] = 0x4E;
+  packetBuffer[14] = 49;
+  packetBuffer[15] = 52;
+  /* Tutti i campi del paccketto NTP sono stati impostati
+  è quindi possibile inviare il pacchetto di richiesta di data/ora */
+  /* Invia la richiesta NTP alla porta 123
+  beginPacket() apre solo la connessione */
+  Udp.beginPacket(address, 123);
+  // Riempie il buffer di invio UDP con i dati del pacchetto
+  Udp.write(packetBuffer, NTP_PACKET_SIZE);
+  // Termina e invia il pacchetto
+  Udp.endPacket();
+  Serial << "OK\n";
+  // Attesa per vedere se una risposta è disponibile
+  delay(waitTime);
+}
+
+/*
+Metodo che imposta il pacchetto e ne ricava i secondi passati al 01/01/1900
+*/
+unsigned long getPacket()
+{
+  Serial << F("Pacchetto ricevuto\n");
+  // Stampa IP e porta remoti per mostrare la provenienza del pacchetto
+  IPAddress remoteIp = Udp.remoteIP();
+  uint32_t remotePort = Udp.remotePort();
+  Serial << F("Remote IP   : ") << remoteIp << "\n";
+  Serial << F("Remote port : ") << remotePort << "\n";
+  // Abbiamo ricevuto un pacchetto, leggiamo i dati e inseriamoli in un buffer
+  Udp.read(packetBuffer, NTP_PACKET_SIZE);
+  // Il timestamp inizia dal byte 40 del pacchetto ricevuto, e consiste in 4 bytes
+  // o due words, long. Innanzitutto estraiamo le due words
+  unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
+  unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);
+  // Combiniamo i 4 bytes (o 2 words) in un long integer
+  // che è il tempo NTP (secondi dal primo Gennaio 1900)
+  unsigned long secsSince1900 = highWord << 16 | lowWord;
+  Serial << F("Seconds since Jan 1 1900 = ") << secsSince1900 << "\n";
+  return secsSince1900;
+}
+
+/*
+Lettura iniziale del'orario trasformato in Unix Time
+*/
+void setInitialTime(unsigned long secsSince1900)
+{
+  // Ora convertiamo il tempo NTP in formato leggibile
+  Serial << F("Unix time = ");
+  // Il tempo Unix inizia dal 01/01/1970. In secondi, sono 2208988800
+  // Sottrae dal tempo NTP la base Unix
+  unsigned long epoch = secsSince1900 - 2208988800UL;
+  // Stampa il tempo Unix
+  Serial << epoch << "\n";
+  // Tempo UTC (ora al meridiano di Greenwich, GMT)
+  Serial << F("The ETC time is ");
+  // Stampa l'ora (contando 86400 secondi al giorno
+  Serial << ((epoch % 86400L) / 3600 + 1);
+  Serial.print(':');
+  if (((epoch % 3600) / 60) < 10)
+  {
+    // Nei primi 10 minuti di ogni ora vogiamo uno zero iniziale
+    Serial << '0';
+  }
+  // Stampa i minuti (contando 3600 secondi per minuto)
+  Serial << ((epoch % 3600) / 60);
+  Serial << ':';
+  if ((epoch % 60) < 10)
+  {
+    // Nei primi 10 secondi di ogni minuto vogliamo lo zero iniziale
+    Serial << '0';
+  }
+  // Stampa i secondi
+  Serial << epoch % 60 << "\n";
+}
+
 void loop()
 {
-  if (millis() > tempoOp1)
+  if (millis() > delayUDP)
   {
     // send an NTP packet to a time server
     Serial << F("Sending UDP request...");
-    sendNTPpacket(timeServer);
+    sendNTPpacket(timeServer, 1000);
     Serial << "OK\n";
 
     // wait to see if a reply is available
@@ -359,9 +384,9 @@ void loop()
     // wait ten seconds before asking for the time again
     // attende 10 secondi prima di effettuare una nuova richiesta
     //delay(5000);
-    tempoOp1 = millis() + 300000;
+    delayUDP = millis() + 300000;
   }
-  if (millis() > tempoOp2)
+  if (millis() > delayPixels)
   {
     DateTime now = rtc.now(); //creo istanza ora/data
     int hour = now.hour();
@@ -382,7 +407,7 @@ void loop()
     Serial.println();
     printTime(hour, minute, second);
     //delay(1000);
-    tempoOp2 = millis() + 1000;
+    delayPixels = millis() + 1000;
   }
 }
 
@@ -948,12 +973,14 @@ void printTime(int hour, int minute, int second)
   }
 
   //secondi
-  if (second >= 0 && second <= 4)
-  {
+  if(second == 0){
     for (int i = 0; i < 13; i++)
     {
       generateWord(i, 0, 0, black);
     }
+  }
+  else if (second >= 0 && second <= 4)
+  {
     generateWord(1, 0, 0, white);
   }
   else if (second >= 5 && second <= 9)
