@@ -68,9 +68,7 @@ unsigned long delayUDP;
 // delay del refresh dei pixel
 unsigned long delayPixels;
 
-// define ip address if requiwhite
-// NOTE : if your network is not of type 255.255.255.0 or your gateway is not xx.xx.xx.1
-// you should set also both netmask and gateway
+// Impostazione network
 #ifdef IPADDR
 IPAddress ip(IPADDR);
 #ifdef GATEWAY
@@ -85,20 +83,15 @@ IPAddress nm(255, 255, 255, 0);
 #endif
 #endif
 
-// local port to listen for UDP packets
-unsigned int localPort = 2390;
-
-// IP address of the NTP server
-// time.nist.gov
+// Porta che ascolta i pacchetti UDP
+unsigned const int localPort = 2390;
+// Indirizzo IP time server - time.nist.gov
 IPAddress timeServer(129, 6, 15, 28);
-
-// NTP time stamp is in the first 48 bytes of the message
+// Informazioni sull'orario NTP sono nei primi 48 bytes del messaggio
 const int NTP_PACKET_SIZE = 48;
-
-//buffer to hold incoming and outgoing packets
+// Buffer che individua i pacchetti
 byte packetBuffer[NTP_PACKET_SIZE];
-
-// A UDP instance to let us send and receive packets over UDP
+// Istanza UPD che gestisce l'invio e la ricezione di pacchetti
 FishinoUDP Udp;
 
 /*
@@ -106,79 +99,72 @@ Setup del sistema
 */
 void setup()
 {
-  // set del delay all'orario corrente per fargli fare subito la prima richiesta
+  // Delay all'orario corrente per fargli fare subito la prima richiesta
   delayUDP = millis();
-
-  // set del delay a 1 secondo
-  delayPixels = millis() + 1000; //1 sec
-
-  // Initialize serial and wait for port to open
+  // Delay dei led a 1 secondo
+  delayPixels = millis() + 1000;
   // Inizializza la porta seriale e ne attende l'apertura
   Serial.begin(115200);
-
-  // reset and test WiFi module
-  // resetta e testa il modulo WiFi
+  // Riavvia e testa il modulo WiFi
   while (!Fishino.reset())
+  {
     Serial << F("Fishino RESET FAILED, RETRYING...\n");
+  }
   Serial << F("Fishino WiFi RESET OK\n");
-
-  // go into station mode
-  // imposta la modalità stazione
+  // Imposta la modalità stazione (default per una connessione WiFi)
   Fishino.setMode(STATION_MODE);
-
-  // try forever to connect to AP
-  // tenta la connessione finchè non riesce
-  Serial << F("Connecting to AP...");
+  // Tenta la connessione finchè non riesce
+  Serial << F("Connessione al AP...");
   while (!Fishino.begin(MY_SSID, MY_PASS))
   {
     Serial << ".";
     delay(2000);
   }
   Serial << "OK\n";
-
-// setup IP or start DHCP client
-// imposta l'IP statico oppure avvia il client DHCP
+// Imposta l'IP statico oppure avvia il client DHCP
 #ifdef IPADDR
   Fishino.config(ip, gw, nm);
 #else
   Fishino.staStartDHCP();
 #endif
 
-  // wait till connection is established
-  Serial << F("Waiting for IP...");
+  // Aspetta finché non c'è una connessione stabile
+  Serial << F("Aspettando un IP...");
   while (Fishino.status() != STATION_GOT_IP)
   {
     Serial << ".";
     delay(500);
   }
   Serial << "OK\n";
-
-  // print connection status on serial port
-  // stampa lo stato della connessione sulla porta seriale
+  // Stampa lo stato della connessione sulla porta seriale
   printWifiStatus();
-
-  Serial << F("Starting connection to server...\n");
+  // Inizia la connessione con il server e ascolta i pacchetti
+  Serial << F("Inizio connessione al server...\n");
   Udp.begin(localPort);
-
+  // Inizializzazione della striscia di led
   strip.begin();
   strip.setBrightness(255);
   strip.show();
+  // Impostazione del RTC
   if (!rtc.begin())
-  { //verifico la presenza dell'RTC
+  {
     Serial.println("Impossibile trovare RTC");
     while (1)
       ;
   }
-
-  if (!rtc.isrunning())
-  { //verifico funzionamento dell'RTC
+  // Verifica funzionamento RTC
+  // Inserisce l'orario del computer durante la compilazione
+  else if (!rtc.isrunning())
+  {
     Serial.println("RTC non è in funzione!");
-    //inserisce l'orario del computer durante la compilazione
+  }
+  else
+  {
     // Se vuoi un orario personalizzato, togli il commento alla riga successiva
     // l'orario: ANNO, MESE, GIORNI, ORA, MINUTI, SECONDI
+    //rtc.adjust(DateTime(2014, 1, 12, 0, 59, 40));
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
-  //rtc.adjust(DateTime(2014, 1, 12, 0, 59, 40));
-  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 }
 
 /*

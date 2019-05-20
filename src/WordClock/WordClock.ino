@@ -826,8 +826,11 @@ void printSecond(int second)
 {
   switch (second)
   {
-  case 0 ... 4:
+  case 0:
     generateSeconds(12, black);
+    break;
+
+  case 1 ... 4:
     generateSeconds(1, white);
     break;
 
