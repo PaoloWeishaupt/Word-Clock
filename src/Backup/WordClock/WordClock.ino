@@ -291,31 +291,7 @@ void loop()
 
     while (Udp.parsePacket())
     {
-      Serial << F("Packet received\n");
-
-      // print remote port and IP of incoming packet, just to show them
-      // stampa IP e porta remoti per mostrare la provenienza del pacchetto
-      IPAddress remoteIp = Udp.remoteIP();
-      uint32_t remotePort = Udp.remotePort();
-      Serial << F("Remote IP   : ") << remoteIp << "\n";
-      Serial << F("Remote port : ") << remotePort << "\n";
-
-      // We've received a packet, read the data from it and put into a buffer
-      // abbiamo ricevuto un pacchetto, leggiamo i dati ed inseriamoli in un buffer
-      Udp.read(packetBuffer, NTP_PACKET_SIZE);
-
-      // the timestamp starts at byte 40 of the received packet and is four bytes,
-      // or two words, long. First, extract the two words:
-      // il timestamp inizia dal byte 40 del pacchetto ricevuto, e consiste in 4 bytes
-      // o due words, long. Innanzitutto estraiamo le due words
-      unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
-      unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);
-
-      // combine the four bytes (two words) into a long integer
-      // this is NTP time (seconds since Jan 1 1900):
-      // combiniamo i 4 bytes (o 2 words) in un long integer
-      // che è il tempo NTP (secondi dal primo Gennaio 1900)
-      unsigned long secsSince1900 = highWord << 16 | lowWord;
+      unsigned long secsSince1900 = getPacket();
       Serial << F("Seconds since Jan 1 1900 = ") << secsSince1900 << "\n";
 
       // now convert NTP time into everyday time
