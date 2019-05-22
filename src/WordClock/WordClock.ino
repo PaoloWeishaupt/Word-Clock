@@ -329,7 +329,6 @@ void loop()
 
 void printTime(int hour, int minute, int second)
 {
-  int diff;
   boolean meno = false;
 
   //PAUSA
@@ -365,7 +364,6 @@ void printTime(int hour, int minute, int second)
       mezzogiorno(black);
       una(white);
     }
-    //time += "mezzogiorno ";
   }
   else if (hour == 0)
   {
@@ -387,7 +385,6 @@ void printTime(int hour, int minute, int second)
       una(white);
       egrave(white);
     }
-    //time += "mezzanotte ";
   }
   else if (hour == 1 || hour == 13)
   {
@@ -431,7 +428,6 @@ void printTime(int hour, int minute, int second)
       due(black);
       tre(white);
     }
-    //time += "due ";
   }
   else if (hour == 3 || hour == 15)
   {
@@ -454,7 +450,6 @@ void printTime(int hour, int minute, int second)
       tre(black);
       quattro(white);
     }
-    //time += "tre ";
   }
   else if (hour == 4 || hour == 16)
   {
@@ -478,7 +473,6 @@ void printTime(int hour, int minute, int second)
       quattro(black);
       cinqueOre(white);
     }
-    //time += "quattro ";
   }
   else if (hour == 5 || hour == 17)
   {
@@ -500,7 +494,6 @@ void printTime(int hour, int minute, int second)
       cinqueOre(black);
       seiOn(white);
     }
-    //time += "cinque ";
   }
   else if (hour == 6 || hour == 18)
   {
@@ -522,7 +515,6 @@ void printTime(int hour, int minute, int second)
       seiOn(black);
       sette(white);
     }
-    //time += "sei ";
   }
   else if (hour == 7 || hour == 19)
   {
@@ -544,7 +536,6 @@ void printTime(int hour, int minute, int second)
       sette(black);
       otto(white);
     }
-    //time += "sette ";
   }
   else if (hour == 8 || hour == 20)
   {
@@ -566,7 +557,6 @@ void printTime(int hour, int minute, int second)
       otto(black);
       nove(white);
     }
-    //time += "otto ";
   }
   else if (hour == 9 || hour == 21)
   {
@@ -588,7 +578,6 @@ void printTime(int hour, int minute, int second)
       nove(black);
       dieciOre(white);
     }
-    //time += "nove ";
   }
   else if (hour == 10 || hour == 22)
   {
@@ -610,7 +599,6 @@ void printTime(int hour, int minute, int second)
       dieciOre(black);
       undici(white);
     }
-    //time += "dieci ";
   }
   else if (hour == 11 || hour == 23)
   {
@@ -640,7 +628,6 @@ void printTime(int hour, int minute, int second)
         mezzanotte(white);
       }
     }
-    //time += "undici ";
   }
 
   //e
@@ -654,7 +641,7 @@ void printTime(int hour, int minute, int second)
   }
 
   //Illuminazione dei pallini
-  diff = minute - int(minute / 10) * 10;
+  int diff = minute - int(minute / 10) * 10;
 
   //Minuti
   if (meno == false)
