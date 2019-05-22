@@ -402,34 +402,8 @@ void printTime(int hour, int minute, int second)
   int diff;
   boolean meno = false;
 
-  int pausaHour = hour;
-
   //PAUSA
-  //Mattino
-  Serial.println(hour);
-  Serial.println(minute);
-  if ((pausaHour == 9 && minute >= 50) || (pausaHour == 10 && minute >= 0 && minute < 2))
-  {
-    generateWord(0, 8, 12, green);
-  }
-  else if (pausaHour == 10 && minute >= 2 && minute <= 4)
-  {
-    generateWord(0, 8, 12, red);
-  }
-  //Pomeriggio
-  else if (pausaHour == 14 && minute >= 45 && minute <= 56)
-  {
-    generateWord(0, 8, 12, green);
-  }
-  else if (pausaHour == 14 && minute >= 57 && minute <= 59)
-  {
-    generateWord(0, 8, 12, red);
-  }
-  //Non pausa
-  else
-  {
-    generateWord(0, 8, 12, black);
-  }
+  printBreak(hour, minute);
 
   //Più o meno
   if (minute < 35)
@@ -445,21 +419,21 @@ void printTime(int hour, int minute, int second)
   {
     if (minute < 35)
     {
-      generateWord(1, 1, 1, white);
-      generateWord(2, 1, 11, white);
+      egrave(white);
+      mezzogiorno(white);
     }
     else if (minute == 35)
     {
-      generateWord(1, 1, 1, white);
-      generateWord(2, 1, 11, white);
-      generateWord(8, 1, 12, white);
+      egrave(white);
+      mezzogiorno(white);
+      eTrentacinque(white);
     }
     if (minute > 35)
     {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 1, 1, white);
-      generateWord(2, 1, 11, black);
-      generateWord(1, 10, 14, white);
+      eTrentacinque(black);
+      egrave(white);
+      mezzogiorno(black);
+      una(white);
     }
     //time += "mezzogiorno ";
   }
@@ -467,21 +441,21 @@ void printTime(int hour, int minute, int second)
   {
     if (minute < 35)
     {
-      generateWord(1, 1, 1, white);
-      generateWord(7, 1, 10, white);
+      egrave(white);
+      mezzanotte(white);
     }
     else if (minute == 35)
     {
-      generateWord(1, 1, 1, white);
-      generateWord(7, 1, 10, white);
-      generateWord(8, 1, 12, white);
+      egrave(white);
+      mezzanotte(white);
+      eTrentacinque(white);
     }
     if (minute > 35)
     {
-      generateWord(8, 1, 12, black);
-      generateWord(7, 1, 10, black);
-      generateWord(1, 10, 14, white);
-      generateWord(1, 1, 1, white);
+      eTrentacinque(black);
+      mezzanotte(black);
+      una(white);
+      egrave(white);
     }
     //time += "mezzanotte ";
   }
@@ -489,47 +463,43 @@ void printTime(int hour, int minute, int second)
   {
     if (minute < 35)
     {
-      generateWord(1, 1, 1, white);
-      generateWord(1, 10, 14, white);
+      egrave(white);
+      una(white);
     }
     else if (minute == 35)
     {
-      generateWord(1, 1, 1, white);
-      generateWord(1, 10, 14, white);
-      generateWord(8, 1, 12, white);
+      egrave(white);
+      una(white);
+      eTrentacinque(white);
     }
     if (minute > 35)
     {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(1, 1, 1, black);
-      generateWord(1, 10, 14, black);
-      generateWord(2, 12, 14, white);
+      eTrentacinque(black);
+      sonoLe(white);
+      eTrentacinque(black);
+      una(white);
+      due(white);
     }
   }
   else if (hour == 2 || hour == 14)
   {
     if (minute < 35)
     {
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(2, 12, 14, white);
+      sonoLe(white);
+      due(white);
     }
     else if (minute == 35)
     {
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(2, 12, 14, white);
-      generateWord(8, 1, 12, white);
+      sonoLe(white);
+      due(white);
+      eTrentacinque(white);
     }
     if (minute > 35)
     {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(2, 12, 14, black);
-      generateWord(3, 1, 3, white);
+      eTrentacinque(black);
+      sonoLe(white);
+      due(black);
+      tre(white);
     }
     //time += "due ";
   }
@@ -538,52 +508,45 @@ void printTime(int hour, int minute, int second)
     //tre();
     if (minute < 35)
     {
-      generateWord(3, 1, 3, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
+      tre(white);
+      sonoLe(white);
     }
     else if (minute == 35)
     {
-      generateWord(3, 1, 3, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(8, 1, 12, white);
+      tre(white);
+      sonoLe(white);
+      eTrentacinque(white);
     }
     if (minute > 35)
     {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(3, 1, 3, black);
-      generateWord(3, 5, 11, white);
+      eTrentacinque(black);
+      sonoLe(white);
+      tre(black);
+      quattro(white);
     }
     //time += "tre ";
   }
   else if (hour == 4 || hour == 16)
   {
-    generateWord(3, 5, 11, white);
-    generateWord(1, 2, 5, white);
-    generateWord(1, 7, 8, white);
+    quattro(white);
+    sonoLe(white);
     if (minute < 35)
     {
-      generateWord(3, 5, 11, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
+      quattro(white);
+      sonoLe(white);
     }
     else if (minute == 35)
     {
-      generateWord(3, 5, 11, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(8, 1, 12, white);
+      quattro(white);
+      sonoLe(white);
+      eTrentacinque(white);
     }
     if (minute > 35)
     {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(3, 5, 11, black);
-      generateWord(4, 1, 6, white);
+      eTrentacinque(black);
+      sonoLe(white);
+      quattro(black);
+      cinqueOre(white);
     }
     //time += "quattro ";
   }
@@ -591,24 +554,21 @@ void printTime(int hour, int minute, int second)
   {
     if (minute < 35)
     {
-      generateWord(4, 1, 6, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
+      cinqueOre(white);
+      sonoLe(white);
     }
     else if (minute == 35)
     {
-      generateWord(4, 1, 6, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(8, 1, 12, white);
+      cinqueOre(white);
+      sonoLe(white);
+      eTrentacinque(white);
     }
     if (minute > 35)
     {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(4, 1, 6, black);
-      generateWord(3, 12, 14, white);
+      eTrentacinque(black);
+      sonoLe(white);
+      cinqueOre(black);
+      seiOn(white);
     }
     //time += "cinque ";
   }
@@ -616,24 +576,22 @@ void printTime(int hour, int minute, int second)
   {
     if (minute < 35)
     {
-      generateWord(3, 12, 14, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
+      seiOn(white);
+      sonoLe(white);
+
     }
     else if (minute == 35)
     {
-      generateWord(3, 12, 14, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(8, 1, 12, white);
+      seiOn(white);
+      sonoLe(white);
+      eTrentacinque(white);
     }
     if (minute > 35)
     {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(3, 12, 14, black);
-      generateWord(4, 10, 14, white);
+      eTrentacinque(black);
+      sonoLe(white);
+      seiOn(black);
+      sette(white);
     }
     //time += "sei ";
   }
@@ -641,24 +599,21 @@ void printTime(int hour, int minute, int second)
   {
     if (minute < 35)
     {
-      generateWord(4, 10, 14, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
+      sette(white);
+      sonoLe(white);
     }
     else if (minute == 35)
     {
-      generateWord(4, 10, 14, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(8, 1, 12, white);
+      sette(white);
+      sonoLe(white);
+      eTrentacinque(white);
     }
     if (minute > 35)
     {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(4, 10, 14, black);
-      generateWord(5, 1, 4, white);
+      eTrentacinque(black);
+      sonoLe(white);
+      sette(black);
+      otto(white);
     }
     //time += "sette ";
   }
@@ -666,24 +621,21 @@ void printTime(int hour, int minute, int second)
   {
     if (minute < 35)
     {
-      generateWord(5, 1, 4, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
+      otto(white);
+      sonoLe(white);
     }
     else if (minute == 35)
     {
-      generateWord(5, 1, 4, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(8, 1, 12, white);
+      otto(white);
+      sonoLe(white);
+      eTrentacinque(white);
     }
     if (minute > 35)
     {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(5, 1, 4, black);
-      generateWord(5, 5, 8, white);
+      eTrentacinque(black);
+      sonoLe(white);
+      otto(black);
+      nove(white);
     }
     //time += "otto ";
   }
@@ -691,24 +643,21 @@ void printTime(int hour, int minute, int second)
   {
     if (minute < 35)
     {
-      generateWord(5, 5, 8, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
+      nove(white);
+      sonoLe(white);
     }
     else if (minute == 35)
     {
-      generateWord(5, 5, 8, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(8, 1, 12, white);
+      nove(white);
+      sonoLe(white);
+      eTrentacinque(white);
     }
     if (minute > 35)
     {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(5, 5, 8, black);
-      generateWord(5, 10, 14, white);
+      eTrentacinque(black);
+      sonoLe(white);
+      nove(black);
+      dieciOre(white);
     }
     //time += "nove ";
   }
@@ -716,24 +665,21 @@ void printTime(int hour, int minute, int second)
   {
     if (minute < 35)
     {
-      generateWord(5, 10, 14, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
+      dieciOre(white);
+      sonoLe(white);
     }
     else if (minute == 35)
     {
-      generateWord(5, 10, 14, white);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(8, 1, 12, white);
+      dieciOre(white);
+      sonoLe(white);
+      eTrentacinque(white);
     }
     if (minute > 35)
     {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(5, 10, 14, black);
-      generateWord(6, 1, 6, white);
+      eTrentacinque(black);
+      sonoLe(white);
+      dieciOre(black);
+      undici(white);
     }
     //time += "dieci ";
   }
@@ -741,31 +687,28 @@ void printTime(int hour, int minute, int second)
   {
     if (minute < 35)
     {
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(6, 1, 6, white);
+      sonoLe(white);
+      undici(white);
     }
     else if (minute == 35)
     {
-      generateWord(1, 2, 5, white);
-      generateWord(1, 7, 8, white);
-      generateWord(6, 1, 6, white);
-      generateWord(8, 1, 12, white);
+      sonoLe(white);
+      undici(white);
+      eTrentacinque(white);
     }
     else if (minute > 35)
     {
-      generateWord(8, 1, 12, black);
-      generateWord(1, 2, 5, black);
-      generateWord(1, 7, 8, black);
-      generateWord(6, 1, 6, black);
-      generateWord(1, 1, 1, white);
+      eTrentacinque(black);
+      sonoLe(black);
+      undici(black);
+      egrave(white);
       if (hour == 11)
       {
-        generateWord(2, 1, 11, white);
+        mezzogiorno(white);
       }
       else if (hour == 23)
       {
-        generateWord(7, 1, 10, white);
+        mezzanotte(white);
       }
     }
     //time += "undici ";
@@ -774,11 +717,11 @@ void printTime(int hour, int minute, int second)
   //e
   if (minute >= 5 && minute <= 35)
   {
-    generateWord(6, 10, 10, white);
+    e(white);
   }
   else
   {
-    generateWord(6, 10, 10, black);
+    e(black);
   }
 
   //Illuminazione dei pallini
@@ -790,12 +733,12 @@ void printTime(int hour, int minute, int second)
 
     if (minute % 5 != 0)
     {
-      generateWord(0, 1, 1, white);
-      generateWord(0, 2, 2, black);
+      piu(white);
+      meno(black);
     }
     else
     {
-      generateWord(0, 1, 6, black);
+      piuMenoEMinuti(black);
     }
 
     if (diff != 0 && diff != 5)
@@ -880,7 +823,7 @@ void printTime(int hour, int minute, int second)
     }
     else
     {
-      generateWord(0, 1, 6, black);
+      piuMenoEMinuti(black);
     }
 
     if (diff != 0 && diff != 5)
@@ -888,8 +831,7 @@ void printTime(int hour, int minute, int second)
 
       if (diff == 2 || diff == 7)
       {
-        generateWord(0, 3, 5, white);
-        generateWord(0, 6, 6, black);
+        printMinutePoints(5, white);
         if (minute > 55)
         {
           generateWord(9, 1, 4, black);
@@ -897,8 +839,7 @@ void printTime(int hour, int minute, int second)
       }
       else if (diff == 3 || diff == 8)
       {
-        generateWord(0, 3, 4, white);
-        generateWord(0, 5, 6, black);
+        printMinutePoints(4, white);
         if (minute > 55)
         {
           generateWord(9, 1, 4, black);
@@ -906,8 +847,7 @@ void printTime(int hour, int minute, int second)
       }
       else if (diff == 4 || diff == 9)
       {
-        generateWord(0, 3, 3, white);
-        generateWord(0, 4, 6, black);
+        printMinutePoints(3, white);
         if (minute > 55)
         {
           generateWord(9, 1, 4, black);
@@ -958,128 +898,350 @@ void printTime(int hour, int minute, int second)
     }
   }
 
-  //secondi
-  if(second == 0){
-    for (int i = 0; i < 13; i++)
-    {
-      generateWord(i, 0, 0, black);
-    }
-  }
-  else if (second >= 0 && second <= 4)
+  printSecond(second);
+
+}
+
+/*
+Accendo "pausa" del colore passato
+*/
+void pausa(uint32_t color)
+{
+  generateWord(0, 8, 12, color);
+}
+
+/*
+Accendo "più" del colore passato
+*/
+void piu(uint32_t color)
+{
+  generateWord(0, 1, 1, color);
+}
+
+/*
+Accendo "meno" del colore passato
+*/
+void meno(uint32_t color)
+{
+  generateWord(0, 2, 2, color);
+}
+
+/*
+Accendo "più", "meno" e i minuti del colore passato
+*/
+void piuMenoEMinuti(uint32_t color)
+{
+  generateWord(0, 1, 6, color);
+}
+
+/*
+Accendo "è" del colore passato
+*/
+void egrave(uint32_t color)
+{
+  generateWord(1, 1, 1, color);
+}
+
+/*
+Accendo "sono le" del colore passato
+*/
+void sonoLe(uint32_t color)
+{
+  generateWord(1, 2, 5, color);
+  generateWord(1, 7, 8, color);
+}
+
+/*
+Accendo "l'una" del colore passato
+*/
+void una(uint32_t color)
+{
+  generateWord(1, 10, 14, color);
+}
+
+/*
+Accendo "mezzogiorno" del colore passato
+*/
+void mezzogiorno(uint32_t color)
+{
+  generateWord(2, 1, 11, color);
+}
+
+/*
+Accendo "due" del colore passato
+*/
+void due(uint32_t color)
+{
+  generateWord(2, 12, 14, color);
+}
+
+/*
+Accendo "tre" del colore passato
+*/
+void tre(uint32_t color)
+{
+  generateWord(3, 1, 3, color);
+}
+
+/*
+Accendo "quattro" del colore passato
+*/
+void quattro(uint32_t color)
+{
+  generateWord(3, 5, 11, color);
+}
+
+/*
+Accendo "cinque" delle ore del colore passato
+*/
+void cinqueOre(uint32_t color)
+{
+    generateWord(4, 1, 6, color);
+}
+
+/*
+Accendo "cinque" dei minuti del colore passato
+*/
+void cinqueMinuti(uint32_t color)
+{
+    generateWord(9, 9, 14, color);
+}
+
+/*
+Accendo "sei" del colore passato
+*/
+void seiOn(uint32_t color)
+{
+  generateWord(3, 12, 14, color);
+}
+
+/*
+Accendo "sette" del colore passato
+*/
+void sette(uint32_t color)
+{
+  generateWord(4, 10, 14, color);
+}
+
+/*
+Accendo "otto" del colore passato
+*/
+void otto(uint32_t color)
+{
+  generateWord(5, 1, 4, color);
+}
+
+/*
+Accendo "nove" del colore passato
+*/
+void nove(uint32_t color)
+{
+  generateWord(5, 5, 8, color);
+}
+
+/*
+Accendo "dieci" delle ore del colore passato
+*/
+void dieciOre(uint32_t color)
+{
+    generateWord(5, 10, 14, color);
+}
+
+/*
+Accendo "dieci" dei minuti del colore passato
+*/
+void dieciMinuti(uint32_t color)
+{
+  generateWord(10, 1, 5, color);
+}
+
+
+/*
+Accendo "undici" del colore passato
+*/
+void undici(uint32_t color)
+{
+  generateWord(6, 1, 6, color);
+}
+
+/*
+Accendo "e" del colore passato
+*/
+void e(uint32_t color)
+{
+  generateWord(6, 10, 10, color);
+}
+
+/*
+Accendo "mezzanotte" del colore passato
+*/
+void mezzanotte(uint32_t color)
+{
+  generateWord(7, 1, 10, color);
+}
+
+/*
+Accendo "e trentacinque" del colore passato
+*/
+void eTrentacinque(uint32_t color)
+{
+  e(color);
+  generateWord(8, 1, 12, color);
+}
+
+/*
+Accendo "meno" del colore passato
+*/
+void menoOn(uint32_t color)
+{
+  generateWord(9, 1, 4, color);
+}
+
+/*
+Accendo "un quarto" del colore passato
+*/
+void unQuarto(uint32_t color)
+{
+  generateWord(10, 6, 7, color);
+  generateWord(10, 9, 14, color);
+}
+
+/*
+Accendo "venti" del colore passato
+*/
+void venti(uint32_t color)
+{
+  generateWord(11, 1, 5, color);
+}
+
+/*
+Accendo "e mezza" del colore passato
+*/
+void eMezza(uint32_t color)
+{
+  generateWord(11, 1, 5, color);
+  generateWord(11, 1, 5, color);
+}
+
+/*
+Accendo "venticinque" del colore passato
+*/
+void venticinque(uint32_t color)
+{
+  generateWord(12, 4, 14, color);
+}
+
+/*
+Stampa della parola "pausa" sul word clock
+*/
+void printBreak(int hour, int minute)
+{
+  uint32_t color = black;
+  // Pausa OK (9:50 - 10:01 / 14:45 - 14:56)
+  if (
+      (hour == 9 && minute >= 50) ||
+      (hour == 10 && minute >= 0 && minute < 2) ||
+      (hour == 14 && minute >= 45 && minute < 57))
   {
-    generateWord(1, 0, 0, white);
+    color = green;
   }
-  else if (second >= 5 && second <= 9)
+  // Pausa sta per finire (10:02 - 10:05 / 14:57 - 15:00)
+  else if (
+      (hour == 10 && minute >= 2 && minute < 5) ||
+      (hour == 14 && minute >= 57 && minute <= 59))
   {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
+    color = red;
   }
-  else if (second >= 10 && second <= 14)
+  // Pausa non c'è, led spenti
+  else
   {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
+    color = black;
   }
-  else if (second >= 15 && second <= 19)
+  // Imposto la parola
+  pausa(color);
+}
+
+/*
+Generazione dei secondi
+*/
+void generateSeconds(int length, uint32_t color)
+{
+  for (int i = 1; i <= length; i++)
   {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
-  }
-  else if (second >= 20 && second <= 24)
-  {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
-    generateWord(5, 0, 0, white);
-  }
-  else if (second >= 25 && second <= 29)
-  {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
-    generateWord(5, 0, 0, white);
-    generateWord(6, 0, 0, white);
-  }
-  else if (second >= 30 && second <= 34)
-  {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
-    generateWord(5, 0, 0, white);
-    generateWord(6, 0, 0, white);
-    generateWord(7, 0, 0, white);
-  }
-  else if (second >= 35 && second <= 39)
-  {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
-    generateWord(5, 0, 0, white);
-    generateWord(6, 0, 0, white);
-    generateWord(7, 0, 0, white);
-    generateWord(8, 0, 0, white);
-  }
-  else if (second >= 40 && second <= 44)
-  {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
-    generateWord(5, 0, 0, white);
-    generateWord(6, 0, 0, white);
-    generateWord(7, 0, 0, white);
-    generateWord(8, 0, 0, white);
-    generateWord(9, 0, 0, white);
-  }
-  else if (second >= 45 && second <= 49)
-  {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
-    generateWord(5, 0, 0, white);
-    generateWord(6, 0, 0, white);
-    generateWord(7, 0, 0, white);
-    generateWord(8, 0, 0, white);
-    generateWord(9, 0, 0, white);
-    generateWord(10, 0, 0, white);
-  }
-  else if (second >= 50 && second <= 54)
-  {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
-    generateWord(5, 0, 0, white);
-    generateWord(6, 0, 0, white);
-    generateWord(7, 0, 0, white);
-    generateWord(8, 0, 0, white);
-    generateWord(9, 0, 0, white);
-    generateWord(10, 0, 0, white);
-    generateWord(11, 0, 0, white);
-  }
-  else if (second >= 55 && second <= 59)
-  {
-    generateWord(1, 0, 0, white);
-    generateWord(2, 0, 0, white);
-    generateWord(3, 0, 0, white);
-    generateWord(4, 0, 0, white);
-    generateWord(5, 0, 0, white);
-    generateWord(6, 0, 0, white);
-    generateWord(7, 0, 0, white);
-    generateWord(8, 0, 0, white);
-    generateWord(9, 0, 0, white);
-    generateWord(10, 0, 0, white);
-    generateWord(11, 0, 0, white);
-    generateWord(12, 0, 0, white);
+    generateWord(i, 0, 0, color);
   }
 }
+
+void printMinutePoints(int endIndex, uint32_t color){
+  generateWord(0, 3, endIndex, color);
+  generateWord(0, endIndex + 1, 6, color);
+}
+
+void printAllMinute(uint32_t color){
+  generateWord(0, 3, 6, color);
+}
+
+/*
+Accensione dei secondi
+*/
+void printSecond(int second)
+{
+  switch (second)
+  {
+  case 0:
+    generateSeconds(12, black);
+    break;
+
+  case 1 ... 4:
+    generateSeconds(1, white);
+    break;
+
+  case 5 ... 9:
+    generateSeconds(2, white);
+    break;
+
+  case 10 ... 14:
+    generateSeconds(3, white);
+    break;
+
+  case 15 ... 19:
+    generateSeconds(4, white);
+    break;
+
+  case 20 ... 24:
+    generateSeconds(5, white);
+    break;
+
+  case 25 ... 29:
+    generateSeconds(6, white);
+    break;
+
+  case 30 ... 34:
+    generateSeconds(7, white);
+    break;
+
+  case 35 ... 39:
+    generateSeconds(8, white);
+    break;
+
+  case 40 ... 44:
+    generateSeconds(9, white);
+    break;
+
+  case 45 ... 49:
+    generateSeconds(10, white);
+    break;
+
+  case 50 ... 54:
+    generateSeconds(11, white);
+    break;
+
+  case 55 ... 59:
+    generateSeconds(12, white);
+    break;
+  }
+}
+
 void pixelOn(int pixel, uint32_t color)
 {
   strip.setPixelColor(pixel, color);
