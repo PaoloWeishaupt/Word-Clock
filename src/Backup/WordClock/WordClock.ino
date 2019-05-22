@@ -162,7 +162,7 @@ void setup()
   {
     // Se vuoi un orario personalizzato, togli il commento alla riga successiva
     // l'orario: ANNO, MESE, GIORNI, ORA, MINUTI, SECONDI
-    //rtc.adjust(DateTime(2014, 1, 12, 0, 59, 40));
+    //rtc.adjust(DateTime(2014, 1, 12, 0, 0, 0));
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
 }
@@ -734,7 +734,7 @@ void printTime(int hour, int minute, int second)
     if (minute % 5 != 0)
     {
       piu(white);
-      meno(black);
+      menoSign(black);
     }
     else
     {
@@ -745,62 +745,51 @@ void printTime(int hour, int minute, int second)
     {
       if (diff >= 1 && diff <= 4 || diff >= 6 && diff <= 9)
       {
-        generateWord(0, 3, 3, white);
-        generateWord(0, 4, 6, black);
+        printMinutePoints(3, white);
       }
       if (diff >= 2 && diff <= 4 || diff >= 7 && diff <= 9)
       {
-        generateWord(0, 3, 4, white);
-        generateWord(0, 5, 6, black);
+        printMinutePoints(4, white);
       }
       if (diff >= 3 && diff <= 4 || diff >= 8 && diff <= 9)
       {
-        generateWord(0, 3, 5, white);
-        generateWord(0, 6, 6, black);
+        printMinutePoints(5, white);
       }
       if (diff == 4 || diff == 9)
       {
-        generateWord(0, 3, 6, white);
+        printAllMinute(white);
       }
     }
 
     if (minute >= 5 && minute < 10)
     {
-      //genWord(90, 5, 10, on); //Five on
-      generateWord(8, 7, 12, white);
+      cinqueMinuti(white);
     }
     else if (minute >= 10 && minute < 15)
     {
-      //genWord(100, 0, 4, on);
-      generateWord(10, 1, 5, white);
-      generateWord(8, 7, 12, black);
+      dieciMinuti(white);
+      cinqueMinuti(black);
     }
     else if (minute >= 15 && minute < 20)
     {
-      //genWord(80, 2, 3, on);
-      //genWord(80, 5, 10, on);
-      generateWord(10, 6, 7, white);
-      generateWord(10, 9, 14, white);
-      generateWord(10, 1, 5, black);
+      unQuarto(white);
+      dieciMinuti(black);
     }
     else if (minute >= 20 && minute < 25)
     {
-      //genWord(90, 0, 4, on); //Twenty on
-      generateWord(10, 6, 7, black);
-      generateWord(10, 9, 14, black);
-      generateWord(11, 1, 5, white);
+      unQuarto(black);
+      venti(white);
     }
     else if (minute >= 25 && minute < 30)
     {
       //genWord(90, 0, 10, on); //25 on
-      generateWord(12, 4, 14, white);
-      generateWord(11, 1, 5, black);
+      venticinque(white);
+      venti(black);
     }
     else if (minute >= 30 && minute < 35)
     {
-      //genWord(100, 6, 10, on); //Half on
-      generateWord(7, 1, 5, white);
-      generateWord(12, 4, 14, black);
+      eMezza(white);
+      venticinque(black);
     }
   }
   else
@@ -810,7 +799,7 @@ void printTime(int hour, int minute, int second)
     {
       if (minute != 35)
       {
-        generateWord(9, 1, 4, white); //Meno
+        menoOn(white);
       }
     }
 
@@ -818,7 +807,7 @@ void printTime(int hour, int minute, int second)
     {
       if (minute < 55)
       {
-        generateWord(0, 1, 1, white);
+        piu(white);
       }
     }
     else
@@ -834,7 +823,7 @@ void printTime(int hour, int minute, int second)
         printMinutePoints(5, white);
         if (minute > 55)
         {
-          generateWord(9, 1, 4, black);
+          menoOn(black);
         }
       }
       else if (diff == 3 || diff == 8)
@@ -842,7 +831,7 @@ void printTime(int hour, int minute, int second)
         printMinutePoints(4, white);
         if (minute > 55)
         {
-          generateWord(9, 1, 4, black);
+          menoOn(black);
         }
       }
       else if (diff == 4 || diff == 9)
@@ -850,51 +839,48 @@ void printTime(int hour, int minute, int second)
         printMinutePoints(3, white);
         if (minute > 55)
         {
-          generateWord(9, 1, 4, black);
+          menoOn(black);
         }
       }
       else if (diff == 1 || diff == 6)
       {
-        generateWord(0, 3, 6, white);
+        printAllMinute(white);
         if (minute > 55)
         {
-          generateWord(9, 1, 4, black);
+          menoOn(black);
         }
       }
     }
     if (minute > 55)
     {
-      generateWord(0, 2, 2, white);
-      generateWord(0, 1, 1, black);
-      generateWord(12, 9, 14, black);
-      generateWord(9, 1, 4, black);
-      //generateWord(12, 9, 14, white);
+      menoSign(white);
+      piu(black);
+      menoCinque(black);
+      menoOn(black);
     }
     else if (minute > 50)
     {
-      generateWord(12, 9, 14, white);
-      generateWord(10, 1, 5, black);
+      menoCinque(white);
+      dieciMinuti(black);
     }
     else if (minute > 45)
     {
-      generateWord(10, 1, 5, white);
-      generateWord(10, 6, 7, black);
-      generateWord(10, 9, 14, black);
+      dieciMinuti(white);
+      unQuarto(black);
     }
     else if (minute > 40)
     {
-      generateWord(10, 6, 7, white);
-      generateWord(10, 9, 14, white);
-      generateWord(11, 1, 5, black);
+      unQuarto(white);
+      venti(black);
     }
     else if (minute >= 35)
     {
       if (minute != 35)
       {
-        generateWord(11, 1, 5, white);
+        venti(white);
       }
-      generateWord(12, 4, 14, black);
-      generateWord(7, 1, 5, black);
+      venticinque(black);
+      eMezza(black);
     }
   }
 
@@ -921,9 +907,14 @@ void piu(uint32_t color)
 /*
 Accendo "meno" del colore passato
 */
-void meno(uint32_t color)
+void menoSign(uint32_t color)
 {
   generateWord(0, 2, 2, color);
+}
+
+void menoCinque(uint32_t color)
+{
+  generateWord(12, 9, 14, color);
 }
 
 /*
@@ -1119,8 +1110,8 @@ Accendo "e mezza" del colore passato
 */
 void eMezza(uint32_t color)
 {
-  generateWord(11, 1, 5, color);
-  generateWord(11, 1, 5, color);
+  generateWord(11, 8, 8, color);
+  generateWord(11, 10, 14, color);
 }
 
 /*
