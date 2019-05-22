@@ -50,6 +50,7 @@ void loop()
 void waitMode(long waitTime){
   modeButtonState = digitalRead(modeButton);
   lastModeButtonState = modeButtonState;
+  Serial << F("Change mode");
 }
 
 void waitIncrement()
@@ -69,6 +70,7 @@ void waitConfirm(long waitTime)
     Serial.println(String(confirmedHour) + ":" + String(confirmedMinute));
   }
   lastConfirmButtonState = confirmButtonState;
+  Serial << F("Confirm");
 }
 
 void incrementHour()
@@ -92,6 +94,7 @@ void incrementHour()
     }
   }
   lastHourButtonState = hourButtonState;
+  Serial << F("Increment hour");
 }
 
 void incrementMinute()
@@ -122,4 +125,5 @@ void incrementMinute()
     }
   }
   lastMinuteButtonState = minuteButtonState;
+  Serial << F("Increment minute");
 }
