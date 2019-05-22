@@ -1,6 +1,6 @@
 /*
 Word Clock
-Mattia Lazzaroni, Paolo Claudio Weishaupt, Gabriele Alessi
+Gabriele Alessi, Mattia Lazzaroni, Paolo Claudio Weishaupt
 https://github.com/PaoloWeishaupt/Word-Clock
 */
 
@@ -8,8 +8,8 @@ https://github.com/PaoloWeishaupt/Word-Clock
 #include <Fishino.h>
 #define DEBUG_LEVEL_INFO
 #include <FishinoDebug.h>
-#include <Wire.h>   //libreria per interfacciare i2c e rtc
-#include "RTClib.h" //libreria rtc
+#include <Wire.h>
+#include "RTClib.h"
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
 #include <avr/power.h>
@@ -46,49 +46,29 @@ const uint32_t white = strip.Color(255, 255, 255);
 const uint32_t black = strip.Color(0, 0, 0);
 const uint32_t orange = strip.Color(255, 165, 0);
 
-// Buttons pins
-int hourButton = 8;
-int minuteButton = 11;
-int confirmButton = 12;
-int modeButton = 13;
-// Buttons states
-int hourButtonState = 0;
-int lastHourButtonState = 0;
-int minuteButtonState = 0;
-int lastMinuteButtonState = 0;
-int confirmButtonState = 0;
-int lastConfirmButtonState = 0;
-int modeButtonState = 0;
-int lastModeButtonState = 0;
-// Numbers to display
-int hourUnit = 0;
-int hourTen = 0;
-int minuteUnit = 0;
-int minuteTen = 0;
-// Hour and minute to set up
-int confirmedHour = 0;
-int confirmedMinute = 0;
+// Valori dell'orario
+int hour = 0;
+int minute = 0;
+int second = 0;
+
+// Se si deve usare la parola "meno" cambiano le parole sul word clock
+bool meno = false;
 
 // Definizione network
 #ifndef __MY_NETWORK_H
-
 // SSID della rete WiFi
 #define MY_SSID "Potaspot"
-
 // Password della rete WiFi (Usare "" per rete non protetta)
 #define MY_PASS "MeterPeterPota"
-
 // Commentare la linea seguente per usare DHCP
 //#define IPADDR    192, 168,   1, 251
 #define GATEWAY 192, 168, 1, 1
 #define NETMASK 255, 255, 255, 0
-
 #endif
 
-// delay della richiesta UDP
+// Delay della richiesta UDP
 unsigned long delayUDP;
-
-// delay del refresh dei pixel
+// Delay del refresh dei pixel
 unsigned long delayPixels;
 
 // Impostazione network
@@ -122,12 +102,6 @@ Setup del sistema
 */
 void setup()
 {
-  // Buttons pins
-  pinMode(hourButton, INPUT);
-  pinMode(minuteButton, INPUT);
-  pinMode(confirmButton, INPUT);
-  pinMode(modeButton, INPUT);
-
   // Delay all'orario corrente per fargli fare subito la prima richiesta
   delayUDP = millis();
   // Delay dei led a 1 secondo
@@ -191,8 +165,34 @@ void setup()
   {
     // Se vuoi un orario personalizzato, togli il commento alla riga successiva
     // l'orario: ANNO, MESE, GIORNI, ORA, MINUTI, SECONDI
-    //rtc.adjust(DateTime(2014, 1, 12, 0, 0, 0));
+    //rtc.adjust(DateTime(2014, 1, 12, 0, 59, 40));
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  }
+}
+
+/*
+Esecuzione del sistema
+*/
+void loop()
+{
+  // Controllo la richiesta iniziale
+  if (millis() > delayUDP)
+  {
+    // Invio richiesta pacchetto
+    sendNTPpacket(timeServer, 1000);
+    while (Udp.parsePacket())
+    {
+      // Stampo il tempo iniziale
+      unsigned long secsSince1900 = getPacket();
+      setInitialTime(secsSince1900);
+    }
+    // Attende prima di effettuare una nuova richiesta
+    delayUDP = millis() + 300000;
+  }
+  else
+  {
+    // Stampo l'orario sul word clock
+    setWordClock();
   }
 }
 
@@ -306,545 +306,55 @@ void setInitialTime(unsigned long secsSince1900)
   Serial << epoch % 60 << "\n";
 }
 
-void loop()
+/*
+Accensione di un led di un certo colore
+*/
+void pixelOn(int pixel, uint32_t color)
 {
-  if (millis() > delayUDP)
+  strip.setPixelColor(pixel, color);
+  strip.show();
+}
+
+/*
+Generazione di una parola nel word clock
+Si fa riferimento alla riga, l'indice d'inizio e quello di fine
+*/
+void generateWord(int row, int start, int end, uint32_t color)
+{
+  for (int i = start; i <= end; i++)
   {
-    // send an NTP packet to a time server
-    Serial << F("Sending UDP request...");
-    sendNTPpacket(timeServer, 1000);
-    Serial << "OK\n";
-
-    // wait to see if a reply is available
-    delay(1000);
-
-    while (Udp.parsePacket())
-    {
-      unsigned long secsSince1900 = getPacket();
-      Serial << F("Seconds since Jan 1 1900 = ") << secsSince1900 << "\n";
-
-      setInitialTime(secsSince1900);
-    }
-
-    // wait ten seconds before asking for the time again
-    // attende 10 secondi prima di effettuare una nuova richiesta
-    //delay(5000);
-    delayUDP = millis() + 300000;
-  }
-  if (millis() > delayPixels)
-  {
-    DateTime now = rtc.now(); //creo istanza ora/data
-    int hour = now.hour();
-    int minute = now.minute();
-    int second = now.second();
-    Serial.print(now.year(), DEC); //stampo anno in decimale
-    Serial.print('/');
-    Serial.print(now.month(), DEC); //stampo mese in decimale
-    Serial.print('/');
-    Serial.print(now.day(), DEC); //stampo giorno in decimale
-    Serial.print(" (");
-    Serial.print(now.hour(), DEC); //stampo ora in decimale
-    Serial.print(':');
-    Serial.print(now.minute(), DEC); //stampo minuto in decimale
-    Serial.print(':');
-    Serial.print(now.second(), DEC); //stampo secondi in decimale
-    Serial.print(") ");
-    Serial.println();
-    printTime(hour, minute, second);
-    //delay(1000);
-    delayPixels = millis() + 1000;
+    pixelOn(pixels[row][i], color);
   }
 }
 
-void printTime(int hour, int minute, int second)
+/*
+Stampa della parola "pausa" sul word clock
+*/
+void printBreak(int hour, int minute)
 {
-  int diff;
-  boolean meno = false;
-
-  //PAUSA
-  printBreak(hour, minute);
-
-  //Più o meno
-  if (minute < 35)
+  uint32_t color = black;
+  // Pausa OK (9:50 - 10:01 / 14:45 - 14:56)
+  if (
+      (hour == 9 && minute >= 50) ||
+      (hour == 10 && minute >= 0 && minute < 2) ||
+      (hour == 14 && minute >= 45 && minute < 57))
   {
-    meno = false;
+    color = green;
   }
+  // Pausa sta per finire (10:02 - 10:05 / 14:57 - 15:00)
+  else if (
+      (hour == 10 && minute >= 2 && minute < 5) ||
+      (hour == 14 && minute >= 57 && minute <= 59))
+  {
+    color = red;
+  }
+  // Pausa non c'è, led spenti
   else
   {
-    meno = true;
+    color = black;
   }
-
-  if (hour == 12)
-  {
-    if (minute < 35)
-    {
-      egrave(white);
-      mezzogiorno(white);
-    }
-    else if (minute == 35)
-    {
-      egrave(white);
-      mezzogiorno(white);
-      eTrentacinque(white);
-    }
-    if (minute > 35)
-    {
-      eTrentacinque(black);
-      egrave(white);
-      mezzogiorno(black);
-      una(white);
-    }
-    //time += "mezzogiorno ";
-  }
-  else if (hour == 0)
-  {
-    if (minute < 35)
-    {
-      egrave(white);
-      mezzanotte(white);
-    }
-    else if (minute == 35)
-    {
-      egrave(white);
-      mezzanotte(white);
-      eTrentacinque(white);
-    }
-    if (minute > 35)
-    {
-      eTrentacinque(black);
-      mezzanotte(black);
-      una(white);
-      egrave(white);
-    }
-    //time += "mezzanotte ";
-  }
-  else if (hour == 1 || hour == 13)
-  {
-    if (minute < 35)
-    {
-      egrave(white);
-      una(white);
-    }
-    else if (minute == 35)
-    {
-      egrave(white);
-      una(white);
-      eTrentacinque(white);
-    }
-    if (minute > 35)
-    {
-      eTrentacinque(black);
-      sonoLe(white);
-      eTrentacinque(black);
-      una(white);
-      due(white);
-    }
-  }
-  else if (hour == 2 || hour == 14)
-  {
-    if (minute < 35)
-    {
-      sonoLe(white);
-      due(white);
-    }
-    else if (minute == 35)
-    {
-      sonoLe(white);
-      due(white);
-      eTrentacinque(white);
-    }
-    if (minute > 35)
-    {
-      eTrentacinque(black);
-      sonoLe(white);
-      due(black);
-      tre(white);
-    }
-    //time += "due ";
-  }
-  else if (hour == 3 || hour == 15)
-  {
-    //tre();
-    if (minute < 35)
-    {
-      tre(white);
-      sonoLe(white);
-    }
-    else if (minute == 35)
-    {
-      tre(white);
-      sonoLe(white);
-      eTrentacinque(white);
-    }
-    if (minute > 35)
-    {
-      eTrentacinque(black);
-      sonoLe(white);
-      tre(black);
-      quattro(white);
-    }
-    //time += "tre ";
-  }
-  else if (hour == 4 || hour == 16)
-  {
-    quattro(white);
-    sonoLe(white);
-    if (minute < 35)
-    {
-      quattro(white);
-      sonoLe(white);
-    }
-    else if (minute == 35)
-    {
-      quattro(white);
-      sonoLe(white);
-      eTrentacinque(white);
-    }
-    if (minute > 35)
-    {
-      eTrentacinque(black);
-      sonoLe(white);
-      quattro(black);
-      cinqueOre(white);
-    }
-    //time += "quattro ";
-  }
-  else if (hour == 5 || hour == 17)
-  {
-    if (minute < 35)
-    {
-      cinqueOre(white);
-      sonoLe(white);
-    }
-    else if (minute == 35)
-    {
-      cinqueOre(white);
-      sonoLe(white);
-      eTrentacinque(white);
-    }
-    if (minute > 35)
-    {
-      eTrentacinque(black);
-      sonoLe(white);
-      cinqueOre(black);
-      seiOn(white);
-    }
-    //time += "cinque ";
-  }
-  else if (hour == 6 || hour == 18)
-  {
-    if (minute < 35)
-    {
-      seiOn(white);
-      sonoLe(white);
-
-    }
-    else if (minute == 35)
-    {
-      seiOn(white);
-      sonoLe(white);
-      eTrentacinque(white);
-    }
-    if (minute > 35)
-    {
-      eTrentacinque(black);
-      sonoLe(white);
-      seiOn(black);
-      sette(white);
-    }
-    //time += "sei ";
-  }
-  else if (hour == 7 || hour == 19)
-  {
-    if (minute < 35)
-    {
-      sette(white);
-      sonoLe(white);
-    }
-    else if (minute == 35)
-    {
-      sette(white);
-      sonoLe(white);
-      eTrentacinque(white);
-    }
-    if (minute > 35)
-    {
-      eTrentacinque(black);
-      sonoLe(white);
-      sette(black);
-      otto(white);
-    }
-    //time += "sette ";
-  }
-  else if (hour == 8 || hour == 20)
-  {
-    if (minute < 35)
-    {
-      otto(white);
-      sonoLe(white);
-    }
-    else if (minute == 35)
-    {
-      otto(white);
-      sonoLe(white);
-      eTrentacinque(white);
-    }
-    if (minute > 35)
-    {
-      eTrentacinque(black);
-      sonoLe(white);
-      otto(black);
-      nove(white);
-    }
-    //time += "otto ";
-  }
-  else if (hour == 9 || hour == 21)
-  {
-    if (minute < 35)
-    {
-      nove(white);
-      sonoLe(white);
-    }
-    else if (minute == 35)
-    {
-      nove(white);
-      sonoLe(white);
-      eTrentacinque(white);
-    }
-    if (minute > 35)
-    {
-      eTrentacinque(black);
-      sonoLe(white);
-      nove(black);
-      dieciOre(white);
-    }
-    //time += "nove ";
-  }
-  else if (hour == 10 || hour == 22)
-  {
-    if (minute < 35)
-    {
-      dieciOre(white);
-      sonoLe(white);
-    }
-    else if (minute == 35)
-    {
-      dieciOre(white);
-      sonoLe(white);
-      eTrentacinque(white);
-    }
-    if (minute > 35)
-    {
-      eTrentacinque(black);
-      sonoLe(white);
-      dieciOre(black);
-      undici(white);
-    }
-    //time += "dieci ";
-  }
-  else if (hour == 11 || hour == 23)
-  {
-    if (minute < 35)
-    {
-      sonoLe(white);
-      undici(white);
-    }
-    else if (minute == 35)
-    {
-      sonoLe(white);
-      undici(white);
-      eTrentacinque(white);
-    }
-    else if (minute > 35)
-    {
-      eTrentacinque(black);
-      sonoLe(black);
-      undici(black);
-      egrave(white);
-      if (hour == 11)
-      {
-        mezzogiorno(white);
-      }
-      else if (hour == 23)
-      {
-        mezzanotte(white);
-      }
-    }
-    //time += "undici ";
-  }
-
-  //e
-  if (minute >= 5 && minute <= 35)
-  {
-    e(white);
-  }
-  else
-  {
-    e(black);
-  }
-
-  //Illuminazione dei pallini
-  diff = minute - int(minute / 10) * 10;
-
-  //Minuti
-  if (meno == false)
-  {
-
-    if (minute % 5 != 0)
-    {
-      piu(white);
-      menoSign(black);
-    }
-    else
-    {
-      piuMenoEMinuti(black);
-    }
-
-    if (diff != 0 && diff != 5)
-    {
-      if (diff >= 1 && diff <= 4 || diff >= 6 && diff <= 9)
-      {
-        printMinutePoints(3, white, black);
-      }
-      if (diff >= 2 && diff <= 4 || diff >= 7 && diff <= 9)
-      {
-        printMinutePoints(4, white, black);
-      }
-      if (diff >= 3 && diff <= 4 || diff >= 8 && diff <= 9)
-      {
-        printMinutePoints(5, white, black);
-      }
-      if (diff == 4 || diff == 9)
-      {
-        printAllMinute(white);
-      }
-    }
-
-    if (minute >= 5 && minute < 10)
-    {
-      cinqueMinuti(white);
-    }
-    else if (minute >= 10 && minute < 15)
-    {
-      dieciMinuti(white);
-      cinqueMinuti(black);
-    }
-    else if (minute >= 15 && minute < 20)
-    {
-      unQuarto(white);
-      dieciMinuti(black);
-    }
-    else if (minute >= 20 && minute < 25)
-    {
-      unQuarto(black);
-      venti(white);
-    }
-    else if (minute >= 25 && minute < 30)
-    {
-      //genWord(90, 0, 10, on); //25 on
-      venticinque(white);
-      venti(black);
-    }
-    else if (minute >= 30 && minute < 35)
-    {
-      eMezza(white);
-      venticinque(black);
-    }
-  }
-  else
-  {
-
-    if (minute < 55)
-    {
-      if (minute != 35)
-      {
-        menoOn(white);
-      }
-    }
-
-    if (minute % 5 != 0)
-    {
-      if (minute < 55)
-      {
-        piu(white);
-      }
-    }
-    else
-    {
-      piuMenoEMinuti(black);
-    }
-
-    if (diff != 0 && diff != 5)
-    {
-
-      if (diff == 2 || diff == 7)
-      {
-        printMinutePoints(5, white, black);
-        if (minute > 55)
-        {
-          menoOn(black);
-        }
-      }
-      else if (diff == 3 || diff == 8)
-      {
-        printMinutePoints(4, white, black);
-        if (minute > 55)
-        {
-          menoOn(black);
-        }
-      }
-      else if (diff == 4 || diff == 9)
-      {
-        printMinutePoints(3, white, black);
-        if (minute > 55)
-        {
-          menoOn(black);
-        }
-      }
-      else if (diff == 1 || diff == 6)
-      {
-        printAllMinute(white);
-        if (minute > 55)
-        {
-          menoOn(black);
-        }
-      }
-    }
-    if (minute > 55)
-    {
-      menoSign(white);
-      piu(black);
-      menoCinque(black);
-      menoOn(black);
-    }
-    else if (minute > 50)
-    {
-      menoCinque(white);
-      dieciMinuti(black);
-    }
-    else if (minute > 45)
-    {
-      dieciMinuti(white);
-      unQuarto(black);
-    }
-    else if (minute > 40)
-    {
-      unQuarto(white);
-      venti(black);
-    }
-    else if (minute >= 35)
-    {
-      if (minute != 35)
-      {
-        venti(white);
-      }
-      venticinque(black);
-      eMezza(black);
-    }
-  }
-
-  printSecond(second);
-
+  // Imposto la parola
+  pausa(color);
 }
 
 /*
@@ -853,38 +363,6 @@ Accendo "pausa" del colore passato
 void pausa(uint32_t color)
 {
   generateWord(0, 8, 12, color);
-}
-
-/*
-Accendo "più" del colore passato
-*/
-void piu(uint32_t color)
-{
-  generateWord(0, 1, 1, color);
-}
-
-/*
-Accendo il segno "-" del colore passato
-*/
-void menoSign(uint32_t color)
-{
-  generateWord(0, 2, 2, color);
-}
-
-/*
-Accendo la scritta "cinque" posizionata dopo il "meno" del colore passato
-*/
-void menoCinque(uint32_t color)
-{
-  generateWord(12, 9, 14, color);
-}
-
-/*
-Accendo "più", "meno" e i minuti del colore passato
-*/
-void piuMenoEMinuti(uint32_t color)
-{
-  generateWord(0, 1, 6, color);
 }
 
 /*
@@ -945,19 +423,21 @@ void quattro(uint32_t color)
 }
 
 /*
-Accendo "cinque" delle ore del colore passato
+Accendo "cinque" del colore passato
 */
-void cinqueOre(uint32_t color)
+void cinque(uint32_t color)
 {
-    generateWord(4, 1, 6, color);
-}
-
-/*
-Accendo "cinque" dei minuti del colore passato
-*/
-void cinqueMinuti(uint32_t color)
-{
+  // Decido se accendere il "cinque" dopo il meno o viceversa
+  if (meno)
+  {
     generateWord(9, 9, 14, color);
+    generateWord(4, 1, 6, black);
+  }
+  else
+  {
+    generateWord(9, 9, 14, black);
+    generateWord(4, 1, 6, color);
+  }
 }
 
 /*
@@ -993,21 +473,22 @@ void nove(uint32_t color)
 }
 
 /*
-Accendo "dieci" delle ore del colore passato
+Accendo "dieci" del colore passato
 */
-void dieciOre(uint32_t color)
+void dieci(uint32_t color)
 {
+  // Decido se accendere il "dieci" dopo il meno o viceversa
+  if (meno)
+  {
+    generateWord(5, 10, 14, black);
+    generateWord(10, 1, 5, color);
+  }
+  else
+  {
     generateWord(5, 10, 14, color);
+    generateWord(10, 1, 5, black);
+  }
 }
-
-/*
-Accendo "dieci" dei minuti del colore passato
-*/
-void dieciMinuti(uint32_t color)
-{
-  generateWord(10, 1, 5, color);
-}
-
 
 /*
 Accendo "undici" del colore passato
@@ -1072,8 +553,8 @@ Accendo "e mezza" del colore passato
 */
 void eMezza(uint32_t color)
 {
-  generateWord(11, 8, 8, color);
-  generateWord(11, 10, 14, color);
+  generateWord(11, 1, 5, color);
+  generateWord(11, 1, 5, color);
 }
 
 /*
@@ -1085,33 +566,246 @@ void venticinque(uint32_t color)
 }
 
 /*
-Stampa della parola "pausa" sul word clock
+Spengo tutti i led del word clock
 */
-void printBreak(int hour, int minute)
+void turnAllOff()
 {
-  uint32_t color = black;
-  // Pausa OK (9:50 - 10:01 / 14:45 - 14:56)
-  if (
-      (hour == 9 && minute >= 50) ||
-      (hour == 10 && minute >= 0 && minute < 2) ||
-      (hour == 14 && minute >= 45 && minute < 57))
+  for (int i = 0; i < strip.numPixels(); i++)
   {
-    color = green;
+    pixelOn(i, black);
   }
-  // Pausa sta per finire (10:02 - 10:05 / 14:57 - 15:00)
-  else if (
-      (hour == 10 && minute >= 2 && minute < 5) ||
-      (hour == 14 && minute >= 57 && minute <= 59))
+}
+
+/*
+Accensione dell'ora
+*/
+void printHour(int hour, int minute)
+{
+  switch (hour)
   {
-    color = red;
+  case 0:
+    egrave(white);
+    mezzanotte(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      // L'una
+      turnAllOff();
+      egrave(white);
+      una(white);
+    }
+    break;
+
+  case 12:
+    egrave(white);
+    mezzogiorno(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      // L'una
+      turnAllOff();
+      egrave(white);
+      una(white);
+    }
+    break;
+
+  case 1:
+  case 13:
+    egrave(white);
+    una(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      // Due
+      turnAllOff();
+      sonoLe(white);
+      due(white);
+    }
+    break;
+
+  case 2:
+  case 14:
+    sonoLe(white);
+    due(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      // Tre
+      turnAllOff();
+      sonoLe(white);
+      tre(white);
+    }
+    break;
+
+  case 3:
+  case 15:
+    sonoLe(white);
+    tre(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      // Quattro
+      turnAllOff();
+      sonoLe(white);
+      quattro(white);
+    }
+    break;
+
+  case 4:
+  case 16:
+    sonoLe(white);
+    quattro(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      // Cinque
+      turnAllOff();
+      sonoLe(white);
+      cinque(white);
+    }
+    break;
+
+  case 5:
+  case 17:
+    sonoLe(white);
+    cinque(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      turnAllOff();
+      sonoLe(white);
+      seiOn(white);
+    }
+    break;
+
+  case 6:
+  case 18:
+    sonoLe(white);
+    seiOn(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      turnAllOff();
+      sonoLe(white);
+      sette(white);
+    }
+    break;
+
+  case 7:
+  case 19:
+    sonoLe(white);
+    sette(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      turnAllOff();
+      sonoLe(white);
+      otto(white);
+    }
+    break;
+
+  case 8:
+  case 20:
+    sonoLe(white);
+    otto(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      turnAllOff();
+      sonoLe(white);
+      nove(white);
+    }
+    break;
+
+  case 9:
+  case 21:
+    sonoLe(white);
+    nove(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      turnAllOff();
+      sonoLe(white);
+      dieci(white);
+    }
+    break;
+
+  case 10:
+  case 22:
+    sonoLe(white);
+    dieci(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      turnAllOff();
+      sonoLe(white);
+      undici(white);
+    }
+    break;
+
+  case 11:
+  case 23:
+    sonoLe(white);
+    undici(white);
+    if (minute == 35)
+    {
+      eTrentacinque(white);
+    }
+    else if (minute > 35)
+    {
+      turnAllOff();
+      egrave(white);
+      if (hour == 11)
+      {
+        mezzogiorno(white);
+      }
+      else if (hour == 23)
+      {
+        mezzanotte(white);
+      }
+      break;
+
+    default:
+      turnAllOff();
+      break;
+    }
   }
-  // Pausa non c'è, led spenti
-  else
-  {
-    color = black;
-  }
-  // Imposto la parola
-  pausa(color);
 }
 
 /*
@@ -1123,15 +817,6 @@ void generateSeconds(int length, uint32_t color)
   {
     generateWord(i, 0, 0, color);
   }
-}
-
-void printMinutePoints(int endIndex, uint32_t color, uint32_t color2){
-  generateWord(0, 3, endIndex, color);
-  generateWord(0, endIndex + 1, 6, color2);
-}
-
-void printAllMinute(uint32_t color){
-  generateWord(0, 3, 6, color);
 }
 
 /*
@@ -1193,27 +878,228 @@ void printSecond(int second)
     generateSeconds(12, white);
     break;
   }
-}
 
-void pixelOn(int pixel, uint32_t color)
+
+/*
+Metodo che accende i led del word clock in base all'orario passato
+*/
+void printTime(int hour, int minute, int second)
 {
-  strip.setPixelColor(pixel, color);
-  strip.show();
-}
-void generateWord(int row, int min, int max, uint32_t color)
-{
-  if (min == 0 && max == 0)
+  meno = false;
+  // Stampo "pausa"
+  printBreak(hour, minute);
+
+  // Stampo l'ora
+  printHour(hour, minute);
+
+  // E
+  if (minute >= 5 && minute <= 35)
   {
-    for (int i = min; i <= (max - min); i++)
+    e(white);
+  }
+  else
+  {
+    e(black);
+  }
+
+  // Illuminazione dei pallini
+  int diff = minute - int(minute / 10) * 10;
+
+  // Minuti
+  if (minute < 35)
+  {
+    if (minute % 5 != 0)
     {
-      pixelOn(pixels[row][i], color);
+      generateWord(0, 1, 1, white);
+      generateWord(0, 2, 2, black);
+    }
+    else
+    {
+      generateWord(0, 1, 6, black);
+    }
+
+    if (diff != 0 && diff != 5)
+    {
+      if (diff >= 1 && diff <= 4 || diff >= 6 && diff <= 9)
+      {
+        generateWord(0, 3, 3, white);
+        generateWord(0, 4, 6, black);
+      }
+      if (diff >= 2 && diff <= 4 || diff >= 7 && diff <= 9)
+      {
+        generateWord(0, 3, 4, white);
+        generateWord(0, 5, 6, black);
+      }
+      if (diff >= 3 && diff <= 4 || diff >= 8 && diff <= 9)
+      {
+        generateWord(0, 3, 5, white);
+        generateWord(0, 6, 6, black);
+      }
+      if (diff == 4 || diff == 9)
+      {
+        generateWord(0, 3, 6, white);
+      }
+    }
+
+    if (minute >= 5 && minute < 10)
+    {
+      cinque(white);
+    }
+    else if (minute >= 10 && minute < 15)
+    {
+      cinque(black);
+      dieci(white);
+    }
+    else if (minute >= 15 && minute < 20)
+    {
+      dieci(black);
+      unQuarto(white);
+    }
+    else if (minute >= 20 && minute < 25)
+    {
+      unQuarto(black);
+      venti(white);
+    }
+    else if (minute >= 25 && minute < 30)
+    {
+      venti(black);
+      venticinque(white);
+    }
+    else if (minute >= 30 && minute < 35)
+    {
+      venticinque(black);
+      eMezza(white);
     }
   }
   else
   {
-    for (int i = min; i <= max; i++)
+
+    if (minute < 55)
     {
-      pixelOn(pixels[row][i], color);
+      if (minute != 35)
+      {
+        // Meno
+        menoOn(white);
+        meno = true;
+      }
+    }
+
+    if (minute % 5 != 0)
+    {
+      if (minute < 55)
+      {
+        generateWord(0, 1, 1, white);
+      }
+    }
+    else
+    {
+      generateWord(0, 1, 6, black);
+    }
+
+    if (diff != 0 && diff != 5)
+    {
+
+      if (diff == 2 || diff == 7)
+      {
+        generateWord(0, 3, 5, white);
+        generateWord(0, 6, 6, black);
+        if (minute > 55)
+        {
+          generateWord(9, 1, 4, black);
+        }
+      }
+      else if (diff == 3 || diff == 8)
+      {
+        generateWord(0, 3, 4, white);
+        generateWord(0, 5, 6, black);
+        if (minute > 55)
+        {
+          generateWord(9, 1, 4, black);
+        }
+      }
+      else if (diff == 4 || diff == 9)
+      {
+        generateWord(0, 3, 3, white);
+        generateWord(0, 4, 6, black);
+        if (minute > 55)
+        {
+          generateWord(9, 1, 4, black);
+        }
+      }
+      else if (diff == 1 || diff == 6)
+      {
+        generateWord(0, 3, 6, white);
+        if (minute > 55)
+        {
+          generateWord(9, 1, 4, black);
+        }
+      }
+    }
+    if (minute > 55)
+    {
+      generateWord(0, 2, 2, white);
+      generateWord(0, 1, 1, black);
+      generateWord(12, 9, 14, black);
+      generateWord(9, 1, 4, black);
+      //generateWord(12, 9, 14, white);
+    }
+    else if (minute > 50)
+    {
+      generateWord(12, 9, 14, white);
+      generateWord(10, 1, 5, black);
+    }
+    else if (minute > 45)
+    {
+      generateWord(10, 1, 5, white);
+      generateWord(10, 6, 7, black);
+      generateWord(10, 9, 14, black);
+    }
+    else if (minute > 40)
+    {
+      generateWord(10, 6, 7, white);
+      generateWord(10, 9, 14, white);
+      generateWord(11, 1, 5, black);
+    }
+    else if (minute >= 35)
+    {
+      if (minute != 35)
+      {
+        generateWord(11, 1, 5, white);
+      }
+      generateWord(12, 4, 14, black);
+      generateWord(7, 1, 5, black);
     }
   }
+
+  // Stampo i secondi sul word clock
+  printSecond(second);
+}
+
+/*
+Stampo l'orario sul word clock
+*/
+void setWordClock()
+{
+  // Istanza data e ora
+  DateTime now = rtc.now();
+  hour = now.hour();
+  minute = now.minute();
+  second = now.second();
+  // Stampo le informazioni in decimale
+  Serial.print(now.year(), DEC);
+  Serial.print('/');
+  Serial.print(now.month(), DEC);
+  Serial.print('/');
+  Serial.print(now.day(), DEC);
+  Serial.print(" (");
+  Serial.print(now.hour(), DEC);
+  Serial.print(':');
+  Serial.print(now.minute(), DEC);
+  Serial.print(':');
+  Serial.print(now.second(), DEC);
+  Serial.print(") ");
+  Serial.println();
+  // Stampo l'orario sul word clock
+  printTime(hour, minute, second);
+  delayPixels = millis() + 1000;
 }
