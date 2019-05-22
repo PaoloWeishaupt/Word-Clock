@@ -4,10 +4,10 @@ Gabriele Alessi, Paolo Claudio Weishaupt
 */
 
 // Buttons pins
-int hourButton = 22;
-int minuteButton = 23;
-int confirmButton = 24;
-int modeButton = 25;
+int hourButton = 8;
+int minuteButton = 11;
+int confirmButton = 12;
+int modeButton = 13;
 // Buttons states
 int hourButtonState = 0;
 int lastHourButtonState = 0;
