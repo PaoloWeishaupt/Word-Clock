@@ -745,15 +745,15 @@ void printTime(int hour, int minute, int second)
     {
       if (diff >= 1 && diff <= 4 || diff >= 6 && diff <= 9)
       {
-        printMinutePoints(3, white);
+        printMinutePoints(3, white, black);
       }
       if (diff >= 2 && diff <= 4 || diff >= 7 && diff <= 9)
       {
-        printMinutePoints(4, white);
+        printMinutePoints(4, white, black);
       }
       if (diff >= 3 && diff <= 4 || diff >= 8 && diff <= 9)
       {
-        printMinutePoints(5, white);
+        printMinutePoints(5, white, black);
       }
       if (diff == 4 || diff == 9)
       {
@@ -820,7 +820,7 @@ void printTime(int hour, int minute, int second)
 
       if (diff == 2 || diff == 7)
       {
-        printMinutePoints(5, white);
+        printMinutePoints(5, white, black);
         if (minute > 55)
         {
           menoOn(black);
@@ -828,7 +828,7 @@ void printTime(int hour, int minute, int second)
       }
       else if (diff == 3 || diff == 8)
       {
-        printMinutePoints(4, white);
+        printMinutePoints(4, white, black);
         if (minute > 55)
         {
           menoOn(black);
@@ -836,7 +836,7 @@ void printTime(int hour, int minute, int second)
       }
       else if (diff == 4 || diff == 9)
       {
-        printMinutePoints(3, white);
+        printMinutePoints(3, white, black);
         if (minute > 55)
         {
           menoOn(black);
@@ -905,13 +905,16 @@ void piu(uint32_t color)
 }
 
 /*
-Accendo "meno" del colore passato
+Accendo il segno "-" del colore passato
 */
 void menoSign(uint32_t color)
 {
   generateWord(0, 2, 2, color);
 }
 
+/*
+Accendo la scritta "cinque" posizionata dopo il "meno" del colore passato
+*/
 void menoCinque(uint32_t color)
 {
   generateWord(12, 9, 14, color);
@@ -1163,9 +1166,9 @@ void generateSeconds(int length, uint32_t color)
   }
 }
 
-void printMinutePoints(int endIndex, uint32_t color){
+void printMinutePoints(int endIndex, uint32_t color, uint32_t color2){
   generateWord(0, 3, endIndex, color);
-  generateWord(0, endIndex + 1, 6, color);
+  generateWord(0, endIndex + 1, 6, color2);
 }
 
 void printAllMinute(uint32_t color){
