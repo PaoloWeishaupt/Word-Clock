@@ -46,6 +46,29 @@ const uint32_t white = strip.Color(255, 255, 255);
 const uint32_t black = strip.Color(0, 0, 0);
 const uint32_t orange = strip.Color(255, 165, 0);
 
+// Buttons pins
+int hourButton = 8;
+int minuteButton = 11;
+int confirmButton = 12;
+int modeButton = 13;
+// Buttons states
+int hourButtonState = 0;
+int lastHourButtonState = 0;
+int minuteButtonState = 0;
+int lastMinuteButtonState = 0;
+int confirmButtonState = 0;
+int lastConfirmButtonState = 0;
+int modeButtonState = 0;
+int lastModeButtonState = 0;
+// Numbers to display
+int hourUnit = 0;
+int hourTen = 0;
+int minuteUnit = 0;
+int minuteTen = 0;
+// Hour and minute to set up
+int confirmedHour = 0;
+int confirmedMinute = 0;
+
 // Definizione network
 #ifndef __MY_NETWORK_H
 
@@ -99,6 +122,12 @@ Setup del sistema
 */
 void setup()
 {
+  // Buttons pins
+  pinMode(hourButton, INPUT);
+  pinMode(minuteButton, INPUT);
+  pinMode(confirmButton, INPUT);
+  pinMode(modeButton, INPUT);
+
   // Delay all'orario corrente per fargli fare subito la prima richiesta
   delayUDP = millis();
   // Delay dei led a 1 secondo
@@ -294,53 +323,7 @@ void loop()
       unsigned long secsSince1900 = getPacket();
       Serial << F("Seconds since Jan 1 1900 = ") << secsSince1900 << "\n";
 
-      // now convert NTP time into everyday time
-      // ora convertiamo il tempo NTP in formato leggibile
-      Serial << F("Unix time = ");
-
-      // Unix time starts on Jan 1 1970. In seconds, that's 2208988800
-      // il tempo Unix inizia dal primo Gennaio 1970. In secondi, sono 2208988800
-      const unsigned long seventyYears = 2208988800UL;
-
-      // subtract seventy years
-      // sottrae dal tempo NTP la base Unix
-      unsigned long epoch = secsSince1900 - seventyYears;
-
-      // print Unix time:
-      // stampa il tempo Unix
-      Serial << epoch << "\n";
-
-      // print the hour, minute and second
-      // stampa ora, minuti e secondi
-
-      // UTC is the time at Greenwich Meridian (GMT)
-      // Tempo UTC (ora al meridiano di Greenwich, GMT)
-      Serial << F("The ETC time is ");
-
-      // print the hour (86400 equals secs per day) + 1 for ETC time
-      // stampa l'ora (contando 86400 secondi al giorno
-      Serial << ((epoch % 86400L) / 3600 + 1);
-      Serial.print(':');
-      if (((epoch % 3600) / 60) < 10)
-      {
-        // In the first 10 minutes of each hour, we'll want a leading '0'
-        // nei primi 10 minuti di ogni ora vogiamo uno zero iniziale
-        Serial << '0';
-      }
-
-      // print the minute (3600 equals secs per minute)
-      // stampa i minuti (contando 3600 secondi per minuto)
-      Serial << ((epoch % 3600) / 60);
-      Serial << ':';
-      if ((epoch % 60) < 10)
-      {
-        // In the first 10 seconds of each minute, we'll want a leading '0'
-        // nei primi 10 secondi di ogni minuto vogliamo lo zero iniziale
-        Serial << '0';
-      }
-      // print the second
-      // stampa i secondi
-      Serial << epoch % 60 << "\n";
+      setInitialTime(secsSince1900);
     }
 
     // wait ten seconds before asking for the time again
