@@ -1111,11 +1111,8 @@ void printSecond(int second)
 {
   switch (second)
   {
-  case 0:
-    generateSeconds(12, black);
-    break;
-
   case 1 ... 4:
+    generateSeconds(12, black);
     generateSeconds(1, white);
     break;
 
